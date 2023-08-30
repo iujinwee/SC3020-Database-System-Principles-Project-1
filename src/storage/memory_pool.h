@@ -5,25 +5,45 @@
 #ifndef SC3020_DATABASE_SYSTEM_PRINCIPLES_MEMORY_POOL_H
 #define SC3020_DATABASE_SYSTEM_PRINCIPLES_MEMORY_POOL_H
 
-#include "types.h"
 #include "iostream"
 
 class MemoryPool {
 private:
-    Record *memPoolPtr;
-
-    uint memPoolSize;
-    uint8_t blockSize;
-    uint8_t memPoolUsedBlocks;
-    uint8_t memPoolUsedRecords;
-    uint8_t currentBlock;
+    int totalMemPoolSize;
+    int blockSize;
+    int recordSize;
+    int currentMemPoolSize;
+    int currentBlockSize;
+    int memPoolAvailableBlocks;
+    int memPoolUsedBlocks;
+    int memPoolUsedRecords;
 
 public:
-    MemoryPool(uint32_t memPoolSize, uint32_t blockSize);
+    int *memPoolPtr;
+    int *currentBlkPtr;
+
+    MemoryPool(int memSize, int blockSize);
+
+    void allocateBlock();
+
+    void addRecord(int recordSize);
+
+    void allocateRecord();
+
+    [[nodiscard]] double getTotalMemPoolSize() const;
+
+    [[nodiscard]] double getCurrentMemPoolSize() const;
+
+    [[nodiscard]] int getNumUsedRecords() const;
+
+    [[nodiscard]] int getNumUsedBlocks() const;
+
+    [[nodiscard]] int getRecordSize() const;
+
+    [[nodiscard]] int numRecordsInBlock() const;
 
     ~MemoryPool();
 
-    double getMemPoolSize();
 };
 
 
