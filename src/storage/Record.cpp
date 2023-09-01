@@ -4,12 +4,10 @@
 
 #include "Record.h"
 #include <sstream>
-#include <iostream>
-#include <bitset>
 
 using namespace std;
 
-Record::Record() {}
+Record::Record() = default;
 
 void Record::write(const string &data) {
     istringstream linestream(data);
