@@ -26,9 +26,10 @@ void Record::store(const string &data) {
  * Bitwise operation to store date from uint32_t (bit-masking)
  * i.e. 0x1F: 00011111 (we apply this to get the lowest 5 bits of the bin_game_date)
  *
- * DD - 5 bits
- * MM - 4 bits
- * YYYY - 15 bits
+ * DD - 5 bits (0 - 31)         [-----------DDDDD]
+ *                              [0000000000011111]
+ * MM - 4 bits (0 - 12)         [-------MMMM-----]
+ * YYYY - 14 bits (0001 - 9999) [YYYYYYY---------]
  */
 void Record::packDate(const std::string &date) {
 
