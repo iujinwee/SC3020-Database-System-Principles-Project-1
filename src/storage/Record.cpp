@@ -4,14 +4,14 @@
 
 #include "Record.h"
 #include <sstream>
-#include <iostream>
-#include <bitset>
 
 using namespace std;
 
-Record::Record() {}
-
-void Record::write(const string &data) {
+/*
+ *  Writing string data into Record class by parsing linestream and packing
+ *  date into uint32_t.
+ */
+void Record::store(const string &data) {
     istringstream linestream(data);
     string tempDate;
 
@@ -22,16 +22,14 @@ void Record::write(const string &data) {
     packDate(tempDate);
 }
 
-Record::~Record() {
-    delete this;
-}
-
-/* Bitwise operation to store date from uint32_t (bit-masking)
+/*
+ * Bitwise operation to store date from uint32_t (bit-masking)
  * i.e. 0x1F: 00011111 (we apply this to get the lowest 5 bits of the bin_game_date)
  *
- * DD - 5 bits
- * MM - 4 bits
- * YYYY - 15 bits
+ * DD - 5 bits (0 - 31)         [-----------DDDDD]
+ *                              [0000000000011111]
+ * MM - 4 bits (0 - 12)         [-------MMMM-----]
+ * YYYY - 14 bits (0001 - 9999) [YYYYYYY---------]
  */
 void Record::packDate(const std::string &date) {
 
@@ -65,4 +63,3 @@ string Record::getDate() const {
            to_string((int) (bin_game_date >> 5 & 0x0F)) + "/" +
            to_string((int) (bin_game_date >> 9 & 0x3FFF));
 }
-
