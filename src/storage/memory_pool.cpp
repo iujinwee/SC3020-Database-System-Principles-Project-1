@@ -101,8 +101,8 @@ Record *MemoryPool::loadRecord(RecordAddress record_address) {
 }
 
 void MemoryPool::displayRecord(RecordAddress record_address) {
-    auto *record = new Record{};
-    int size = sizeof(RecordAddress);
+    auto *record = new Record;
+    int size = sizeof(Record);
 
     memcpy(record, (char *) (record_address.address + record_address.offset), size);
 

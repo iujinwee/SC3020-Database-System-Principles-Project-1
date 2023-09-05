@@ -23,9 +23,9 @@ struct Record {
     float fg_pct_home;       // Field Goal Percentage
     float ft_pct_home;       // Free Throw Percentage
     float fg3_pct_home;      // Three-Point Percentage
-    uint8_t ast_home;        // Assists Home
-    uint8_t reb_home;        // Rebounds Home
-    uint8_t home_team_wins;  // Home Team Wins (1 bit for boolean)
+    uint16_t ast_home;        // Assists Home
+    uint16_t reb_home;        // Rebounds Home
+    uint16_t home_team_wins;  // Home Team Wins (1 bit for boolean)
 
 private:
     void packDate(const string &date);

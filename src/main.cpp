@@ -23,7 +23,7 @@ int main() {
 
     // Reading data from games.txt into memory pool
     ifstream datafile(DATA_DIR);
-    vector <RecordAddress> recordAddressList;
+    vector<RecordAddress> recordAddressList;
 
     bool header = true;
     if (datafile.is_open()) {
@@ -68,7 +68,6 @@ int main() {
     cout << recordAddressList.size() << endl;
     for (RecordAddress t: recordAddressList) {
         MemoryPool::displayRecord(t);
-//        cout << &t.address << endl;
     }
 
 
