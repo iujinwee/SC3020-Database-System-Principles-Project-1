@@ -1,5 +1,6 @@
-#include "storage/memory_pool.h"
+#include "storage/MemoryPool.h"
 #include "storage/Record.h"
+#include "indexing/BPlusTree.h"
 
 #include <iostream>
 #include <fstream>
@@ -65,10 +66,19 @@ int main() {
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedBlocks() << endl;
     cout << "==================================================================" << endl;
 
-    cout << recordAddressList.size() << endl;
-    for (RecordAddress t: recordAddressList) {
-        MemoryPool::displayRecord(t);
-    }
+
+    BPlusTree tree(3);
+
+    tree.insertNode(1, 2);
+    tree.insertNode(2, 3);
+    tree.insertNode(6, 5);
+    tree.insertNode(10, 10);
+    tree.displayTree();
+
+//    cout << recordAddressList.size() << endl;
+//    for (RecordAddress t: recordAddressList) {
+//        MemoryPool::displayRecord(t);
+//    }
 
 
     return 0;
