@@ -11,20 +11,20 @@
 
 
 class MemoryPool {
-    const int recordSize = sizeof(Record);
+    const int record_size = sizeof(Record);
 
-    std::size_t totalMemorySize;        // Total size of the memory pool
-    std::size_t currentMemorySize = 0;  // Current size of the memory pool
-    std::size_t blockSize;              // Memory size of 1 block
-    std::size_t currentBlockSize = 0;       // Memory size of current block
-    std::size_t numUsedBlocks = 0;      // Count of used blocks
-    std::size_t numUsedRecords = 0;     // Count of initialised records
-    std::size_t numAccessedBlocks = 0;  // Count of accessed blocks
+    std::size_t total_memory_size;           // Total size of the memory pool
+    std::size_t current_memory_size = 0;     // Current size of the memory pool
+    std::size_t block_size;                  // Memory size of 1 block
+    std::size_t current_block_size = 0;      // Memory size of current block
+    std::size_t num_used_blocks = 0;         // Count of used blocks
+    std::size_t num_used_records = 0;        // Count of initialised records
+    std::size_t num_accessed_blocks = 0;     // Count of accessed blocks
 
 public:
-    u_char *memPoolPtr;     // Pointer to memory pool
-    u_char *nodeBlkPtr;     // Pointer B+ tree nodes
-    u_char *dataBlkPtr;     // Pointer data records
+    u_char *mem_pool_ptr;   // Pointer to memory pool
+    u_char *b_tree_ptr;     // Pointer B+ tree nodes
+    u_char *data_ptr;       // Pointer data records
 
     MemoryPool(int totalMemorySize, int blockSize);
 
@@ -34,9 +34,9 @@ public:
 
     RecordAddress saveRecord(Record newRecord);
 
-    static Record *loadRecord(RecordAddress record_address);
+    static Record *loadRecord(RecordAddress recordAddress);
 
-    static void displayRecord(RecordAddress record_address);
+    static void displayRecord(RecordAddress recordAddress);
 
     [[nodiscard]] double getTotalMemory() const;
 

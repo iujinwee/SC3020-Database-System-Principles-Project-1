@@ -66,14 +66,9 @@ int main() {
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedBlocks() << endl;
     cout << "==================================================================" << endl;
 
+    int bptree_node_size = 4;
+    BPlusTree tree(bptree_node_size);
 
-    BPlusTree tree(3);
-
-    tree.insertNode(1, 2);
-    tree.insertNode(2, 3);
-    tree.insertNode(6, 5);
-    tree.insertNode(10, 10);
-    tree.displayTree();
 
 //    cout << recordAddressList.size() << endl;
 //    for (RecordAddress t: recordAddressList) {
