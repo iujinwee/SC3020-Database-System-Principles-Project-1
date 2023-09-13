@@ -7,43 +7,52 @@
 
 #include "../storage//Record.h"
 
-struct BPlusTreeNode {
-    bool isLeafNode;
-    int size;
-    BPlusTreeNode *nextLeaf;
+const int BLOCK_SIZE = 400;
 
-    vector<int> keys;
-    vector<vector<int>> values;
-    vector<BPlusTreeNode *> children;
+/*
+ *  Key structure stores the
+ *  1) Key value
+ *  2) Memory addresses of the records with the same key value
+ */
+struct BPlusTreeKey {
+    int key{};
+    vector<void *> record_addresses;
+};
 
-    explicit BPlusTreeNode(bool isLeaf = false) {
-        size = 0;
-        isLeafNode = isLeaf;
-        nextLeaf = nullptr;
+class BPlusTreeNode {
+    bool isLeaf;
+
+    std::vector<BPlusTreeKey> keys;
+    std::vector<BPlusTreeNode *> children;
+
+    friend class BPlusTree;
+
+    explicit BPlusTreeNode(bool isLeafNode = false) {
+        isLeaf = isLeafNode;
     }
 };
 
 class BPlusTree {
 private:
-    int degree;
     BPlusTreeNode *root;
+    int m;
 
-    void inOrderTransversal(BPlusTreeNode *node);
+    static void insertNonFullNode(BPlusTreeNode *node, int key, void *recordAddress);
 
-    void insertNonFull(BPlusTreeNode *node, int key, int value);
+    static BPlusTreeNode *splitNode(BPlusTreeNode *node, int key);
 
-    void splitChild(BPlusTreeNode *parentNode, int childIndex);
+    void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
 public:
-    explicit BPlusTree(int degree);
+    explicit BPlusTree(int nodeSize);
 
     void displayTree();
 
-    BPlusTree searchTree();
+    BPlusTreeNode *searchNode(int key);
 
-    bool insertNode(int key, int value);
+    void insertKey(int key, void *recordAddress);
 
-    bool deleteNode();
+    static void deleteKey(int key);
 
     ~BPlusTree();
 };

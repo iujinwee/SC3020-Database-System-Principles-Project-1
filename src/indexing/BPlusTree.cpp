@@ -4,116 +4,115 @@
 
 #include "BPlusTree.h"
 
+using namespace std;
 
-BPlusTree::BPlusTree(int degree) {
+BPlusTree::BPlusTree(int nodeSize) {
     this->root = nullptr;
-    this->degree = degree;
+    this->m = nodeSize;
 }
 
+BPlusTree::~BPlusTree() = default;
+
+/*
+ *  ==================================
+ *  ===    PUBLIC KEY FUNCTION     ===
+ *  ==================================
+ */
+
 void BPlusTree::displayTree() {
-    inOrderTransversal(root);
     cout << endl;
 }
 
-bool BPlusTree::insertNode(int key, int value) {
+void BPlusTree::insertKey(int key, void *recordAddress) {
+    // Case 1: Empty B+ Tree, insert root node
     if (!root) {
         root = new BPlusTreeNode(true);
-        root->keys.push_back(key);
-        root->values.push_back({value});
+        auto rec_add_vectors = std::vector<void *>();
+        auto b_plus_tree_key = BPlusTreeKey{key, rec_add_vectors};
+        root->keys.push_back(b_plus_tree_key);
     } else {
-        // Handle insertion into the root and splitting if necessary
-        if (root->keys.size() == (2 * degree - 1)) {
-            auto *newRoot = new BPlusTreeNode(false);
-            newRoot->children.push_back(root);
-            splitChild(newRoot, 0);
-            root = newRoot;
-        }
-        insertNonFull(root, key, value);
-    }
-}
+        // Search leaf node for insertion
+        BPlusTreeNode *target_node = searchNode(key);
 
-BPlusTree BPlusTree::searchTree() {
-    return BPlusTree(0);
-}
-
-bool BPlusTree::deleteNode() {
-    return false;
-}
-
-void BPlusTree::inOrderTransversal(BPlusTreeNode *node) {
-    if (node) {
-        int n = (int) node->keys.size();
-        for (int i = 0; i < n; i++) {
-            if (!node->isLeafNode && i == 0) {
-                inOrderTransversal(node->children[i]);
-            }
-            cout << node->keys[i] << " ";
-            if (!node->isLeafNode && i < n - 1) {
-                inOrderTransversal(node->children[i + 1]);
-            }
-        }
-    }
-}
-
-// Helper function to insert a key-value pair into a non-full node
-void BPlusTree::insertNonFull(BPlusTreeNode *node, int key, int value) {
-    int i = (int) node->keys.size() - 1;
-
-    if (node->isLeafNode) {
-        // Insert key-value pair into a leaf node
-        while (i >= 0 && key < node->keys[i]) {
-            i--;
-        }
-        i++;  // Find the correct position to insert
-
-        // Check if the key already exists in the node
-        if (i < node->keys.size() && node->keys[i] == key) {
-            // Key already exists, append the value to the existing values
-            node->values[i].push_back(value);
+        // Case 2: Non-full B+ Tree Node, maintain order of keys
+        if (root->keys.size() == (2 * m - 1)) {
+            insertNonFullNode(target_node, key, recordAddress);
         } else {
-            // Key doesn't exist, insert it along with the value
-            node->keys.insert(node->keys.begin() + i, key);
-            node->values.insert(node->values.begin() + i, {value});
+            /*
+             * Case 3: Full B+ Tree Node, Split the nodes,
+             * and propagate upwards until it reaches the root.
+             */
+            BPlusTreeNode *new_node = splitNode(target_node, key);
+            propagateUpwards(target_node, new_node);
         }
+    }
+}
+
+BPlusTreeNode *BPlusTree::searchNode(int key) {
+    BPlusTreeNode *current_node = root;
+    return current_node;
+}
+
+void BPlusTree::deleteKey(int key) {
+}
+
+/*
+ *  ===================================
+ *  ====  PRIVATE HELPER FUNCTION  ====
+ *  ===================================
+ */
+
+// Helper function to insert a key-address pair into a non-full node
+void BPlusTree::insertNonFullNode(BPlusTreeNode *node, int key, void *recordAddress) {
+    int index = 0;
+
+    // Find the index to insert the key-address pair
+    while (index < node->keys.size()) {
+        if (node->keys[index].key >= key) {
+            break;
+        }
+        index++;
+    }
+
+    // If key exists, append the address to the record_address vector
+    if (node->keys[index].key == key) {
+        node->keys[index].record_addresses.push_back(recordAddress);
     } else {
-        // Insert key-value pair into a non-leaf node
-        while (i >= 0 && key < node->keys[i]) {
-            i--;
-        }
-        i++;  // Find the correct child to insert into
-
-        if (node->children[i]->keys.size() == (2 * degree - 1)) {
-            splitChild(node, i);
-            if (key > node->keys[i]) {
-                i++;
-            }
-        }
-        insertNonFull(node->children[i], key, value);
+        // If key doesn't exist, insert a new key
+        std::vector<void *> add_vector{recordAddress};
+        BPlusTreeKey new_key{key, add_vector};
+        node->keys.insert(node->keys.begin() + index, new_key);
     }
 }
 
-// Helper function to split a child node
-void BPlusTree::splitChild(BPlusTreeNode *parentNode, int childIndex) {
-    BPlusTreeNode *child = parentNode->children[childIndex];
-    auto *newChild = new BPlusTreeNode(child->isLeafNode);
+// Helper function to split a node
+BPlusTreeNode *BPlusTree::splitNode(BPlusTreeNode *node, int key) {
 
-    // Move the second half of keys and values to the new child
-    parentNode->keys.insert(parentNode->keys.begin() + childIndex, child->keys[degree - 1]);
-    parentNode->values.insert(parentNode->values.begin() + childIndex, {});
-    parentNode->children.insert(parentNode->children.begin() + childIndex + 1, newChild);
+    // Create the new B+ Tree node
+    auto *new_node = new BPlusTreeNode(node->isLeaf);
 
-    newChild->keys.assign(child->keys.begin() + degree, child->keys.end());
-    child->keys.resize(degree - 1);
+    int split_index = (int) node->keys.size() / 2;
 
-    newChild->values.assign(child->values.begin() + degree, child->values.end());
-    child->values.resize(degree - 1);
-
-    if (!child->isLeafNode) {
-        newChild->children.assign(child->children.begin() + degree, child->children.end());
-        child->children.resize(degree);
+    // Shift keys from the 2nd half to the new node
+    for (int i = split_index; i < node->keys.size(); i++) {
+        new_node->keys.push_back(node->keys[i]);
     }
+
+    // Erase the moved keys and record addresses from the original node
+    node->keys.erase(node->keys.begin() + split_index, node->keys.end());
+
+    // Update the linked list pointers for leaf nodes (last ptr is to next leaf)
+    if (node->isLeaf) {
+        new_node->children.push_back(node->children.back());
+        node->children.back() = new_node;
+    }
+
+    return new_node;
+}
+
+void BPlusTree::propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode) {
+
 }
 
 
-BPlusTree::~BPlusTree() = default;
 
