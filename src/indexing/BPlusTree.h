@@ -22,8 +22,8 @@ struct BPlusTreeKey {
 class BPlusTreeNode {
     bool isLeaf;
 
-    std::vector<BPlusTreeKey> keys;
-    std::vector<BPlusTreeNode *> children;
+    std::vector<BPlusTreeKey> keys;         // Stores a list of BPlusTreeKeys
+    std::vector<BPlusTreeNode *> children;  // Stores a list of BPlusTreeNodes children
 
     friend class BPlusTree;
 
@@ -37,9 +37,11 @@ private:
     BPlusTreeNode *root;
     int m;
 
-    static void insertNonFullNode(BPlusTreeNode *node, int key, void *recordAddress);
+    static BPlusTreeKey newKey(int key, void *recordAddress);
 
-    static BPlusTreeNode *splitNode(BPlusTreeNode *node, int key);
+    static void insertIntoLeafNode(BPlusTreeNode *leafNode, int key, void *recordAddress);
+
+    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, int key, void *recordAddress);
 
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
