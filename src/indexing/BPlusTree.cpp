@@ -72,7 +72,7 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *rec
     int key_index = 0;
 
     // Find the index to insert the key-address pair
-    while (key_index < leafNode->keys.size() && key > leafNode->keys[key_index].key) {
+    while (key_index < leafNode->keys.size() && key > leafNode->keys[key_index].key_value) {
         key_index++;
     }
 

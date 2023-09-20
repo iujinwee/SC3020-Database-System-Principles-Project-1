@@ -15,7 +15,7 @@ const int BLOCK_SIZE = 400;
  *  2) Count of keys (to handle duplicate keys)
  */
 struct BPlusTreeKey {
-    float key_value;
+    float key;
     int count;
 };
 
@@ -40,7 +40,7 @@ class BPlusTreeNode {
 class BPlusTree {
 private:
     BPlusTreeNode *root;
-    int m;
+    int m; // Maximum keys that can be stored
 
     static BPlusTreeKey newKey(float key, void *recordAddress);
 
