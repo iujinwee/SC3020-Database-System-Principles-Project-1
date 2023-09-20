@@ -8,11 +8,12 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <stdint.h>
 
 using namespace std;
 
 struct RecordAddress {
-    u_char *address;
+    unsigned char *address;
     std::size_t offset;
 };
 
