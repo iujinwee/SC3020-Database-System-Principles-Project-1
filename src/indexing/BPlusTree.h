@@ -9,6 +9,7 @@
 #include <vector> 
 
 const int BLOCK_SIZE = 400;
+const int m = 23;
 
 /*
  *  Key structure stores the
@@ -22,12 +23,15 @@ struct BPlusTreeKey {
 
 class BPlusTreeNode {
     bool is_leaf;
+    int size;
     BPlusTreeNode* next;  // Stores the next BPlusTree node
-    BPlusTreeNode* parent;  // Stores the previous BPlusTree node
+    BPlusTreeNode* parent;  // Stores the parent BPlusTree node
 
-    std::vector<BPlusTreeKey> keys;         // Stores the BPlusTreeKey structure
-    std::vector<BPlusTreeNode *> children;  // Stores a list of BPlusTreeNodes children
+    BPlusTreeKey keys[m];
+    void* children[m+1];
 
+//    void* children [10];  // Stores a list of BPlusTreeNodes children
+//    std::vector<BPlusTreeKey> keys;         // Stores the BPlusTreeKey structure
 
     friend class BPlusTree;
 
@@ -35,15 +39,17 @@ class BPlusTreeNode {
         is_leaf = isLeafNode;
         next = nullptr;
         parent = nullptr;
+        size = 0;
     }
 };
 
 class BPlusTree {
 private:
-    BPlusTreeNode *root;
-    int m; // Maximum keys that can be stored
+    BPlusTreeNode *root = nullptr;
 
-    static BPlusTreeKey newKey(float key, void *recordAddress);
+    BPlusTreeNode* searchInsertionNode(float key);
+
+    static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
     static void insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress);
 
@@ -52,7 +58,7 @@ private:
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
 public:
-    explicit BPlusTree(int nodeSize);
+    explicit BPlusTree();
 
     void displayTree();
 

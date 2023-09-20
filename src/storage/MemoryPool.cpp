@@ -95,7 +95,7 @@ Record *MemoryPool::loadRecord(RecordAddress recordAddress) {
     void *record = new Record{};
     int size = sizeof(RecordAddress);
 
-    memcpy(record, (char *) (record_address.address + record_address.offset), size);
+    memcpy(record, (char *) (recordAddress.address + recordAddress.offset), size);
 
     return (Record *) record;
 }
@@ -104,7 +104,7 @@ void MemoryPool::displayRecord(RecordAddress recordAddress) {
     auto *record = new Record;
     int size = sizeof(Record);
 
-    memcpy(record, (char *) (record_address.address + record_address.offset), size);
+    memcpy(record, (char *) (recordAddress.address + recordAddress.offset), size);
 
     string delimiter = " ";
 
