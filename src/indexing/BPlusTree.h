@@ -12,36 +12,41 @@ const int BLOCK_SIZE = 400;
 /*
  *  Key structure stores the
  *  1) Key value
- *  2) Memory addresses of the records with the same key value
+ *  2) Count of keys (to handle duplicate keys)
  */
 struct BPlusTreeKey {
-    int key{};
-    vector<void *> record_addresses;
+    float key;
+    int count;
 };
 
 class BPlusTreeNode {
-    bool isLeaf;
+    bool is_leaf;
+    BPlusTreeNode* next;  // Stores the next BPlusTree node
+    BPlusTreeNode* parent;  // Stores the previous BPlusTree node
 
-    std::vector<BPlusTreeKey> keys;         // Stores a list of BPlusTreeKeys
+    std::vector<BPlusTreeKey> keys;         // Stores the BPlusTreeKey structure
     std::vector<BPlusTreeNode *> children;  // Stores a list of BPlusTreeNodes children
+
 
     friend class BPlusTree;
 
     explicit BPlusTreeNode(bool isLeafNode = false) {
-        isLeaf = isLeafNode;
+        is_leaf = isLeafNode;
+        next = nullptr;
+        parent = nullptr;
     }
 };
 
 class BPlusTree {
 private:
     BPlusTreeNode *root;
-    int m;
+    int m; // Maximum keys that can be stored
 
-    static BPlusTreeKey newKey(int key, void *recordAddress);
+    static BPlusTreeKey newKey(float key, void *recordAddress);
 
-    static void insertIntoLeafNode(BPlusTreeNode *leafNode, int key, void *recordAddress);
+    static void insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress);
 
-    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, int key, void *recordAddress);
+    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
 
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
@@ -50,11 +55,11 @@ public:
 
     void displayTree();
 
-    BPlusTreeNode *searchNode(int key);
+    BPlusTreeNode *searchNode(float key);
 
-    void insertKey(int key, void *recordAddress);
+    void insertKey(float key, void *recordAddress);
 
-    static void deleteKey(int key);
+    static void deleteKey(float key);
 
     ~BPlusTree();
 };

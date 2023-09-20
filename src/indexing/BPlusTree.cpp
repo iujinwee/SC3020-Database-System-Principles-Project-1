@@ -23,19 +23,18 @@ void BPlusTree::displayTree() {
     cout << endl;
 }
 
-void BPlusTree::insertKey(int key, void *recordAddress) {
+void BPlusTree::insertKey(float key, void *recordAddress) {
     // Case 1: Empty B+ Tree, insert root node
     if (!root) {
         root = new BPlusTreeNode(true);
-        auto rec_add_vectors = std::vector<void *>();
-        auto b_plus_tree_key = BPlusTreeKey{key, rec_add_vectors};
+        auto b_plus_tree_key = BPlusTreeKey{key, 1};
         root->keys.push_back(b_plus_tree_key);
     } else {
         // Search leaf node for insertion
         BPlusTreeNode *target_node = searchNode(key);
 
         // Case 2: Non-full B+ Tree Node, maintain order of keys
-        if (root->keys.size() == (2 * m - 1)) {
+        if (root->keys.size() < m) {
             insertIntoLeafNode(target_node, key, recordAddress);
         } else {
             /*
@@ -90,9 +89,12 @@ BPlusTreeNode *BPlusTree::searchNode(int key) {
 
     //BPlusTreeNode *current_node = root;
     //return current_node;
+BPlusTreeNode *BPlusTree::searchNode(float key) {
+    BPlusTreeNode *current_node = root;
+    return current_node;
 }
 
-void BPlusTree::deleteKey(int key) {
+void BPlusTree::deleteKey(float key) {
 }
 
 /*
@@ -101,18 +103,18 @@ void BPlusTree::deleteKey(int key) {
  *  ===================================
  */
 
-BPlusTreeKey BPlusTree::newKey(int key, void *recordAddress) {
+BPlusTreeKey BPlusTree::newKey(float key, void *recordAddress) {
     std::vector<void *> add_vector{recordAddress};
     BPlusTreeKey new_key{key, add_vector};
     return new_key;
 }
 
 // Helper function to insert a key-address pair into a non-full node
-void BPlusTree::insertIntoLeafNode(BPlusTreeNode *leafNode, int key, void *recordAddress) {
+void BPlusTree::insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress) {
     int key_index = 0;
 
     // Find the index to insert the key-address pair
-    while (key_index < leafNode->keys.size() && key > leafNode->keys[key_index].key) {
+    while (key_index < leafNode->keys.size() && key > leafNode->keys[key_index].key_value) {
         key_index++;
     }
 
@@ -126,7 +128,7 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *leafNode, int key, void *recor
 }
 
 // Helper function to split a node
-BPlusTreeNode *BPlusTree::splitLeafNode(BPlusTreeNode *node, int key, void *recordAddress) {
+BPlusTreeNode *BPlusTree::splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress) {
 
     // Create the new B+ Tree node
     auto *new_node = new BPlusTreeNode(node->isLeaf);

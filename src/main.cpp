@@ -8,7 +8,6 @@
 
 using namespace std;
 
-int BLOCK_SIZE = 400; // 400B
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
 string DATA_DIR = "../data/games.txt";
 
