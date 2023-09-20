@@ -1,0 +1,2 @@
+INDEX VERSION 1.131+C:\Users\Kelly Khoo\Downloads\SC3020-Database-System-Principles\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index

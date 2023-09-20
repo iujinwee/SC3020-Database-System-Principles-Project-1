@@ -6,6 +6,7 @@
 #define SC3020_DATABASE_SYSTEM_PRINCIPLES_BPLUSTREE_H
 
 #include "../storage//Record.h"
+#include <vector> 
 
 const int BLOCK_SIZE = 400;
 
