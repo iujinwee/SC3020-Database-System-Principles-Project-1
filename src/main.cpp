@@ -49,7 +49,7 @@ int main() {
 
             // Add to B+ Tree sequentially
             tree.insertKey(new_record.fg_pct_home, &new_record);
-            tree.
+            tree.displayTree();
         }
 
         cout << "--------------  DATA READING COMPLETE ----------------" << endl;

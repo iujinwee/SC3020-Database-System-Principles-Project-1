@@ -45,9 +45,10 @@ class BPlusTreeNode {
 
 class BPlusTree {
 private:
-    BPlusTreeNode *root = nullptr;
 
-    BPlusTreeNode* searchInsertionNode(float key);
+    void printNode(BPlusTreeNode *node, int level);
+
+    BPlusTreeNode* searchInsertionNode(float key) const;
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
@@ -58,6 +59,8 @@ private:
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
 public:
+    BPlusTreeNode *root = nullptr;
+
     explicit BPlusTree();
 
     void displayTree();
