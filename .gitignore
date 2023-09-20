@@ -37,3 +37,4 @@ build/
 *.exe
 *.out
 *.app
+/.metadata/
