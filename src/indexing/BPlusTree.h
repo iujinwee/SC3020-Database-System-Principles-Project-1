@@ -27,11 +27,8 @@ class BPlusTreeNode {
     BPlusTreeNode* next;  // Stores the next BPlusTree node
     BPlusTreeNode* parent;  // Stores the parent BPlusTree node
 
-    BPlusTreeKey keys[m];
-    void* children[m+1];
-
-//    void* children [10];  // Stores a list of BPlusTreeNodes children
-//    std::vector<BPlusTreeKey> keys;         // Stores the BPlusTreeKey structure
+    BPlusTreeKey keys[m]{};
+    void* children[m+1]{};
 
     friend class BPlusTree;
 
@@ -48,13 +45,19 @@ private:
 
     void printNode(BPlusTreeNode *node, int level);
 
-    BPlusTreeNode* searchInsertionNode(float key) const;
+    [[nodiscard]] BPlusTreeNode* searchInsertionNode(float key) const;
+
+    static void shiftKey(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
     static void insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress);
 
+    static void insertIntoNonLeafNode(BPlusTreeNode *parentNode, BPlusTreeKey newKey, void* newNodeAddress);
+
     static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
+
+    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey key);
 
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
