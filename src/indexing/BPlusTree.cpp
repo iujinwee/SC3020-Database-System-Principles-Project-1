@@ -47,8 +47,10 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
     }
 }
 
-BPlusTreeNode *BPlusTree::searchNode(int key) {
-    // If tree is empty
+ 
+BPlusTreeNode *BPlusTree::searchNode(float key) {
+    
+      
     if (root == NULL)
     {
         cout << "B+ Tree is empty\n";
@@ -56,19 +58,22 @@ BPlusTreeNode *BPlusTree::searchNode(int key) {
 
     else{
         BPlusTreeNode *current_node = root;
-        while (current_node->isLeaf == false) 
+        while (current_node->is_leaf == false) 
         {
             for (int i = 0; i < current_node->keys.size(); i++)
             {
                 if (key < current_node->keys[i].key)
                 {
-                    current_node = current_node->keys[i];
+                    /* current_node = current_node->keys[i]; */
+
+                    current_node = current_node->children[i];
                     break;
                 }
                 
                 if (i == current_node->keys.size()-1)
                 {
-                    current_node = current_node->keys[i+1];
+                    /* current_node = current_node->keys[i+1]; */
+                    current_node = current_node->children[i+1];
                     break;
                 }   
             }
@@ -78,21 +83,23 @@ BPlusTreeNode *BPlusTree::searchNode(int key) {
         {
             if (current_node->keys[i].key == key)
             {
-                cout << "Found\n";
-                return;
+                // cout << "Found\n";
+                // return;
+                return current_node;
             }
         }
 
         cout << "Not found\n";
     }
 
+}
 
     //BPlusTreeNode *current_node = root;
     //return current_node;
-BPlusTreeNode *BPlusTree::searchNode(float key) {
+/* BPlusTreeNode *BPlusTree::searchNode(float key) {
     BPlusTreeNode *current_node = root;
     return current_node;
-}
+} */
 
 void BPlusTree::deleteKey(float key) {
 }
