@@ -57,7 +57,7 @@ private:
 
     static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
 
-    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey key);
+    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode);
 
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
