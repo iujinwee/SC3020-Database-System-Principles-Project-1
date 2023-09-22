@@ -145,9 +145,11 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
         }
 
         // Check if sibling node has the key, if so, return the sibling node
-        BPlusTreeNode* sibling_node = current_node->next;
-        if(current_node->keys[0].key == key){
-            return sibling_node;
+        if(current_node->next != nullptr){
+            BPlusTreeNode* sibling_node = current_node->next;
+            if(sibling_node->keys[0].key == key){
+                return sibling_node;
+            }
         }
         return current_node;
     }
@@ -199,7 +201,7 @@ void BPlusTree::addNewNonLeafKey(BPlusTreeNode *node, int index, float key, int 
 // Helper function to insert a key-address pair into a non-full node
 void BPlusTree::insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress) {
     int key_index = 0;
-    int count = 1;
+    int count = leafNode->keys[0].key == key ? leafNode->keys[0].count: 1;
 
     // Find the index to insert the key-address pair
     // Resulting index have already considered duplicated instances
