@@ -144,6 +144,11 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
             }
         }
 
+        // Check if sibling node has the key, if so, return the sibling node
+        BPlusTreeNode* sibling_node = current_node->next;
+        if(current_node->keys[0].key == key){
+            return sibling_node;
+        }
         return current_node;
     }
     return nullptr;
@@ -162,11 +167,32 @@ void BPlusTree::shiftKey(BPlusTreeNode *node, int index, BPlusTreeKey* temp, voi
 }
 
 
+void BPlusTree::shiftNonLeafKey(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address){
+    BPlusTreeKey temp2 = node->keys[index];
+    void* temp2_address = temp_address;
+
+    node->keys[index] = *temp;
+    node->children[index+1] = *temp_address;
+
+    *temp = temp2;
+    *temp_address = temp2_address;
+}
+
+
+
 // Helper function to add a new key into leaf node
 void BPlusTree::addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address) {
     auto new_key = BPlusTreeKey{key, count};
     node->keys[index] = new_key;
     node->children[index] = address;
+}
+
+
+// Helper function to add a new key into leaf node
+void BPlusTree::addNewNonLeafKey(BPlusTreeNode *node, int index, float key, int count, void *address) {
+    auto new_key = BPlusTreeKey{key, count};
+    node->keys[index] = new_key;
+    node->children[index+1] = address;
 }
 
 
@@ -375,36 +401,35 @@ BPlusTreeNode *BPlusTree::splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey new
     auto *new_node = new BPlusTreeNode(false);
 
     BPlusTreeKey temp{};
-    void *temp_node;
+    void* temp_node_address;
     bool inserted = false;
     int index = 0;
     int second_index = 0;
-    int split_index = (int) ceil((node->size + 1) / 2);
+    int split_index = (int) ceil(node->size/ 2);
 
     // Iterate through all keys in the current node
     while (index < m) {
 
         // Handles case when yet to reach split index
-        if (index < split_index) {
+        if (index <= split_index) {
 
             // Skip if target key larger than current key
-            if (new_node->keys[second_index].key != 0 & newKey.key >= node->keys[index].key) {
+            if (newKey.key >= node->keys[index].key) {
                 index++;
                 continue;
             }
 
             // Shift once inserted
             if(inserted){
-                shiftKey(node, index, &temp, &temp_node);
+                shiftNonLeafKey(node, index, &temp, &temp_node_address);
                 index++;
                 continue;
             }
 
             // Insert new key & store the replaced key in temp
             temp = node->keys[index];
-            temp_node = (BPlusTreeNode*) node->children[index];
-            node->keys[index] = newKey;
-            node->children[index] = newNode;
+            temp_node_address = node->children[index+1];
+            addNewNonLeafKey(node, index+1, newKey.key, newKey.count, newNode);
             inserted = true;
 
         } else {
@@ -424,16 +449,19 @@ BPlusTreeNode *BPlusTree::splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey new
             if (inserted) {
                 // Case: temp >= key
                 // Move from current node to new node, delete current node
-                if (new_node->keys[second_index].key != 0 & temp.key >= new_node->keys[second_index].key) {
+
+                if (temp.key >= new_node->keys[second_index].key) {
                     auto current_key = node->keys[index];
-                    addNewKey(new_node, second_index, current_key.key, current_key.count, node->children[second_index]);
+                    auto current_add = node->children[index+1];
+                    addNewKey(new_node, second_index, current_key.key, current_key.count, current_add);
 
                     // delete current node
                     node->keys[index] = BPlusTreeKey{};
-                    node->children[index] = nullptr;
+                    node->children[index+1] = nullptr;
 
                     // update node size
                     node->size--;
+                    new_node->size++;
                     index++;
                     second_index++;
                     continue;
@@ -441,39 +469,41 @@ BPlusTreeNode *BPlusTree::splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey new
 
                 // Case: temp < key
                 // add temp to new node, move current key to temp, delete current node
-                addNewKey(new_node, second_index, temp.key, temp.count, temp_node);
+                addNewKey(new_node, second_index, temp.key, temp.count, temp_node_address);
                 temp = node->keys[index];
-                temp_node = node->children[index];
+                temp_node_address = node->children[index+1];
 
                 // delete current node
                 node->keys[index] = BPlusTreeKey{};
-                node->children[index] = nullptr;
+                node->children[index+1] = nullptr;
 
             } else {
                 // Case when key has yet to be inserted
                 // Move current key to new node, delete current key
-                if (new_node->keys[second_index].key != 0 & newKey.key >= node->keys[index].key) {
-                    auto current_key = node->keys[index];
-                    void *current_node = node->children[index];
-                    addNewKey(new_node, second_index, current_key.key, current_key.count, current_node);
+                if (newKey.key >= node->keys[index].key) {
+                    auto transfer_key = node->keys[index];
+                    void *transfer_add = node->children[index+1];
+                    addNewKey(new_node, second_index, transfer_key.key, transfer_key.count, transfer_add);
+//                    addNewKey(new_node, second_index, transfer_key.key, transfer_key.count, newNode);
 
                     // delete current node
                     node->keys[index] = BPlusTreeKey{};
-                    node->children[index] = nullptr;
+                    node->children[index+1] = nullptr;
 
                     // Update node sizes
                     new_node->size++;
                     node->size--;
+                    index++;
                     second_index++;
                     continue;
                 }
 
                 // Case when key is to be inserted to the new node
-                addNewKey(new_node, second_index, newKey.key, newKey.count, temp_node);
+                addNewKey(new_node, second_index, newKey.key, newKey.count, newNode);
 
                 // Update inserted & remove temp
                 temp = node->keys[index];
-                temp_node = node->children[index];
+                temp_node_address = node->children[index+1];
 
                 inserted = true;
             }
