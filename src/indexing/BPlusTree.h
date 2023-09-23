@@ -9,7 +9,7 @@
 #include <vector> 
 
 const int BLOCK_SIZE = 400;
-const int m = 23;
+const int m = 3;
 
 /*
  *  Key structure stores the
@@ -43,25 +43,31 @@ class BPlusTreeNode {
 class BPlusTree {
 private:
 
+    void propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+
+    static BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+
+    BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
+
     void printNode(BPlusTreeNode *node, int level);
 
     [[nodiscard]] BPlusTreeNode* searchInsertionNode(float key) const;
 
-    static void shiftKey(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
+    static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
 
-    static void shiftNonLeafKey(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
+    static void swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
     static void addNewNonLeafKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
-    static void insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress);
+    static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    static void insertIntoNonLeafNode(BPlusTreeNode *parentNode, BPlusTreeKey newKey, void* newNodeAddress);
+    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
+//    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
 
-    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode);
+//    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode);
 
     void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
 
@@ -75,6 +81,8 @@ public:
     BPlusTreeNode *searchNode(float key);
 
     void insertKey(float key, void *recordAddress);
+
+    void insertKey2(float key, void *address);
 
     static void deleteKey(float key);
 
