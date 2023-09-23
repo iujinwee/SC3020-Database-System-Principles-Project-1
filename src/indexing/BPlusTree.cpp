@@ -99,7 +99,7 @@ void BPlusTree::deleteKey(float key) {
             target_node->size--;
         }
         if(target_node->size==0){
-            delete target_node;
+            delete target_node; 
         }
 
         if(target_node->is_leaf&&target_node->size<floor((m+1)/2)){
