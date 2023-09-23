@@ -99,7 +99,53 @@ BPlusTreeNode *BPlusTree::searchNode(float key)
 }
 
 void BPlusTree::deleteKey(float key) {
-}
+    if(root== nullptr){
+        cout << "B+Tree is emoty\n";
+    } else{
+        BPlusTreeNode *target_node = searchInsertionNode(key);
+        int index_target_node = findIndexChild(target_node);
+        int count=0;
+        //find number of keys to delete
+        for (int i = 0; i < target_node->size; i++){
+            if(target_node->keys[i].key <= key){
+                count++;
+            }
+        }
+        // delete the keys
+        for (int i = 0; i < count; i++){
+            target_node->keys.pop_front();
+            target_node->children.pop_front();
+            target_node->size--;
+        }
+        if(target_node->size==0){
+            delete target_node; 
+        }
+
+        if(target_node->is_leaf&&target_node->size<floor((m+1)/2)){
+            //number of missing keys
+            int missing = floor((m+1)/2)-target_node->size;
+            //if right can borrow
+            if(target_node->next->size-missing>=floor((m+1)/2)){
+                BorrowFromRight(missing,target_node,target_node->next);
+            } else{
+                MergeWithRight(target_node,target_node->next);
+            }
+        } else if (!target_node->is_leaf&&target_node->size<floor(m/2))
+        {
+            //number of missing keys
+            int missing = floor((m+1)/2)-target_node->size;
+            //if right can borrow
+            if(target_node->next->size-missing>=floor((m+1)/2)){
+                BorrowFromRight(missing,target_node,target_node->next);
+            } else{
+                MergeWithRight(target_node,target_node->next);
+            }
+        }
+        deleteKey(target_node->parent);
+
+        //check if parent needs to be adjusted
+    }
+
 
 void BPlusTree::deleteKey_2(float key)
 {
