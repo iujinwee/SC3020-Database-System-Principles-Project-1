@@ -59,17 +59,9 @@ private:
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void* address);
 
-    static void addNewNonLeafKey(BPlusTreeNode *node, int index, float key, int count, void* address);
-
     static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
-
-//    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
-
-//    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode);
-
-    void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
+    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
 public:
     BPlusTreeNode *root = nullptr;
