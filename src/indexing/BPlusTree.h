@@ -63,7 +63,7 @@ private:
 
     static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+    void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
 //    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
 

@@ -517,6 +517,7 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
 
     // update size
     cur->size++;
+
 }
 
 //BPlusTreeNode *BPlusTree::splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode) {
@@ -705,6 +706,17 @@ void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address)
         cur->parent = new_root;
         new_node->parent = new_root;
         root = new_root;
+
+        // New Node should only have floor(m/2) keys (replace the first key)
+        // TO DO: UPDATE!!!
+        int new_size = (int) floor(m/2);
+        for (int i = 0; i < new_node->size; i++) {
+            new_node->keys[i] = new_node->keys[i+1];
+            if(i >= new_size){
+                new_node->keys[i] = BPlusTreeKey{};
+                new_node->size--;
+            }
+        }
     }
 
     // Recursive call on propagate()
