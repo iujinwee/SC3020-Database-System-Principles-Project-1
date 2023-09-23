@@ -297,31 +297,6 @@ int BPlusTreeNode::delete(BPlusTreeNode *node, int keyToDelete)
     }
     return -1; // key not found
 }
-return 0;
-}
-void BPlusTreeNode::
-    delete(BPlusTreeNode *node, int
-                                    key)
-{
-    // Deletes keys that are <= key
-    // Need to add delete pointer and delete main memory
-
-    auto iterator = node->keys.begin();
-    // Iterate over a vector of keys
-    while (iterator != node->keys.end())
-    {
-        // If element equals to target key
-        if (*iterator <= key)
-        {
-            // delete and reset iterator to next item
-            iterator = node->keys.erase(iterator);
-        }
-        else
-        {
-            iterator++;
-        }
-    }
-}
 
 void BPlusTree::printNode(BPlusTreeNode *node, int level)
 {
