@@ -215,40 +215,23 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
         cout << "B+ Tree is empty\n";
     } else {
         auto *current_node = (BPlusTreeNode *) root;
+        // Transverse to the lowest left node
         while (!current_node->is_leaf) {
-            for (int i = current_node->size; i >= 0; i--) {
-
-                if (current_node->is_leaf) {
-                    break;
-                }
-
-                // If key is larger, go to right node
-                if (key >= current_node->keys[i-1].key) {
-
-                    auto target_node = (BPlusTreeNode *) current_node->children[i];
-                    if (target_node != nullptr) {
-                        current_node = target_node;
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-
-                // If all nodes exhausted, go to left node
-                if (i == 0) {
-                    current_node = (BPlusTreeNode *) current_node->children[0];
-                    continue;
-                }
-            }
+            current_node = (BPlusTreeNode*) current_node->children[0];
         }
 
-//        // Check if sibling node has the key, if so, return the sibling node
-//        if (current_node->next != nullptr) {
-//            BPlusTreeNode *sibling_node = current_node->next;
-//            if (sibling_node->keys[0].key == key) {
-//                return sibling_node;
-//            }
-//        }
+        // Find insertion node by travelling horizontally (using next ptr)
+        while(current_node->keys[0].key < key){
+            if(current_node->next != nullptr){
+                if(current_node->next->keys[0].key < key){
+                    current_node = current_node->next;
+                }else{
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
         return current_node;
     }
     return nullptr;
@@ -337,6 +320,11 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
         index++;
     }
 
+    // Update parent keys
+    if(cur->parent != nullptr){
+        updateNonLeafNode(cur->parent, bpKey);
+    }
+
     // Insert temp (largest BPlusTreeKey)
     cur->keys[index] = temp;
     cur->children[index+1] = temp_address;
@@ -347,6 +335,7 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
 }
 
 void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address){
+
     // No longer need to split
     if(cur->size < m){
         if(cur->is_leaf) {
@@ -470,10 +459,8 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
         // Insert smallest children of new_node (HARD-CODED)
         new_node->children[0] = smallest_children;
 
-        // Insert temp (largest BPlusTreeKey)
-//        new_node->keys[new_index] = temp;
-//        new_node->children[new_index+1] = temp_address;
-//        new_node->size++;
+        // Reassign parent node
+        ((BPlusTreeNode*) smallest_children)->parent = new_node;
     }
 
     // update pointers
@@ -492,4 +479,8 @@ BPlusTreeKey BPlusTree::getInsertionBPKey(BPlusTreeNode* target, float key){
     }
 
     return BPlusTreeKey{key, count};
+}
+
+void BPlusTree::updateNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey key){
+    cur->keys[0] = key;
 }

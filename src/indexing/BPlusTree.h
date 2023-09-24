@@ -49,6 +49,8 @@ private:
 
     BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
 
+    void updateNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey key);
+
     void printNode(BPlusTreeNode *node, int level);
 
     [[nodiscard]] BPlusTreeNode* searchInsertionNode(float key) const;
@@ -61,7 +63,7 @@ private:
 
     static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+    void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
 public:
     BPlusTreeNode *root = nullptr;
