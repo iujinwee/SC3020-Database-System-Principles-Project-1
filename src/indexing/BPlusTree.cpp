@@ -216,14 +216,14 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
     } else {
         auto *current_node = (BPlusTreeNode *) root;
         while (!current_node->is_leaf) {
-            for (int i = 0; i < current_node->size; i++) {
+            for (int i = current_node->size; i >= 0; i--) {
 
                 if (current_node->is_leaf) {
                     break;
                 }
 
-                // If key is smaller, go to left node
-                if (key < current_node->keys[i].key) {
+                // If key is larger, go to right node
+                if (key >= current_node->keys[i-1].key) {
 
                     auto target_node = (BPlusTreeNode *) current_node->children[i];
                     if (target_node != nullptr) {
@@ -234,21 +234,21 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
                     }
                 }
 
-                // If all nodes exhausted, go to right node
-                if (i == current_node->size - 1) {
-                    current_node = (BPlusTreeNode *) current_node->children[i + 1];
+                // If all nodes exhausted, go to left node
+                if (i == 0) {
+                    current_node = (BPlusTreeNode *) current_node->children[0];
                     continue;
                 }
             }
         }
 
-        // Check if sibling node has the key, if so, return the sibling node
-        if (current_node->next != nullptr) {
-            BPlusTreeNode *sibling_node = current_node->next;
-            if (sibling_node->keys[0].key == key) {
-                return sibling_node;
-            }
-        }
+//        // Check if sibling node has the key, if so, return the sibling node
+//        if (current_node->next != nullptr) {
+//            BPlusTreeNode *sibling_node = current_node->next;
+//            if (sibling_node->keys[0].key == key) {
+//                return sibling_node;
+//            }
+//        }
         return current_node;
     }
     return nullptr;
@@ -371,17 +371,6 @@ void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address)
         cur->parent = new_root;
         new_node->parent = new_root;
         root = new_root;
-
-        // New Node should only have floor(m/2) keys (replace the first key)
-        // TO DO: UPDATE!!!
-        int new_size = (int) floor(m/2);
-        for (int i = 0; i < new_node->size; i++) {
-            new_node->keys[i] = new_node->keys[i+1];
-            if(i >= new_size){
-                new_node->keys[i] = BPlusTreeKey{};
-                new_node->size--;
-            }
-        }
     }
 
     // Recursive call on propagate()
@@ -439,6 +428,8 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
         new_node->size++;
 
     }else{
+        void *smallest_children;
+
         // NON-LEAF NODE
         while(index < m){
             // Sort in ascending order
@@ -452,9 +443,16 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
 
             // Handle after split index
             if(index >= split_index){
-                // transfer to new node
-                new_node->keys[new_index] = cur->keys[index];
-                new_node->children[new_index] = cur->children[index+1];
+
+                // first index is always the larger key
+                if(new_index == 0){
+                    // set smallest children of new node
+                    smallest_children = cur->children[index+1];
+                }
+
+                // transfer temp to new node
+                new_node->keys[new_index] = temp;
+                new_node->children[new_index+1] = temp_address;
 
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
@@ -469,13 +467,17 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
             index++;
         }
 
+        // Insert smallest children of new_node (HARD-CODED)
+        new_node->children[0] = smallest_children;
+
         // Insert temp (largest BPlusTreeKey)
-        new_node->keys[new_index] = temp;
-        new_node->children[new_index] = temp_address;
-        new_node->size++;
+//        new_node->keys[new_index] = temp;
+//        new_node->children[new_index+1] = temp_address;
+//        new_node->size++;
     }
 
     // update pointers
+    new_node->parent = cur->parent;
     new_node->next = cur->next;
     cur->next = new_node;
 
