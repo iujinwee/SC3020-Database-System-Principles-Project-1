@@ -442,6 +442,9 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
                 new_node->keys[new_index] = temp;
                 new_node->children[new_index+1] = temp_address;
 
+                // Reassign parent
+                ((BPlusTreeNode *)new_node->children[new_index+1])->parent = new_node;
+
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
                 cur->children[index+1] = nullptr;
