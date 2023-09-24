@@ -26,6 +26,8 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
     // Empty B+ Tree, insert root node
     if (!root) {
         root = new BPlusTreeNode(true);
+        nodes = 1;
+        levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
     } else {
         // Search leaf node for insertion
@@ -359,6 +361,8 @@ void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address)
         cur->parent = new_root;
         new_node->parent = new_root;
         root = new_root;
+        nodes++;
+        levels++;
     }
 
     // Recursive call on propagate()
@@ -369,6 +373,7 @@ void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address)
 BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address){
     // Initialize a new node
     auto new_node = new BPlusTreeNode(cur->is_leaf);
+    nodes++;
 
     // Split node
     int split_index = (int) ceil(m/2) + 1;
@@ -434,7 +439,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
 
                 // first index is always the larger key
                 if(new_index == 0){
-                    // set smallest children of new node
+                    // set the smallest children of new node
                     smallest_children = cur->children[index+1];
                 }
 
@@ -458,7 +463,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* ad
             index++;
         }
 
-        // Insert smallest children of new_node (HARD-CODED)
+        // Insert the smallest children of new_node (HARD-CODED)
         new_node->children[0] = smallest_children;
 
         // Reassign parent node
@@ -498,4 +503,19 @@ BPlusTreeKey BPlusTree::getSmallestRightSubtree(BPlusTreeNode *node){
     }
 
     return cur->keys[0];
+}
+
+void BPlusTree::printRootKeys() {
+    for(int i = 0; i < root->size; i++){
+        cout << "(" << root->keys[i].key << ", " << root->keys[i].count << ") ";
+    }
+}
+
+void BPlusTree::displayStatistics(){
+    // Experiment 2 Results
+    cout << "Experiment 2: Build B+ Tree and report statistics" << endl;
+    cout << " - Parameter of n of B+ tree: " << m << endl;
+    cout << " - Number of nodes of the B+ tree: " << nodes << endl;
+    cout << " - Number of levels of the B+ tree: " << levels << endl;
+    cout << " - Content of root node: "; printRootKeys(); cout << endl;
 }

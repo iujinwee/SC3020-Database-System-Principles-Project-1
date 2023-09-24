@@ -46,9 +46,11 @@ private:
 
     void propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
 
-    static BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+    BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
 
-    static BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
+    BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
+
+    void printRootKeys();
 
     void printNode(BPlusTreeNode *node, int level);
 
@@ -66,6 +68,8 @@ private:
 
 public:
     BPlusTreeNode *root = nullptr;
+    int nodes;
+    int levels;
 
     explicit BPlusTree();
 
@@ -78,6 +82,8 @@ public:
     void insertKey2(float key, void *address);
 
     static void deleteKey(float key);
+
+    void displayStatistics();
 
     ~BPlusTree();
 };
