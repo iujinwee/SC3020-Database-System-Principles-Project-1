@@ -23,7 +23,10 @@ int main() {
 
     // Reading data from games.txt into memory pool
     ifstream datafile(DATA_DIR);
-    vector<RecordAddress> recordAddressList;
+    vector<RecordAddress> record_address_list;
+
+    // Initialize B+ Tree
+    BPlusTree tree;
 
     bool header = true;
     if (datafile.is_open()) {
@@ -39,9 +42,14 @@ int main() {
             }
 
             // Write new record into memory pool
-            Record newRecord = {};
-            newRecord.store(line);
-            recordAddressList.push_back(disk.saveRecord(newRecord));
+            Record new_record = {};
+            new_record.store(line);
+            RecordAddress new_record_address= disk.saveRecord(new_record);
+            record_address_list.push_back(new_record_address);
+
+            // Add to B+ Tree sequentially
+            tree.insertKey(new_record.fg_pct_home, &new_record);
+            tree.displayTree();
         }
 
         cout << "--------------  DATA READING COMPLETE ----------------" << endl;
@@ -65,12 +73,9 @@ int main() {
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedBlocks() << endl;
     cout << "==================================================================" << endl;
 
-    int bptree_node_size = 4;
-    BPlusTree tree(bptree_node_size);
 
-
-//    cout << recordAddressList.size() << endl;
-//    for (RecordAddress t: recordAddressList) {
+//    cout << record_address_list.size() << endl;
+//    for (RecordAddress t: record_address_list) {
 //        MemoryPool::displayRecord(t);
 //    }
 
