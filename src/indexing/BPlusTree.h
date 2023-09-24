@@ -38,6 +38,10 @@ class BPlusTreeNode {
         parent = nullptr;
         size = 0;
     }
+
+    int deleteKeyInNode(BPlusTreeNode *node, int keyToDelete);
+
+    int findIndexChild(BPlusTreeNode * childNode);
 };
 
 class BPlusTree {
