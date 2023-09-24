@@ -9,7 +9,7 @@
 #include <vector> 
 
 const int BLOCK_SIZE = 400;
-const int m = 3;
+const int m = 23;
 
 /*
  *  Key structure stores the
@@ -42,14 +42,13 @@ class BPlusTreeNode {
 
 class BPlusTree {
 private:
+    static BPlusTreeKey getSmallestRightSubtree(BPlusTreeNode *node);
 
     void propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
 
     static BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
 
-    BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
-
-    void updateNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey key);
+    static BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
 
     void printNode(BPlusTreeNode *node, int level);
 
@@ -63,7 +62,7 @@ private:
 
     static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
 public:
     BPlusTreeNode *root = nullptr;

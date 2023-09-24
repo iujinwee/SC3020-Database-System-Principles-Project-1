@@ -320,11 +320,6 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
         index++;
     }
 
-    // Update parent keys
-    if(cur->parent != nullptr){
-        updateNonLeafNode(cur->parent, bpKey);
-    }
-
     // Insert temp (largest BPlusTreeKey)
     cur->keys[index] = temp;
     cur->children[index+1] = temp_address;
@@ -349,8 +344,12 @@ void BPlusTree::propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address)
     // Split and propagate changes
     auto new_node = split(cur, bpKey, address);
 
-    // Get the lower bound of the new node
+    // Get the smallest key of the right subtree
     auto lb = new_node->keys[0];
+
+    if(!cur->is_leaf){
+        lb = getSmallestRightSubtree(new_node);
+    }
 
     // Create new root if necessary
     if(cur->parent == nullptr){
@@ -481,6 +480,19 @@ BPlusTreeKey BPlusTree::getInsertionBPKey(BPlusTreeNode* target, float key){
     return BPlusTreeKey{key, count};
 }
 
-void BPlusTree::updateNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey key){
-    cur->keys[0] = key;
+
+BPlusTreeKey BPlusTree::getSmallestRightSubtree(BPlusTreeNode *node){
+
+    auto cur = (BPlusTreeNode*) node->children[0];
+
+    while(!cur->is_leaf){
+        auto target_node = (BPlusTreeNode*) cur->children[0];
+        if(target_node != nullptr){
+            cur = target_node;
+        }else{
+            break;
+        }
+    }
+
+    return cur->keys[0];
 }
