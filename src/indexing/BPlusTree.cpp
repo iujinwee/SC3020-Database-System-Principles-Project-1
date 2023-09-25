@@ -3,6 +3,7 @@
 //
 
 #include "BPlusTree.h"
+#include <list>
 
 using namespace std;
 
@@ -16,8 +17,10 @@ BPlusTree::~BPlusTree() = default;
  *  ==================================
  */
 
-void BPlusTree::displayTree() {
-    if (root) {
+void BPlusTree::displayTree()
+{
+    if (root)
+    {
         printNode(root, 0);
     }
 }
@@ -29,7 +32,9 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
-    } else {
+    }
+    else
+    {
         // Search leaf node for insertion
         // If duplicate, should return the BPlusTree node with the last instance of the key
         auto *target_node = searchInsertionNode(key);
@@ -45,28 +50,38 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
     }
 }
 
-BPlusTreeNode *BPlusTree::searchNode(float key) {
+BPlusTreeNode *BPlusTree::searchNode(float key)
+{
     // If tree is empty
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         cout << "B+ Tree is empty\n";
-    } else {
+    }
+    else
+    {
         BPlusTreeNode *current_node = root;
-        while (!current_node->is_leaf) {
-            for (int i = 0; i < current_node->size; i++) {
-                if (key < current_node->keys[i].key) {
-                    current_node = (BPlusTreeNode *) current_node->children[i];
+        while (!current_node->is_leaf)
+        {
+            for (int i = 0; i < current_node->size; i++)
+            {
+                if (key < current_node->keys[i].key)
+                {
+                    current_node = (BPlusTreeNode *)current_node->children[i];
                     continue;
                 }
 
-                if (i == current_node->size - 1) {
-                    current_node = (BPlusTreeNode *) current_node->children[i + 1];
+                if (i == current_node->size - 1)
+                {
+                    current_node = (BPlusTreeNode *)current_node->children[i + 1];
                     continue;
                 }
             }
         }
 
-        for (int i = 0; i < current_node->size; i++) {
-            if (current_node->keys[i].key == key) {
+        for (int i = 0; i < current_node->size; i++)
+        {
+            if (current_node->keys[i].key == key)
+            {
                 cout << "Found " << key << endl;
                 return current_node;
             }
@@ -76,47 +91,68 @@ BPlusTreeNode *BPlusTree::searchNode(float key) {
     return nullptr;
 }
 
-//void BPlusTree::deleteKey(float key) {
-//}
-//
-//void BPlusTree::deleteKey_2(float key) {
-//    // Function deletes all keys where key value <=key
-//
-//    if (root == nullptr) {
-//        cout << "B+ Tree is empty\n";
-//    } else {
-//        // find Last Instance of leaf node with target key
+//void BPlusTree::deleteKey(float key)
+//{
+//    if (root == nullptr)
+//    {
+//        cout << "B+Tree is emoty\n";
+//    }
+//    else
+//    {
 //        BPlusTreeNode *target_node = searchInsertionNode(key);
-//
-//        // find index of the leaf node from its parent
 //        int index_target_node = findIndexChild(target_node);
-//
-//        // Delete keys that are <= key in current node
-//        BPlusTreeNode *target_deleted_node = delete (target_node, key); // include deltion of data in main memory in delete() as well
-//
-//        // If all keys are deleted
-//        if (target_deleted_node->size == 0) {
-//
-//            // check if 1st index
-//
-//            // update parent
-//        } else if (target_deleted_node->size < min_size_leaf_node) {
-//            // if deleted node left with insufficient keys
-//
-//            // num keys to borrow
-//            num_keys_borrow = min_size_leaf_node - target_deleted_node->size;
-//
-//            // Right neighbour has more than enough keys to borrow
-//            if (target_deleted_node->next->size - num_keys_borrow <= min_size_leaf_node) {
-//                // Borrow from right
-//                borrowRight()
-//            } else {
-//                // merge with right
-//                mergeRight()
+//        int count = 0;
+//        // find number of keys to delete
+//        for (int i = 0; i < target_node->size; i++)
+//        {
+//            if (target_node->keys[i].key <= key)
+//            {
+//                count++;
 //            }
 //        }
+//        // delete the keys
+//        for (int i = 0; i < count; i++)
+//        {
+//            target_node->keys.pop_front();
+//            target_node->children.pop_front();
+//            target_node->size--;
+//        }
+//        if (target_node->size == 0)
+//        {
+//            delete target_node;
+//        }
 //
-//        // Delete all nodes on the left of target_node
+//        if (target_node->is_leaf && target_node->size < floor((m + 1) / 2))
+//        {
+//            // number of missing keys
+//            int missing = floor((m + 1) / 2) - target_node->size;
+//            // if right can borrow
+//            if (target_node->next->size - missing >= floor((m + 1) / 2))
+//            {
+//                BorrowFromRight(missing, target_node, target_node->next);
+//            }
+//            else
+//            {
+//                MergeWithRight(target_node, target_node->next);
+//            }
+//        }
+//        else if (!target_node->is_leaf && target_node->size < floor(m / 2))
+//        {
+//            // number of missing keys
+//            int missing = floor((m + 1) / 2) - target_node->size;
+//            // if right can borrow
+//            if (target_node->next->size - missing >= floor((m + 1) / 2))
+//            {
+//                BorrowFromRight(missing, target_node, target_node->next);
+//            }
+//            else
+//            {
+//                MergeWithRight(target_node, target_node->next);
+//            }
+//        }
+//        deleteKey(target_node->parent);
+//
+//        // check if parent needs to be adjusted
 //    }
 //}
 //
@@ -125,7 +161,8 @@ BPlusTreeNode *BPlusTree::searchNode(float key) {
 // *  ====  PRIVATE HELPER FUNCTION  ====
 // *  ===================================
 // */
-//void BPlusTree::upwardPropogationDeletion() { // for non leaf/root
+//void BPlusTree::upwardPropogationDeletion()
+//{ // for non leaf/root
 //
 //    // check if sufficient keys > m/2 ||  num children = no keys+1
 //    // if fail to satisfy either
@@ -141,79 +178,200 @@ BPlusTreeNode *BPlusTree::searchNode(float key) {
 //    // if root and only 1 child
 //    // delete root
 //}
-//
-//void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode) {
-//    // check right sibling if leaf node
-//
-//    // add keys borrowed from right Node (BPlusTreeKey) to left node
-//    // add children pointers from right Node to left Node
-//    // delete right parent (delete the keys_borrowed and children pointers) popfront()
-//    // update left parent -> each key shld be lowest value of right children
-//    //  upwardpropogationdeletion(parentNode)
-//}
-//
-//void BPlusTree::MergeWithRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode) {
+//void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+//{
 //    // update left parent
 //    // pop left node
 //    // pushfront() left node keys to right node
 //    // pushfront() left node children to right children
 //    //  upwardpropogationdeletion(parentNode)
+//
+//    // add keys and children ptrs borrowed from right Node to left Node
+//    // for (int i = 0; i < num_keys_borrow; i++)
+//    // {
+//    //     leftNode->keys.push_back(rightNode->keys[i])
+//    //         leftNode->children.push_back(rightNode->children[i])
+//    // }
+//    // // store following node
+//    // following_node = rightNode->next;
+//    // leftNode->next = following_node;
 //}
 //
-//int BPlusTreeNode::findIndexChild(BPlusTreeNode *ChildNode) {
-//    // Given the child node, find the index of the child node
-//    int first_key = ChildNode->keys[0];
-//    BPlusTreeNode parentNode = ChildNode->parent;
-//    for (int i = 0; i < parentNode->size; i++) {
-//        if (parentNode->keys[i] == first_key) {
-//            return i + 1;
-//        }
-//    }
-//    return 0;
-//}
-//void BPlusTreeNode::
-//delete (BPlusTreeNode * node, int
-//key)
+//void BPlusTree::BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,
+//                                BPlusTreeNode *rightNode)
 //{
-//    // Deletes keys that are <= key
-//    // Need to add delete pointer and delete main memory
+//    // Function: Node(leaf/ non-leaf) borrow >=1 keys from right sibling
 //
-//    auto iterator = node->keys.begin();
-//    // Iterate over a vector of keys
-//    while (iterator != node->keys.end()) {
-//        // If element equals to target key
-//        if (*iterator <= key) {
-//            // delete and reset iterator to next item
-//            iterator = node->keys.erase(iterator);
-//        } else {
-//            iterator++;
+//    int j = index_key_deletion; // starting from index where key was deleted in left node
+//
+//    // add keys borrowed and children ptrs  from right Node to left node
+//    for (int i = 0; i < num_keys_borrow; i++)
+//    {
+//        leftNode->keys[j] = rightNode->keys[i];         // add keys from rightNode
+//        leftNode->children[j] = rightNode->children[i]; // add children ptr from rightNode
+//
+//        // update size
+//        leftNode->size += num_keys_borrow;
+//        rightNode->size -= num_keys_borrow;
+//        j++; // update index for left node
+//    }
+//    // shift remaining keys and children in rightNode to start of key array
+//    rightNode = rightNode->ShiftKeysToFront(num_keys_borrow, rightNode);
+//
+//    // find node index for both left and right nodes
+//    index_leftNode = findIndexChild(leftNode)
+//        index_rightNode = findIndexChild(rightNode)
+//
+//        // only update the parent keys if the index of nodes > 0
+//        if (index_leftNode > 0)
+//    {
+//        leftParentNode = leafNode->parent;
+//        // replace respective key in parent node with smallest key in child node
+//        parentNode->keys[index_leftNode - 1] = leftNode->keys[0]
+//    }
+//    if (index_rightNode > 0)
+//    {
+//        rightParentNode = leafNode->parent;
+//        // replace respective key in parent node with smallest key in child node
+//        parentNode->keys[index_rightNode - 1] = rightNode->keys[0]
+//    }
+//
+//    upwardPropogation(leftParentNode);
+//    upwardPropogation(rightParentNode);
+//}
+//
+//void BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift)
+//{
+//    int j = node->size - 1;
+//    int i = j + num_indexes_shift;
+//    if (i > node->size - 1)
+//    {
+//        std::cout << "Cannot merge, will exceed size of node" << ;
+//    }
+//    while (j >= 0)
+//    {
+//        node->keys[i] = node->keys[j];
+//        node->keys[j] = NULL;
+//        i--;
+//        j--;
+//    }
+//}
+//BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node)
+//{
+//    // shift remaining keys and children in the node to the start of the array
+//    int j = start_index_remaining_keys + 1;
+//    int i = 0;
+//    while (j < node->size)
+//    {
+//        node->keys[i] = node->keys[j];
+//        node->children[i] = node->children[j];
+//        node->keys[j] = NULL;
+//        node->children[j] = nullptr;
+//        j++;
+//        i++;
+//    }
+//    return node
+//}
+//
+//int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode)
+//{
+//    parentNode = childNode->parent;
+//    for (int i = 0; i < parentNode->size; i++)
+//    {
+//        if (parentNode->children[i] == childNode)
+//        {
+//            // Found the leaf node in the parent's children array
+//            return i;
 //        }
 //    }
+//    // Leaf node not found in the parent's children array
+//    return -1;
+//}
+//
+//int BPlusTreeNode::deleteKeyInLeafNode(BPlusTreeNode *node, int keyToDelete)
+//{
+//    // Function: Deletes keys in node that are <= key, along with its respective child ptr
+//    // This function is for  leaf nodes only
+//
+//    // Iterate over a vector of keys
+//    for (int i = 0; i < node->size; i++)
+//    {
+//        if (node->keys[i].key <= keyToDelete)
+//        {
+//            // delete data in main memory [ADD CODE FOR THIS PART]
+//
+//            // delete current key and shift behind keys and ptrs forward
+//            for (int j = i; j < node->size - 1; j++)
+//            {
+//                node->keys[j] = node->keys[j + 1];
+//                node->children[j - 1] = node->children[j + 1];
+//            }
+//
+//            delete node->key[j]; // delete j key
+//
+//            // delete j ptr
+//            node->children[j] = nullptr;
+//
+//            // reduce size by 1
+//            node->size--;
+//
+//            // return index of last deleted key
+//            return i;
+//        }
+//    }
+//    return -1; // key not found
+//}
+//
+//void BPlusTreeNode::deleteKeyInNonLeafNode(BPlusTreeNode *node, int index_to_delete)
+//{
+//    // Function: Delete a specific key in node where index= index_to_delete
+//    // This function is for non leaf nodes only
+//
+//    // delete current key and shift behind keys and ptrs forward
+//    for (int j = i; j < node->size - 1; j++)
+//    {
+//        node->keys[j] = node->keys[j + 1];
+//        node->children[j - 1] = node->children[j + 1];
+//    }
+//
+//    delete node->key[j]; // delete j key
+//    // move ptr forward and delete next ptr
+//    node->children[j] = node->children[j + 1] node->children[j + 1] = nullptr;
+//
+//    // reduce size by 1
+//    node->size--;
 //}
 
-void BPlusTree::printNode(BPlusTreeNode *node, int level) {
-    if (!node) {
+void BPlusTree::printNode(BPlusTreeNode *node, int level)
+{
+    if (!node)
+    {
         return;
     }
 
     std::cout << "Level " << level << ": ";
 
-    for (int i = 0; i < node->size; ++i) {
+    for (int i = 0; i < node->size; ++i)
+    {
         std::cout << "(" << node->keys[i].key << ", " << node->keys[i].count << ") ";
     }
 
     std::cout << "| Size: " << node->size << std::endl;
 
-    if (!node->is_leaf) {
-        for (int i = 0; i <= node->size; ++i) {
-            printNode((BPlusTreeNode *) node->children[i], level + 1);
+    if (!node->is_leaf)
+    {
+        for (int i = 0; i <= node->size; ++i)
+        {
+            printNode((BPlusTreeNode *)node->children[i], level + 1);
         }
     }
 }
 
-BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
+BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const
+{
     // If tree is empty
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         cout << "B+ Tree is empty\n";
     } else {
         auto *current_node = (BPlusTreeNode *) root;
@@ -262,7 +420,8 @@ void BPlusTree::swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey *te
 }
 
 // Helper function to add a new key into leaf node
-void BPlusTree::addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address) {
+void BPlusTree::addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address)
+{
     auto new_key = BPlusTreeKey{key, count};
     node->keys[index] = new_key;
     node->children[index] = address;
