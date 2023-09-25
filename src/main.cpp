@@ -49,7 +49,7 @@ int main() {
 
             // Add to B+ Tree sequentially
             tree.insertKey(new_record.fg_pct_home, &new_record);
-            tree.displayTree();
+//            tree.displayTree();
         }
 
         cout << "--------------  DATA READING COMPLETE ----------------" << endl;
@@ -65,13 +65,18 @@ int main() {
     }
 
     // Experiment 1 Results
-    cout << "==================================================================" << endl;
+    cout <<  "==================================================================" << endl;
     cout << "Experiment 1: Reading data text file into DB system." << endl;
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedBlocks() << endl;
-    cout << "==================================================================" << endl;
+    cout << endl;
+
+    // Experiment 2 Results
+    tree.displayStatistics();
+
+    cout <<  "==================================================================" << endl;
 
 
 //    cout << record_address_list.size() << endl;

@@ -56,30 +56,34 @@ class BPlusTreeNode
 class BPlusTree
 {
 private:
+    static BPlusTreeKey getSmallestRightSubtree(BPlusTreeNode *node);
+
+    void propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+
+    BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+
+    BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
+
+    void printRootKeys();
+
     void printNode(BPlusTreeNode *node, int level);
 
     [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key) const;
 
-    static void shiftKey(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
+    static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
 
-    static void shiftNonLeafKey(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
+    static void swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address);
 
-    static void addNewNonLeafKey(BPlusTreeNode *node, int index, float key, int count, void *address);
+    static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
-    static void insertIntoLeafNode(BPlusTreeNode *leafNode, float key, void *recordAddress);
-
-    static void insertIntoNonLeafNode(BPlusTreeNode *parentNode, BPlusTreeKey newKey, void *newNodeAddress);
-
-    static BPlusTreeNode *splitLeafNode(BPlusTreeNode *node, float key, void *recordAddress);
-
-    static BPlusTreeNode *splitNonLeafNode(BPlusTreeNode *node, BPlusTreeKey newKey, void *newNode);
-
-    void propagateUpwards(BPlusTreeNode *oldNode, BPlusTreeNode *newNode);
+    static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
 public:
     BPlusTreeNode *root = nullptr;
+    int nodes;
+    int levels;
 
     explicit BPlusTree();
 
@@ -89,7 +93,11 @@ public:
 
     void insertKey(float key, void *recordAddress);
 
+    void insertKey2(float key, void *address);
+
     static void deleteKey(float key);
+
+    void displayStatistics();
 
     ~BPlusTree();
 };
