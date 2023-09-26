@@ -58,11 +58,11 @@ class BPlusTree
 private:
     static BPlusTreeKey getSmallestRightSubtree(BPlusTreeNode *node);
 
-    void propagate(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+    void propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    BPlusTreeNode *split(BPlusTreeNode* cur, BPlusTreeKey bpKey, void* address);
+    BPlusTreeNode *split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    BPlusTreeKey getInsertionBPKey(BPlusTreeNode* target, float key);
+    BPlusTreeKey getInsertionBPKey(BPlusTreeNode *target, float key);
 
     void printRootKeys();
 
@@ -70,15 +70,17 @@ private:
 
     [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key) const;
 
-    static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
+    static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
 
-    static void swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey* temp, void** temp_address);
+    static void swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
 
     static void addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address);
 
     static void insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress);
 
     static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+
+    static void MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
 public:
     BPlusTreeNode *root = nullptr;
