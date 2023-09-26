@@ -295,13 +295,13 @@ BPlusTreeNode *BPlusTree::searchNode(float key)
 // BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node)
 //{
 //    // shift remaining keys and children in the node to the start of the array
-//    int j = start_index_remaining_keys + 1;
+//    int j = start_index_remaining_keys;
 //    int i = 0;
 //    while (j < node->size)
 //    {
 //        node->keys[i] = node->keys[j];
 //        node->children[i] = node->children[j];
-//        node->keys[j] = NULL;
+//        node->keys[j] =  new BPlusTreeKey{};
 //        node->children[j] = nullptr;
 //        j++;
 //        i++;
