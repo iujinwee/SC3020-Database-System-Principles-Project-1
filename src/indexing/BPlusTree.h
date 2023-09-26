@@ -42,13 +42,13 @@ class BPlusTreeNode
         size = 0;
     }
 
-    int deleteKeyInNode(BPlusTreeNode *node, int keyToDelete);
+    void deleteKeyInLeafNode(BPlusTreeNode *node, float keyToDelete);
 
     int findIndexChild(BPlusTreeNode *childNode);
 
     void ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
 
-    void deleteKeyInNonLeafNode(BPlusTreeNode *node, int index_to_delete);
+    void deleteKeyInNonLeafNode(BPlusTreeNode *node, float index_to_delete);
 
     BPlusTreeNode *ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node);
 };
@@ -80,6 +80,10 @@ private:
 
     static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
+    void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    void BPlusTree::BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
+
 public:
     BPlusTreeNode *root = nullptr;
     int nodes;
@@ -95,7 +99,7 @@ public:
 
     void insertKey2(float key, void *address);
 
-    static void deleteKey(float key);
+    void deleteKey(float key);
 
     void displayStatistics();
 
