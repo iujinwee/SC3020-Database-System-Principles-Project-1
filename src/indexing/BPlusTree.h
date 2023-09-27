@@ -42,13 +42,13 @@ class BPlusTreeNode
         size = 0;
     }
 
-    void deleteKeyInLeafNode(BPlusTreeNode *node, float keyToDelete);
+    void deleteKeyInLeafNode();
 
     int findIndexChild(BPlusTreeNode *childNode);
 
     BPlusTreeNode* ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
 
-    void deleteKeyInNonLeafNode(BPlusTreeNode *node, float index_to_delete);
+    void deleteKeyInNonLeafNode();
 
     BPlusTreeNode *ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node);
 };
@@ -97,11 +97,12 @@ public:
 
     void insertKey(float key, void *recordAddress);
 
-    void insertKey2(float key, void *address);
-
-    void deleteKey(float key);
+    int deleteKey(BPlusTreeNode *node, float dkey);
 
     void displayStatistics();
+
+    BPlusTreeKey findLB_rightSubTree(BPlusTreeNode *node, int index_key);
+
 
     ~BPlusTree();
 };
