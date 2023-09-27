@@ -177,10 +177,6 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
 }
 
 
-
-//create funciton get next node
-
-
 /*
  *  ===================================
  *  ====  PRIVATE HELPER FUNCTION  ====
@@ -216,6 +212,7 @@ void BPlusTree::checkKey(BPlusTreeNode *node)
 
 }
 
+
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {
     // For any given node, find
@@ -228,7 +225,7 @@ BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 }
 
 // REVIEW CHANGES
-void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+void BPlusTree::MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
 {
     // Shift keys and children of right node to the back
     rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge);
@@ -236,47 +233,65 @@ void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlu
     // Move keys and children ptr from leftNode over to rightNode
     for (int i = 0; i < num_keys_merge; i++)
     {
-        leftNode->keys[i] = rightNode->keys[i];
-        leftNode->children[i] = rightNode->children[i];
+        rightNode->keys[i] = leftNode->keys[i];
+        rightNode->children[i] = leftNode->children[i];
         rightNode->size++;
     }
 
     // Delete leftNode
     delete leftNode;
 
-    // Update keys and children in parent
+    // // Update keys and children in parent
 
-    auto index_deleted_node = leftNode->findIndexChild(leftNode);
-    auto parent_deleted_node = leftNode->parent;
+    // auto index_deleted_node = leftNode->findIndexChild(leftNode);
+    // auto parent_deleted_node = leftNode->parent;
 
-    // if both leaf nodes share same parent (deleted leaf node is index 0 or middle)
-    if (leftNode->parent == rightNode->parent)
-    {
-        // shift keys and children ptr in parent node
-        for (int i = index_deleted_node; i < parent_deleted_node->size; i++)
-        {
-            parent_deleted_node->keys[i] = parent_deleted_node->keys[i + 1];
-            parent_deleted_node->children[i] = parent_deleted_node->children[i + 1];
-            parent_deleted_node->size--;
-        }
-        parent_deleted_node->keys[parent_deleted_node->size - 1] = BPlusTreeKey{}; // remove last key
-        parent_deleted_node->children[parent_deleted_node->size - 1] = nullptr;    // remove last ptr
-    }
-    else
-    { // leaf node is the last node of parent
-        // Delete corresponding key and ptr in leftNode parent
-        parent_deleted_node->keys[index_deleted_node - 1] = BPlusTreeKey{};
-        parent_deleted_node->children[index_deleted_node] = nullptr;
-        parent_deleted_node->size--;
-    }
-
-    //    upwardPropogationDeletion(parent_deleted_node);
-
-    // store following node //not sure why need this
-    //    following_node = rightNode->next;
-    //    leftNode->next = following_node;
+    // // if both leaf nodes share same parent (deleted leaf node is index 0 or middle)
+    // if (leftNode->parent == rightNode->parent)
+    // {
+    //     // shift keys and children ptr in parent node
+    //     for (int i = index_deleted_node; i < parent_deleted_node->size; i++)
+    //     {
+    //         parent_deleted_node->keys[i] = parent_deleted_node->keys[i + 1];
+    //         parent_deleted_node->children[i] = parent_deleted_node->children[i + 1];
+    //         parent_deleted_node->size--;
+    //     }
+    //     parent_deleted_node->keys[parent_deleted_node->size - 1] = BPlusTreeKey{}; // remove last key
+    //     parent_deleted_node->children[parent_deleted_node->size - 1] = nullptr;    // remove last ptr
+    // }
+    // else
+    // { // leaf node is the last node of parent
+    //     // Delete corresponding key and ptr in leftNode parent
+    //     parent_deleted_node->keys[index_deleted_node - 1] = BPlusTreeKey{};
+    //     parent_deleted_node->children[index_deleted_node] = nullptr;
+    //     parent_deleted_node->size--;
+    // }
 }
 
+void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+{
+
+    // num_keys_merge = number keys merging fron leftnode
+    //+1 to create new key
+
+    // Shift keys and children of right node to the back, leaving 1 empty space prior to first key
+    rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge + 1);
+
+    // create new key
+    rightNode->keys[num_keys_merge].key = findLB_rightSubTree(rightNode, num_keys_merge); // take smallest key of right subtree
+
+    // Move keys and children ptr from leftNode over to rightNode
+    for (int i = 0; i < num_keys_merge; i++)
+    {
+        rightNode->keys[i] = leftNode->keys[i];
+        rightNode->children[i] = leftNode->children[i];
+        rightNode->size++;
+    }
+    rightNode->children[num_keys_merge] = leftNode->children[num_keys_merge];
+
+    // Delete leftNode
+    delete leftNode;
+}
 // REVIEW CHANGES
 void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
                                 BPlusTreeNode *rightNode)
@@ -332,10 +347,13 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_index
     while (j >= 0)
     {
         node->keys[i] = node->keys[j];
-        node->keys[j] = BPlusTreeKey{};
+        node->children[i + 1] = node->children[j + 1]; // review
+        node->keys[j] = new BPlusTreeKey{};
+        node->children[j + 1] = nullptr;
         i--;
         j--;
     }
+    node->children[num_indexes_shift] = node->children[0];
 }
 
 BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node)
@@ -557,8 +575,6 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void 
 
         index++;
     }
-
-    // Check cur->parent if 
 
 
     // Insert temp (largest BPlusTreeKey)
