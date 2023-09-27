@@ -137,7 +137,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
             }
             return 0;
         }
-    } else(!node->is_leaf){
+    } else if (!node->is_leaf){
         int full_delete = 0;
         for(int i=0; i<node->size;i++){
             full_delete=deleteKey((BPlusTreeNode*)node->children[i],dkey);
@@ -154,7 +154,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
         } else if (node==root&node->size < floor(m / 2))
         {   
             root=(BPlusTreeNode*) root->children[0];
-        } else if (node->size < floor(m / 2)){
+        } else if(node->size < floor(m / 2)){
             //check if need borrow/merge before return
             // number of missing keys
             int missing = floor(m / 2) - node->size;
@@ -210,7 +210,7 @@ BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
     {
         node=(BPlusTreeNode*) node->children[0];
     }
-    return node->keys[0].key;
+    return node->keys[0];
 }
 
 // REVIEW CHANGES
