@@ -46,7 +46,7 @@ class BPlusTreeNode
 
     int findIndexChild(BPlusTreeNode *childNode);
 
-    BPlusTreeNode* ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
+    BPlusTreeNode *ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
 
     void deleteKeyInNonLeafNode(BPlusTreeNode *node, float index_to_delete);
 
@@ -82,7 +82,9 @@ private:
 
     void MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
+    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    int findLB_rightSubTree(BPlusTreeNode *node, int index_key);
 
 public:
     BPlusTreeNode *root = nullptr;
