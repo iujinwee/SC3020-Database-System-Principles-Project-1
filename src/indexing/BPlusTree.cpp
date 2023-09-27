@@ -36,6 +36,8 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
         auto *target_node = searchInsertionNode(key);
         auto bpKey = getInsertionBPKey(target_node, key);
 
+        // Find index to compare
+
         // Insertion into non-full B+ leaf node
         if (target_node->size < m) {
             insertIntoLeafNode(target_node, bpKey, recordAddress);
@@ -83,46 +85,60 @@ void BPlusTree::deleteKey(float key) {
     } else {
         BPlusTreeNode *target_node = searchNode(key);
         //find smallest leaf node
-        BPlusTreeNode *temp = (BPlusTreeNode *) root;
-        while (!temp->is_leaf) {
-            temp = (BPlusTreeNode *) temp->children[0];
-        }
-        BPlusTreeNode *tparent = temp->parent;
-        //delete node smaller than target (use delete??)
-        while (temp != target_node) {
-            temp->deleteKeyInLeafNode(temp, key);
-        }
-        //check if need borrow or merge
-        if (target_node->size < floor((m + 1) / 2)) {
-            // number of missing keys
-            int missing = floor((m + 1) / 2) - target_node->size;
-            // if right can borrow
-            if (target_node->next->size - missing >= floor((m + 1) / 2)) {
-                //    BorrowFromRight(missing, target_node, target_node->next);
+        if(target_node==root){
+            target_node->deleteKeyInNonLeafNode(target_node, key);
+        } else{
+            BPlusTreeNode *temp = (BPlusTreeNode *) root;
+            while (!temp->is_leaf) {
+                temp = (BPlusTreeNode *) temp->children[0];
+            }
+            BPlusTreeNode *tparent = temp->parent;
+            //delete node smaller than target (use delete??)
+            while (temp != target_node) {
+                temp->deleteKeyInLeafNode(temp, key);
+                if(temp->size==0){
+                    BPlusTreeNode *ntemp=temp;
+                    temp=temp->next;
+                    delete ntemp;
+                }
+            }
+            //check if need borrow or merge
+            if (target_node->size < floor((m + 1) / 2)) {
+                // number of missing keys
+                int missing = floor((m + 1) / 2) - target_node->size;
+                // if right can borrow
+                if (target_node->next->size - missing >= floor((m + 1) / 2)) {
+                       BorrowFromRight(missing, target_node, target_node->next);
+                    //update key of right
+                } else {
+                       MergeWithRight(missing,target_node, target_node->next);
+                    //update key of right
+                }
+            }
+            //check key[pointer -1], c
+            while(tparent!=root){
+                tparent
+            if (temp->parent->keys[temp->parent->size - 1].key < key)
+                //check if the parent will be left with no key after deletion(single branch)
+            {
+                //check if the next node parent can fit one more key
+
+                //else take one node from
                 //update key
             } else {
-                //    MergeWithRight(target_node, target_node->next);
-                //update key
-            }
-        } else if (temp->parent->keys[temp->parent->size - 1].key < key)
-            //check if the parent will be left with no key after deletion(single branch)
-        {
-            //check if the next node parent can fit one more key
-
-            //else take one node from
-            //update key
-        } else {
-            //continue delete as per noraml
-            while (temp != root) {
-                while (temp != target_node) {
-                    temp->deleteKeyInNonLeafNode(temp, key);
-                    //update key
+                //continue delete as per noraml
+                while (temp != root) {
+                    while (temp != target_node) {
+                        temp->deleteKeyInNonLeafNode(temp, key);
+                        //update key
+                    }
+                    target_node = target_node->parent;
+                    temp = temp->parent;
                 }
-                target_node = target_node->parent;
-                temp = temp->parent;
+            }
+            //update keys
             }
         }
-        //update keys
 
     }
 }
@@ -194,11 +210,11 @@ void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlu
 }
 
 // REVIEW CHANGES
-void BPlusTree::BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,
+void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
                                 BPlusTreeNode *rightNode) {
     // Function: Node(leaf/ non-leaf) borrow >=1 keys from right sibling
 
-    int j = index_key_deletion; // starting from index where key was deleted in left node
+    int j = leftNode->size-1; // starting from index where key was deleted in left node
 
     // add keys borrowed and children ptrs  from right Node to left node
     for (int i = 0; i < num_keys_borrow; i++) {
@@ -422,6 +438,10 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void 
 
         index++;
     }
+
+    // Check cur->parent if 
+    auto lb = 1;
+    propagate(cur->parent, lb, (void*) cur);
 
     // Insert temp (largest BPlusTreeKey)
     cur->keys[index] = temp;

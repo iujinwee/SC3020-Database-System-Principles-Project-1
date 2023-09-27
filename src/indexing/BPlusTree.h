@@ -82,7 +82,7 @@ private:
 
     void MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    void BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
+    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
 
 public:
     BPlusTreeNode *root = nullptr;
