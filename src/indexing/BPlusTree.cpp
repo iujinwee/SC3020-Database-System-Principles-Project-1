@@ -9,6 +9,9 @@ using namespace std;
 
 BPlusTree::~BPlusTree() = default;
 
+BPlusTreeNode::~BPlusTreeNode() = default;
+
+
 /*
  *  ==================================
  *  ===    PUBLIC KEY FUNCTION     ===
@@ -583,7 +586,7 @@ void BPlusTree::propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpK
     }
 
     // Recursive call on propagate()
-    propagate(cur->parent, lb, (void *)new_node);
+    propagate(disk, cur->parent, lb, (void *)new_node);
 }
 
 BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
@@ -757,3 +760,4 @@ void BPlusTree::displayStatistics()
     printRootKeys();
     cout << endl;
 }
+

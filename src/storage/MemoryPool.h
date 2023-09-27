@@ -10,25 +10,26 @@
 #include "iostream"
 #include "memory"
 
-using BPlusTreeNode;
+struct BPlusTreeNode;
 
-const int block_size = sizeof(BPlusTreeNode);
 const int record_size = sizeof(Record);
 
 class Block {
 public:
     int num_records = 0;
+    int block_size;
     int size = 0;
+
+    explicit Block(int size);
 };
 
 class MemoryPool {
-    const int record_size = sizeof(Record);
-
     int total_memory_size;           // Total size of the memory pool
     int current_memory_size = 0;     // Current size of the memory pool
     int num_used_blocks = 0;         // Count of used blocks
     int num_used_records = 0;        // Count of initialised records
     int num_accessed_blocks = 0;     // Count of accessed blocks
+    int block_size;
 
 public:
     void *mem_pool_ptr;   // Pointer to memory pool

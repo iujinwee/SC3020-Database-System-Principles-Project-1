@@ -6,12 +6,17 @@
 
 using namespace std;
 
+Block::Block(int size){
+    this->block_size = size;
+}
+
 MemoryPool::MemoryPool(int totalMemorySize, int blockSize) {
     /*
      * Create a fixed-size memory pool with the given total memory size
      * and block size.
      */
     this->total_memory_size = totalMemorySize;
+    this->block_size = blockSize;
 
     /*
      * Assign blocks to memory pool and initialize every bit to 0.
@@ -30,7 +35,7 @@ Block *MemoryPool::allocateBlock() {
     bool sufficientTotalMemory = current_memory_size + block_size <= total_memory_size;
 
     if (sufficientTotalMemory) {
-        auto new_block = new Block();
+        auto new_block = new Block(block_size);
 
         // Update block
         current_memory_size += block_size;
