@@ -12,11 +12,6 @@
 
 using namespace std;
 
-struct RecordAddress {
-    unsigned char *address;
-    std::size_t offset;
-};
-
 struct Record {
     uint32_t bin_game_date;  // Binary representation of Game Date DD|MM|YYYY
     uint32_t team_id_home;   // Team ID, 32 bits

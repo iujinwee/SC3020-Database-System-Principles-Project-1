@@ -12,35 +12,35 @@ MemoryPool::MemoryPool(int totalMemorySize, int blockSize) {
      * and block size.
      */
     this->total_memory_size = totalMemorySize;
-    this->block_size = blockSize;
 
     /*
      * Assign blocks to memory pool and initialize every bit to 0.
      */
-    this->mem_pool_ptr = new u_char[totalMemorySize];
-    memset((void *) mem_pool_ptr, 0, totalMemorySize);
-
-    this->b_tree_ptr = nullptr;
-    this->data_ptr = nullptr;
+    this->mem_pool_ptr = allocateBPlusTreeNode();
+    this->current_data_block = nullptr;
 }
 
 MemoryPool::~MemoryPool() = default;
 
 /*
- * Allocate new block within the memory pool if sufficient remaining memory space in the pool.
+ *  Allocate new block within the memory pool if sufficient remaining memory space in the pool.
+ *  Returns the address of the new block if created
  */
-bool MemoryPool::allocateBlock() {
+Block *MemoryPool::allocateBlock() {
     bool sufficientTotalMemory = current_memory_size + block_size <= total_memory_size;
+
     if (sufficientTotalMemory) {
+        auto new_block = new Block();
+
+        // Update block
         current_memory_size += block_size;
-        data_ptr = mem_pool_ptr + num_used_blocks * block_size;
         num_used_blocks += 1;
-        current_block_size = 0;
-        return true;
-    } else {
-        cout << "Insufficient memory space in Memory Pool to allocate new block." << endl;
+
+        return new_block;
     }
-    return false;
+
+    cout << "Insufficient memory space in Memory Pool to allocate new block." << endl;
+    return nullptr;
 }
 
 /*
@@ -48,15 +48,25 @@ bool MemoryPool::allocateBlock() {
  *  Creates new block if insufficient space in current block.
  *  Throws error if required size exceed memory of block size.
  */
-RecordAddress MemoryPool::allocate(std::size_t requiredSize) {
-    if (requiredSize > block_size) {
-        throw invalid_argument("Insufficient space in memory block!");
+void *MemoryPool::allocateRecord(Block *cur) {
+
+    // Create block if null
+    if (cur == nullptr) {
+        Block *new_block = allocateBlock();
+        current_data_block = new_block;
+        return (void *) current_data_block;
     }
 
-    bool sufficientMemory = current_block_size + requiredSize <= block_size;
+    // Checks if sufficient memory in current block
+    bool sufficientMemory = cur->size + record_size <= block_size;
+
     if (!num_used_blocks || !sufficientMemory) {
-        bool allocatedNewBlock = allocateBlock();
-        if (!allocatedNewBlock) {
+
+        // Allocates new block and replace current
+        Block *new_block = allocateBlock();
+        current_data_block = new_block;
+
+        if (!new_block) {
             string error = "Insufficient Memory " +
                            to_string(getCurrentMemory()) +
                            "MB / " +
@@ -66,45 +76,55 @@ RecordAddress MemoryPool::allocate(std::size_t requiredSize) {
         }
     }
 
-    // Updates the current block size
-    std::size_t offset = current_block_size;
-    current_memory_size += requiredSize;
+    // Allocate memory space within memory pool
+    void *new_address = current_data_block + record_size;
 
-    return RecordAddress{data_ptr, offset};
+    return new_address;
+}
+
+/*
+ *  Allocates memory space for new BPlusTreeNode
+ */
+void *MemoryPool::allocateBPlusTreeNode() {
+    auto new_address = (void *) ((int *) mem_pool_ptr + num_used_blocks + block_size);
+    return new_address;
+}
+
+/*
+ *  Stores the new BPlusTreeNode into memory pool
+ */
+void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
+    auto new_address = allocateBPlusTreeNode();
+    memmove(new_address, (void *) newNode, block_size);
 }
 
 /*
  *  Save record by allocating memory space then updating relevant counters.
- *  We used memcpy to transfer the content to the allocated record address.
+ *  We used memmove to transfer the content to the allocated record address.
  */
-RecordAddress MemoryPool::saveRecord(Record newRecord) {
-    RecordAddress newRecordAdd = allocate(sizeof(newRecord));
-    memmove((void *) (newRecordAdd.address + newRecordAdd.offset), (void *) &newRecord, sizeof(newRecord));
+void *MemoryPool::saveRecord(Record newRecord) {
+    auto new_record_address = allocateRecord(current_data_block);
+    memmove(new_record_address, (void *) &newRecord, record_size);
 
-    current_block_size += sizeof(newRecord);
+    current_data_block->size += record_size;
+    current_data_block->num_records += 1;
     num_used_records += 1;
     num_accessed_blocks += 1;
 
-    return newRecordAdd;
+    return new_record_address;
 }
 
 /*
  *  Load record given its record address
  */
-Record *MemoryPool::loadRecord(RecordAddress recordAddress) {
-    void *record = new Record{};
-    int size = sizeof(RecordAddress);
-
-    memcpy(record, (char *) (recordAddress.address + recordAddress.offset), size);
-
-    return (Record *) record;
+Record *MemoryPool::loadRecord(void *recordAddress) {
+    return (Record *) recordAddress;
 }
 
-void MemoryPool::displayRecord(RecordAddress recordAddress) {
+void MemoryPool::displayRecord(void *recordAddress) {
     auto *record = new Record;
-    int size = sizeof(Record);
 
-    memcpy(record, (char *) (recordAddress.address + recordAddress.offset), size);
+    memcpy(record, recordAddress, record_size);
 
     string delimiter = " ";
 
@@ -129,20 +149,24 @@ double MemoryPool::getCurrentMemory() const {
     return (double) current_memory_size / (1024 * 1024);
 }
 
-std::size_t MemoryPool::getNumUsedBlocks() const {
+int MemoryPool::getNumUsedBlocks() const {
     return num_used_blocks;
 }
 
-std::size_t MemoryPool::getNumUsedRecords() const {
+int MemoryPool::getNumUsedRecords() const {
     return num_used_records;
 }
 
-std::size_t MemoryPool::getRecordSize() const {
+int MemoryPool::getNumAccessedBlocks() const {
+    return num_accessed_blocks;
+}
+
+int MemoryPool::getRecordSize() const {
     return record_size;
 }
 
-std::size_t MemoryPool::getNumRecordsInBlock() const {
-    std::size_t utilisedBlockSize = block_size - (block_size % record_size);
-    return utilisedBlockSize / record_size;
+int MemoryPool::getNumRecordsInBlock() const {
+    int utilised_block_size = block_size - (block_size % record_size);
+    return utilised_block_size / record_size;
 }
 

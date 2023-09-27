@@ -23,7 +23,6 @@ int main() {
 
     // Reading data from games.txt into memory pool
     ifstream datafile(DATA_DIR);
-    vector<RecordAddress> record_address_list;
 
     // Initialize B+ Tree
     BPlusTree tree;
@@ -44,11 +43,10 @@ int main() {
             // Write new record into memory pool
             Record new_record = {};
             new_record.store(line);
-            RecordAddress new_record_address= disk.saveRecord(new_record);
-            record_address_list.push_back(new_record_address);
+            auto new_record_address = disk.saveRecord(new_record);
 
             // Add to B+ Tree sequentially
-            tree.insertKey(new_record.fg_pct_home, &new_record);
+            tree.insertKey(new_record.fg_pct_home, new_record_address);
 //            tree.displayTree();
         }
 

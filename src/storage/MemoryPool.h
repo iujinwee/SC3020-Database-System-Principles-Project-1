@@ -8,47 +8,59 @@
 #include "Record.h"
 #include "iostream"
 #include "memory"
+#include "../indexing/BPlusTree.h"
 
+const int block_size = sizeof(BPlusTreeNode);
+const int record_size = sizeof(Record);
+
+class Block {
+public:
+    int num_records = 0;
+    int size = 0;
+};
 
 class MemoryPool {
     const int record_size = sizeof(Record);
 
-    std::size_t total_memory_size;           // Total size of the memory pool
-    std::size_t current_memory_size = 0;     // Current size of the memory pool
-    std::size_t block_size;                  // Memory size of 1 block
-    std::size_t current_block_size = 0;      // Memory size of current block
-    std::size_t num_used_blocks = 0;         // Count of used blocks
-    std::size_t num_used_records = 0;        // Count of initialised records
-    std::size_t num_accessed_blocks = 0;     // Count of accessed blocks
+    int total_memory_size;           // Total size of the memory pool
+    int current_memory_size = 0;     // Current size of the memory pool
+    int num_used_blocks = 0;         // Count of used blocks
+    int num_used_records = 0;        // Count of initialised records
+    int num_accessed_blocks = 0;     // Count of accessed blocks
 
 public:
-    u_char *mem_pool_ptr;   // Pointer to memory pool
-    u_char *b_tree_ptr;     // Pointer B+ tree nodes
-    u_char *data_ptr;       // Pointer data records
+    void *mem_pool_ptr;   // Pointer to memory pool
+    Block *current_data_block;   // Pointer to current data block
 
     MemoryPool(int totalMemorySize, int blockSize);
 
-    bool allocateBlock();
+    Block* allocateBlock();
 
-    RecordAddress allocate(std::size_t requiredSize);
+    void* allocateRecord(Block* cur);
 
-    RecordAddress saveRecord(Record newRecord);
+    void* allocateBPlusTreeNode();
 
-    static Record *loadRecord(RecordAddress recordAddress);
+    void saveBPlusTreeNode(BPlusTreeNode* newNode);
 
-    static void displayRecord(RecordAddress recordAddress);
+    void* saveRecord(Record newRecord);
+
+    Record *loadRecord(void* recordAddress);
+
+    void displayRecord(void* recordAddress);
 
     [[nodiscard]] double getTotalMemory() const;
 
     [[nodiscard]] double getCurrentMemory() const;
 
-    [[nodiscard]] std::size_t getNumUsedBlocks() const;
+    [[nodiscard]] int getNumUsedBlocks() const;
 
-    [[nodiscard]] std::size_t getNumUsedRecords() const;
+    [[nodiscard]] int getNumUsedRecords() const;
 
-    [[nodiscard]] std::size_t getRecordSize() const;
+    [[nodiscard]] int getNumAccessedBlocks() const;
 
-    [[nodiscard]] std::size_t getNumRecordsInBlock() const;
+    [[nodiscard]] int getRecordSize() const;
+
+    [[nodiscard]] int getNumRecordsInBlock() const;
 
     ~MemoryPool();
 };

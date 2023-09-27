@@ -95,8 +95,6 @@ public:
 
     void insertKey(float key, void *recordAddress);
 
-    void insertKey2(float key, void *address);
-
     static void deleteKey(float key);
 
     void displayStatistics();
