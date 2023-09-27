@@ -84,8 +84,6 @@ private:
 
     void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    int findLB_rightSubTree(BPlusTreeNode *node, int index_key);
-
 public:
     BPlusTreeNode *root = nullptr;
     int nodes;
