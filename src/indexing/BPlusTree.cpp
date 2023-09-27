@@ -17,20 +17,26 @@ BPlusTree::~BPlusTree() = default;
  *  ==================================
  */
 
-void BPlusTree::displayTree() {
-    if (root) {
+void BPlusTree::displayTree()
+{
+    if (root)
+    {
         printNode(root, 0);
     }
 }
 
-void BPlusTree::insertKey(float key, void *recordAddress) {
+void BPlusTree::insertKey(float key, void *recordAddress)
+{
     // Empty B+ Tree, insert root node
-    if (!root) {
+    if (!root)
+    {
         root = new BPlusTreeNode(true);
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
-    } else {
+    }
+    else
+    {
         // Search leaf node for insertion
         // If duplicate, should return the BPlusTree node with the last instance of the key
         auto *target_node = searchInsertionNode(key);
@@ -39,37 +45,50 @@ void BPlusTree::insertKey(float key, void *recordAddress) {
         // Find index to compare
 
         // Insertion into non-full B+ leaf node
-        if (target_node->size < m) {
+        if (target_node->size < m)
+        {
             insertIntoLeafNode(target_node, bpKey, recordAddress);
-        } else {
+        }
+        else
+        {
             // Recursive call on propagate()
             propagate(target_node, bpKey, recordAddress);
         }
     }
 }
 
-BPlusTreeNode *BPlusTree::searchNode(float key) {
+BPlusTreeNode *BPlusTree::searchNode(float key)
+{
     // If tree is empty
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         cout << "B+ Tree is empty\n";
-    } else {
+    }
+    else
+    {
         BPlusTreeNode *current_node = root;
-        while (!current_node->is_leaf) {
-            for (int i = 0; i < current_node->size; i++) {
-                if (key < current_node->keys[i].key) {
-                    current_node = (BPlusTreeNode *) current_node->children[i];
+        while (!current_node->is_leaf)
+        {
+            for (int i = 0; i < current_node->size; i++)
+            {
+                if (key < current_node->keys[i].key)
+                {
+                    current_node = (BPlusTreeNode *)current_node->children[i];
                     continue;
                 }
 
-                if (i == current_node->size - 1) {
-                    current_node = (BPlusTreeNode *) current_node->children[i + 1];
+                if (i == current_node->size - 1)
+                {
+                    current_node = (BPlusTreeNode *)current_node->children[i + 1];
                     continue;
                 }
             }
         }
 
-        for (int i = 0; i < current_node->size; i++) {
-            if (current_node->keys[i].key == key) {
+        for (int i = 0; i < current_node->size; i++)
+        {
+            if (current_node->keys[i].key == key)
+            {
                 cout << "Found " << key << endl;
                 return current_node;
             }
@@ -163,25 +182,25 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
 
 
 /*
-*  ===================================
-*  ====  PRIVATE HELPER FUNCTION  ====
-*  ===================================
-*/
-//void BPlusTree::upwardPropogationDeletion() { // for non leaf/root
+ *  ===================================
+ *  ====  PRIVATE HELPER FUNCTION  ====
+ *  ===================================
+ */
+// void BPlusTree::upwardPropogationDeletion() { // for non leaf/root
 
-    // check if sufficient keys > m/2 ||  num children = no keys+1
-    // if fail to satisfy either
-    // num keys to borrow = m/2 - current size
-    // check if right node>m/2, after borrowing
-    // if yes, borrow
-    // borrowfromright()
-    // upwardPropogationDeletion()
-    // else merge
-    // mergewithright()
-    // upwardPropogationDeletion()
+// check if sufficient keys > m/2 ||  num children = no keys+1
+// if fail to satisfy either
+// num keys to borrow = m/2 - current size
+// check if right node>m/2, after borrowing
+// if yes, borrow
+// borrowfromright()
+// upwardPropogationDeletion()
+// else merge
+// mergewithright()
+// upwardPropogationDeletion()
 
-    // if root and only 1 child
-    // delete root
+// if root and only 1 child
+// delete root
 //}
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {
@@ -195,12 +214,14 @@ BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 }
 
 // REVIEW CHANGES
-void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode) {
+void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+{
     // Shift keys and children of right node to the back
     rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge);
 
     // Move keys and children ptr from leftNode over to rightNode
-    for (int i = 0; i < num_keys_merge; i++) {
+    for (int i = 0; i < num_keys_merge; i++)
+    {
         leftNode->keys[i] = rightNode->keys[i];
         leftNode->children[i] = rightNode->children[i];
         rightNode->size++;
@@ -215,23 +236,27 @@ void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlu
     auto parent_deleted_node = leftNode->parent;
 
     // if both leaf nodes share same parent (deleted leaf node is index 0 or middle)
-    if (leftNode->parent == rightNode->parent) {
+    if (leftNode->parent == rightNode->parent)
+    {
         // shift keys and children ptr in parent node
-        for (int i = index_deleted_node; i < parent_deleted_node->size; i++) {
+        for (int i = index_deleted_node; i < parent_deleted_node->size; i++)
+        {
             parent_deleted_node->keys[i] = parent_deleted_node->keys[i + 1];
             parent_deleted_node->children[i] = parent_deleted_node->children[i + 1];
             parent_deleted_node->size--;
         }
         parent_deleted_node->keys[parent_deleted_node->size - 1] = BPlusTreeKey{}; // remove last key
-        parent_deleted_node->children[parent_deleted_node->size - 1] = nullptr;        // remove last ptr
-    } else { // leaf node is the last node of parent
+        parent_deleted_node->children[parent_deleted_node->size - 1] = nullptr;    // remove last ptr
+    }
+    else
+    { // leaf node is the last node of parent
         // Delete corresponding key and ptr in leftNode parent
         parent_deleted_node->keys[index_deleted_node - 1] = BPlusTreeKey{};
         parent_deleted_node->children[index_deleted_node] = nullptr;
         parent_deleted_node->size--;
     }
 
-//    upwardPropogationDeletion(parent_deleted_node);
+    //    upwardPropogationDeletion(parent_deleted_node);
 
     // store following node //not sure why need this
     //    following_node = rightNode->next;
@@ -240,13 +265,15 @@ void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlu
 
 // REVIEW CHANGES
 void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
-                                BPlusTreeNode *rightNode) {
+                                BPlusTreeNode *rightNode)
+{
     // Function: Node(leaf/ non-leaf) borrow >=1 keys from right sibling
 
-    int j = leftNode->size-1; // starting from index where key was deleted in left node
+    int j = leftNode->size - 1; // starting from index where key was deleted in left node
 
     // add keys borrowed and children ptrs  from right Node to left node
-    for (int i = 0; i < num_keys_borrow; i++) {
+    for (int i = 0; i < num_keys_borrow; i++)
+    {
         leftNode->keys[j] = rightNode->keys[i];         // add keys from rightNode
         leftNode->children[j] = rightNode->children[i]; // add children ptr from rightNode
 
@@ -263,28 +290,33 @@ void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
     auto index_rightNode = rightNode->findIndexChild(rightNode);
 
     // only update the parent keys if the index of nodes > 0
-    if (index_leftNode > 0) {
+    if (index_leftNode > 0)
+    {
         auto leftParentNode = leftNode->parent;
         // replace respective key in parent node with smallest key in child node
         leftParentNode->keys[index_leftNode - 1] = leftNode->keys[0];
     }
-    if (index_rightNode > 0) {
+    if (index_rightNode > 0)
+    {
         auto rightParentNode = rightNode->parent;
         // replace respective key in parent node with smallest key in child node
         rightParentNode->keys[index_rightNode - 1] = rightNode->keys[0];
     }
 
-//    upwardPropogation(leftParentNode);
-//    upwardPropogation(rightParentNode);
+    //    upwardPropogation(leftParentNode);
+    //    upwardPropogation(rightParentNode);
 }
 
-BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift) {
+BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift)
+{
     int j = node->size - 1;
     int i = j + num_indexes_shift;
-    if (i > node->size - 1) {
+    if (i > node->size - 1)
+    {
         std::cout << "Cannot merge, will exceed size of node";
     }
-    while (j >= 0) {
+    while (j >= 0)
+    {
         node->keys[i] = node->keys[j];
         node->keys[j] = BPlusTreeKey{};
         i--;
@@ -292,11 +324,13 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_index
     }
 }
 
-BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node) {
+BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node)
+{
     // shift remaining keys and children in the node to the start of the array
     int j = start_index_remaining_keys;
     int i = 0;
-    while (j < node->size) {
+    while (j < node->size)
+    {
         node->keys[i] = node->keys[j];
         node->children[i] = node->children[j];
         j++;
@@ -308,10 +342,13 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront(int start_index_remaining_keys, B
     return node;
 }
 
-int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode) {
+int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode)
+{
     auto parentNode = childNode->parent;
-    for (int i = 0; i < parentNode->size; i++) {
-        if (parentNode->children[i] == childNode) {
+    for (int i = 0; i < parentNode->size; i++)
+    {
+        if (parentNode->children[i] == childNode)
+        {
             // Found the leaf node in the parent's children array
             return i;
         }
@@ -354,46 +391,63 @@ void BPlusTreeNode::deleteKeyInNonLeafNode() {
 
 }
 
-void BPlusTree::printNode(BPlusTreeNode *node, int level) {
-    if (!node) {
+void BPlusTree::printNode(BPlusTreeNode *node, int level)
+{
+    if (!node)
+    {
         return;
     }
 
     std::cout << "Level " << level << ": ";
 
-    for (int i = 0; i < node->size; ++i) {
+    for (int i = 0; i < node->size; ++i)
+    {
         std::cout << "(" << node->keys[i].key << ", " << node->keys[i].count << ") ";
     }
 
     std::cout << "| Size: " << node->size << std::endl;
 
-    if (!node->is_leaf) {
-        for (int i = 0; i <= node->size; ++i) {
-            printNode((BPlusTreeNode *) node->children[i], level + 1);
+    if (!node->is_leaf)
+    {
+        for (int i = 0; i <= node->size; ++i)
+        {
+            printNode((BPlusTreeNode *)node->children[i], level + 1);
         }
     }
 }
 
-BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
+BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const
+{
     // If tree is empty
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         cout << "B+ Tree is empty\n";
-    } else {
-        auto *current_node = (BPlusTreeNode *) root;
+    }
+    else
+    {
+        auto *current_node = (BPlusTreeNode *)root;
         // Transverse to the lowest left node
-        while (!current_node->is_leaf) {
-            current_node = (BPlusTreeNode *) current_node->children[0];
+        while (!current_node->is_leaf)
+        {
+            current_node = (BPlusTreeNode *)current_node->children[0];
         }
 
         // Find insertion node by travelling horizontally (using next ptr)
-        while (current_node->keys[0].key < key) {
-            if (current_node->next != nullptr) {
-                if (current_node->next->keys[0].key < key) {
+        while (current_node->keys[0].key < key)
+        {
+            if (current_node->next != nullptr)
+            {
+                if (current_node->next->keys[0].key < key)
+                {
                     current_node = current_node->next;
-                } else {
+                }
+                else
+                {
                     break;
                 }
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -402,7 +456,8 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const {
     return nullptr;
 }
 
-void BPlusTree::swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address) {
+void BPlusTree::swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address)
+{
     BPlusTreeKey temp2 = node->keys[index];
     void *temp2_address = node->children[index];
 
@@ -413,7 +468,8 @@ void BPlusTree::swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, voi
     *temp_address = temp2_address;
 }
 
-void BPlusTree::swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address) {
+void BPlusTree::swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address)
+{
     BPlusTreeKey temp2 = node->keys[index];
     void *temp2_address = node->children[index + 1];
 
@@ -425,14 +481,16 @@ void BPlusTree::swapNonLeafTemp(BPlusTreeNode *node, int index, BPlusTreeKey *te
 }
 
 // Helper function to add a new key into leaf node
-void BPlusTree::addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address) {
+void BPlusTree::addNewKey(BPlusTreeNode *node, int index, float key, int count, void *address)
+{
     auto new_key = BPlusTreeKey{key, count};
     node->keys[index] = new_key;
     node->children[index] = address;
 }
 
 // Helper function to insert a key-address pair into a non-full node
-void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress) {
+void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *recordAddress)
+{
 
     int index = 0;
     auto temp = bpKey;
@@ -440,13 +498,15 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void 
     bool tempSmaller;
 
     // Distribute keys accordingly
-    while (index < cur->size) {
+    while (index < cur->size)
+    {
         // Sort in ascending order
         tempSmaller = (cur->keys[index].key > temp.key) ||
                       (cur->keys[index].key == temp.key &&
                        cur->keys[index].count > temp.count);
 
-        if (tempSmaller) {
+        if (tempSmaller)
+        {
             swapTemp(cur, index, &temp, &temp_address);
         }
 
@@ -464,7 +524,8 @@ void BPlusTree::insertIntoLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void 
     cur->size++;
 }
 
-void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address) {
+void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
+{
 
     int index = 0;
     auto temp = bpKey;
@@ -472,13 +533,15 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
     bool tempSmaller;
 
     // Distribute keys accordingly
-    while (index < cur->size) {
+    while (index < cur->size)
+    {
         // Sort in ascending order
         tempSmaller = (cur->keys[index].key > temp.key) ||
                       (cur->keys[index].key == temp.key &&
                        cur->keys[index].count > temp.count);
 
-        if (tempSmaller) {
+        if (tempSmaller)
+        {
             swapNonLeafTemp(cur, index, &temp, &temp_address);
         }
 
@@ -493,13 +556,18 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
     cur->size++;
 }
 
-void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address) {
+void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
+{
 
     // No longer need to split
-    if (cur->size < m) {
-        if (cur->is_leaf) {
+    if (cur->size < m)
+    {
+        if (cur->is_leaf)
+        {
             insertIntoLeafNode(cur, bpKey, address);
-        } else {
+        }
+        else
+        {
             insertIntoNonLeafNode(cur, bpKey, address);
         }
         return;
@@ -511,15 +579,17 @@ void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
     // Get the smallest key of the right subtree
     auto lb = new_node->keys[0];
 
-    if (!cur->is_leaf) {
+    if (!cur->is_leaf)
+    {
         lb = getSmallestRightSubtree(new_node);
     }
 
     // Create new root if necessary
-    if (cur->parent == nullptr) {
+    if (cur->parent == nullptr)
+    {
         auto *new_root = new BPlusTreeNode();
         new_root->keys[0] = lb;
-        new_root->children[0] = (void *) cur;
+        new_root->children[0] = (void *)cur;
         cur->parent = new_root;
         new_node->parent = new_root;
         root = new_root;
@@ -528,16 +598,17 @@ void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
     }
 
     // Recursive call on propagate()
-    propagate(cur->parent, lb, (void *) new_node);
+    propagate(cur->parent, lb, (void *)new_node);
 }
 
-BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address) {
+BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
+{
     // Initialize a new node
     auto new_node = new BPlusTreeNode(cur->is_leaf);
     nodes++;
 
     // Split node
-    int split_index = (int) ceil(m / 2) + 1;
+    int split_index = (int)ceil(m / 2) + 1;
     int index = 0;
     int new_index = 0;
     auto temp = bpKey;
@@ -545,20 +616,24 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
     bool tempSmaller;
 
     // Distribute keys accordingly
-    if (cur->is_leaf) {
+    if (cur->is_leaf)
+    {
         // LEAF NODE
-        while (index < m) {
+        while (index < m)
+        {
             // Sort in ascending order
             tempSmaller = (cur->keys[index].key > temp.key) ||
                           (cur->keys[index].key == temp.key &&
                            cur->keys[index].count > temp.count);
 
-            if (tempSmaller) {
+            if (tempSmaller)
+            {
                 swapTemp(cur, index, &temp, &temp_address);
             }
 
             // Handle after split index
-            if (index >= split_index) {
+            if (index >= split_index)
+            {
                 // transfer to new node
                 new_node->keys[new_index] = cur->keys[index];
                 new_node->children[new_index] = cur->children[index];
@@ -580,25 +655,31 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
         new_node->keys[new_index] = temp;
         new_node->children[new_index] = temp_address;
         new_node->size++;
-    } else {
+    }
+    else
+    {
         void *smallest_children;
 
         // NON-LEAF NODE
-        while (index < m) {
+        while (index < m)
+        {
             // Sort in ascending order
             tempSmaller = (cur->keys[index].key > temp.key) ||
                           (cur->keys[index].key == temp.key &&
                            cur->keys[index].count > temp.count);
 
-            if (tempSmaller) {
+            if (tempSmaller)
+            {
                 swapNonLeafTemp(cur, index, &temp, &temp_address);
             }
 
             // Handle after split index
-            if (index >= split_index) {
+            if (index >= split_index)
+            {
 
                 // first index is always the larger key
-                if (new_index == 0) {
+                if (new_index == 0)
+                {
                     // set the smallest children of new node
                     smallest_children = cur->children[index + 1];
                 }
@@ -608,7 +689,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 new_node->children[new_index + 1] = temp_address;
 
                 // Reassign parent
-                ((BPlusTreeNode *) new_node->children[new_index + 1])->parent = new_node;
+                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
 
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
@@ -627,7 +708,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
         new_node->children[0] = smallest_children;
 
         // Reassign parent node
-        ((BPlusTreeNode *) smallest_children)->parent = new_node;
+        ((BPlusTreeNode *)smallest_children)->parent = new_node;
     }
 
     // update pointers
@@ -638,10 +719,12 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
     return new_node;
 }
 
-BPlusTreeKey BPlusTree::getInsertionBPKey(BPlusTreeNode *target, float key) {
+BPlusTreeKey BPlusTree::getInsertionBPKey(BPlusTreeNode *target, float key)
+{
     int count = target->keys[0].key == key ? target->keys[0].count : 1;
 
-    for (int i = 0; i < target->size; i++) {
+    for (int i = 0; i < target->size; i++)
+    {
         if (target->keys[i].key == key)
             count++;
     }
@@ -649,15 +732,20 @@ BPlusTreeKey BPlusTree::getInsertionBPKey(BPlusTreeNode *target, float key) {
     return BPlusTreeKey{key, count};
 }
 
-BPlusTreeKey BPlusTree::getSmallestRightSubtree(BPlusTreeNode *node) {
+BPlusTreeKey BPlusTree::getSmallestRightSubtree(BPlusTreeNode *node)
+{
 
-    auto cur = (BPlusTreeNode *) node->children[0];
+    auto cur = (BPlusTreeNode *)node->children[0];
 
-    while (!cur->is_leaf) {
-        auto target_node = (BPlusTreeNode *) cur->children[0];
-        if (target_node != nullptr) {
+    while (!cur->is_leaf)
+    {
+        auto target_node = (BPlusTreeNode *)cur->children[0];
+        if (target_node != nullptr)
+        {
             cur = target_node;
-        } else {
+        }
+        else
+        {
             break;
         }
     }
@@ -665,13 +753,16 @@ BPlusTreeKey BPlusTree::getSmallestRightSubtree(BPlusTreeNode *node) {
     return cur->keys[0];
 }
 
-void BPlusTree::printRootKeys() {
-    for (int i = 0; i < root->size; i++) {
+void BPlusTree::printRootKeys()
+{
+    for (int i = 0; i < root->size; i++)
+    {
         cout << "(" << root->keys[i].key << ", " << root->keys[i].count << ") ";
     }
 }
 
-void BPlusTree::displayStatistics() {
+void BPlusTree::displayStatistics()
+{
     // Experiment 2 Results
     cout << "Experiment 2: Build B+ Tree and report statistics" << endl;
     cout << " - Parameter of n of B+ tree: " << m << endl;
