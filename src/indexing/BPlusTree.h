@@ -51,6 +51,7 @@ class BPlusTreeNode
     void deleteKeyInNonLeafNode();
 
     BPlusTreeNode *ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node);
+  
 };
 
 class BPlusTree
@@ -103,6 +104,7 @@ public:
 
     BPlusTreeKey findLB_rightSubTree(BPlusTreeNode *node, int index_key);
 
+    BPlusTreeNode* findNextNonLeafNode(BPlusTreeNode *node);
 
     ~BPlusTree();
 };

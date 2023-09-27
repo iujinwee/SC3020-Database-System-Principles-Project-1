@@ -202,6 +202,8 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
 // if root and only 1 child
 // delete root
 //}
+
+
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {
     // For any given node, find
@@ -390,6 +392,37 @@ void BPlusTreeNode::deleteKeyInNonLeafNode() {
     size--;
 
 }
+
+BPlusTreeNode* BPlusTree::findNextNonLeafNode(BPlusTreeNode *node){
+    int level = 0;
+    while(node->parent!=root){
+        
+        if(node->findIndexChild(node)==node->parent->size-1){
+            node=node->parent;
+            level++;
+        } else{
+            node= (BPlusTreeNode *) node->parent->children[node->findIndexChild(node)+1];
+            if(level==0){
+                return node;
+            }
+            break;
+        }
+        break;
+    }
+    if(node->parent!=root & node->findIndexChild(node)==node->parent->size-1){
+            std::cout<<"No more next node";
+            return NULL;
+    }
+    node=(BPlusTreeNode *) node->parent->children[node->findIndexChild(node)+1];
+    while(level!=0){
+        //already last branch of whole tree
+
+        node=(BPlusTreeNode *) node->children[0];
+        level--;
+    }
+    return node;
+}
+
 
 void BPlusTree::printNode(BPlusTreeNode *node, int level)
 {
