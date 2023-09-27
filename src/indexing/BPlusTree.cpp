@@ -128,8 +128,9 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
                             BorrowFromRight(missing, node, node->next);
                             return 0;
                         } else {
-                            MergeWithRight(missing,node, node->next);
+                            MergeWithRight_LeafNode(missing,node, node->next);
                             //propagate update key of right
+                            checkKey(node->next);
                             return 1;
                         }
                     }
@@ -145,6 +146,8 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
                 node->deleteKeyInNonLeafNode();
             } else{
                 //update left and propagte upwards
+                checkKey((BPlusTreeNode*)node->children[0]);
+                break;
             }
         }
         //check structure
@@ -163,8 +166,9 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
                 BorrowFromRight(missing, node, node->next);
                 return 0;
             } else {
-                MergeWithRight(missing,node, node->next);
+                MergeWithRight_NonLeafNode(missing,node, findNextNonLeafNode(node));
                 //propagate update key of right
+                checkKey(findNextNonLeafNode(node));
                 return 1;
             }
         }else{
@@ -278,7 +282,7 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
     rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge + 1);
 
     // create new key
-    rightNode->keys[num_keys_merge].key = findLB_rightSubTree(rightNode, num_keys_merge); // take smallest key of right subtree
+    rightNode->keys[num_keys_merge] = findLB_rightSubTree(rightNode, num_keys_merge); // take smallest key of right subtree
 
     // Move keys and children ptr from leftNode over to rightNode
     for (int i = 0; i < num_keys_merge; i++)
@@ -348,7 +352,7 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_index
     {
         node->keys[i] = node->keys[j];
         node->children[i + 1] = node->children[j + 1]; // review
-        node->keys[j] = new BPlusTreeKey{};
+        node->keys[j] = BPlusTreeKey{};
         node->children[j + 1] = nullptr;
         i--;
         j--;
