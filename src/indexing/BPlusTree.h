@@ -46,7 +46,7 @@ class BPlusTreeNode
 
     int findIndexChild(BPlusTreeNode *childNode);
 
-    void ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
+    BPlusTreeNode* ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
 
     void deleteKeyInNonLeafNode(BPlusTreeNode *node, float index_to_delete);
 
@@ -80,9 +80,9 @@ private:
 
     static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    void BPlusTree::MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+    void MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    void BPlusTree::BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
+    void BorrowFromRight(int num_keys_borrow, int index_key_deletion, BPlusTreeNode *leftNode,BPlusTreeNode *rightNode);
 
 public:
     BPlusTreeNode *root = nullptr;
