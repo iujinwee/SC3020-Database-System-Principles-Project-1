@@ -6,10 +6,12 @@
 #define SC3020_DATABASE_SYSTEM_PRINCIPLES_BPLUSTREE_H
 
 #include "../storage//Record.h"
+#include "../storage/MemoryPool.h"
 #include <vector>
 
 const int BLOCK_SIZE = 400;
 const int m = 23;
+struct MemoryPool;
 
 /*
  *  Key structure stores the
@@ -58,7 +60,7 @@ class BPlusTree
 private:
     static BPlusTreeKey getSmallestRightSubtree(BPlusTreeNode *node);
 
-    void propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+    void propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
     BPlusTreeNode *split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
@@ -84,16 +86,16 @@ private:
 
 public:
     BPlusTreeNode *root = nullptr;
-    int nodes;
-    int levels;
+    int nodes = 0;
+    int levels = 0;
 
-    explicit BPlusTree();
+    BPlusTree();
 
     void displayTree();
 
     BPlusTreeNode *searchNode(float key);
 
-    void insertKey(float key, void *recordAddress);
+    void insertKey(MemoryPool *disk, float key, void *recordAddress);
 
     static void deleteKey(float key);
 

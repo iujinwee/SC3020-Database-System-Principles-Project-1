@@ -5,10 +5,12 @@
 #ifndef SC3020_DATABASE_SYSTEM_PRINCIPLES_MEMORYPOOL_H
 #define SC3020_DATABASE_SYSTEM_PRINCIPLES_MEMORYPOOL_H
 
+#include "../indexing/BPlusTree.h"
 #include "Record.h"
 #include "iostream"
 #include "memory"
-#include "../indexing/BPlusTree.h"
+
+using BPlusTreeNode;
 
 const int block_size = sizeof(BPlusTreeNode);
 const int record_size = sizeof(Record);
@@ -40,7 +42,7 @@ public:
 
     void* allocateBPlusTreeNode();
 
-    void saveBPlusTreeNode(BPlusTreeNode* newNode);
+    void saveBPlusTreeNode(BPlusTreeNode *newNode);
 
     void* saveRecord(Record newRecord);
 

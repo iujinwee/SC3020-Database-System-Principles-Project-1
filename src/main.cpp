@@ -46,7 +46,7 @@ int main() {
             auto new_record_address = disk.saveRecord(new_record);
 
             // Add to B+ Tree sequentially
-            tree.insertKey(new_record.fg_pct_home, new_record_address);
+            tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
 //            tree.displayTree();
         }
 

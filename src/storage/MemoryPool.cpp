@@ -93,10 +93,11 @@ void *MemoryPool::allocateBPlusTreeNode() {
 /*
  *  Stores the new BPlusTreeNode into memory pool
  */
-void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
+void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode){
     auto new_address = allocateBPlusTreeNode();
     memmove(new_address, (void *) newNode, block_size);
 }
+
 
 /*
  *  Save record by allocating memory space then updating relevant counters.
