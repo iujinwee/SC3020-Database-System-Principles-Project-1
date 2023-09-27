@@ -203,6 +203,18 @@ int BPlusTree::deleteKey(BPlusTreeNode *node ,float dkey) {
 // delete root
 //}
 
+void BPlusTree::checkKey(BPlusTreeNode *node)
+{
+    if(node!=root){
+        int index = node->findIndexChild(node)-1;
+        BPlusTreeKey LB = findLB_rightSubTree(node->parent,index);
+        if(node->parent->keys[index].key!=LB.key|node->parent->keys[index].count!=LB.count){
+            node->parent->keys[index]=LB;
+            checkKey(node->parent);
+        }
+    }
+
+}
 
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {

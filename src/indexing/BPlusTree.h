@@ -106,6 +106,8 @@ public:
 
     BPlusTreeNode* findNextNonLeafNode(BPlusTreeNode *node);
 
+    void checkKey(BPlusTreeNode *node);
+
     ~BPlusTree();
 };
 
