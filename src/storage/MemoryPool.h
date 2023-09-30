@@ -22,9 +22,12 @@ class MemoryPool {
     std::size_t num_accessed_blocks = 0;     // Count of accessed blocks
 
 public:
-    u_char *mem_pool_ptr;   // Pointer to memory pool
-    u_char *b_tree_ptr;     // Pointer B+ tree nodes
-    u_char *data_ptr;       // Pointer data records
+    //u_char *mem_pool_ptr;   // Pointer to memory pool
+    //u_char *b_tree_ptr;     // Pointer B+ tree nodes
+    //u_char *data_ptr;       // Pointer data records
+    unsigned char *mem_pool_ptr;   // Pointer to memory pool
+    unsigned char *b_tree_ptr;     // Pointer B+ tree nodes
+    unsigned char *data_ptr;       // Pointer data records
 
     MemoryPool(int totalMemorySize, int blockSize);
 

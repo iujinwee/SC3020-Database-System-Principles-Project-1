@@ -9,7 +9,8 @@
 using namespace std;
 
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
-string DATA_DIR = "../data/games.txt";
+//string DATA_DIR = "../data/games.txt";
+string DATA_DIR = "C:/Users/Kelly Khoo/Downloads/SC3020-Database-System-Principles/data/games.txt"; //address changed
 
 int main() {
 
@@ -77,6 +78,26 @@ int main() {
     tree.displayStatistics();
 
     cout <<  "==================================================================" << endl;
+
+    // Experiment 3
+    
+    auto *record = new Record{};
+    int flag ; 
+    int count = 0 ;
+    
+    int size = sizeof(Record);
+
+     
+    for (RecordAddress t: record_address_list)
+    { 
+        memcpy(record, (char *) (t.address + t.offset), size);
+                
+        if (record->fg_pct_home == 0.5) count = count + 1 ;
+        
+    }
+
+    cout << " - Number of records with fg_pct_home = 0.5: " << count << endl;
+
 
 
 //    cout << record_address_list.size() << endl;

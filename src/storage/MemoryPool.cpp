@@ -17,7 +17,7 @@ MemoryPool::MemoryPool(int totalMemorySize, int blockSize) {
     /*
      * Assign blocks to memory pool and initialize every bit to 0.
      */
-    this->mem_pool_ptr = new u_char[totalMemorySize];
+    this->mem_pool_ptr = new unsigned char[totalMemorySize];
     memset((void *) mem_pool_ptr, 0, totalMemorySize);
 
     this->b_tree_ptr = nullptr;
