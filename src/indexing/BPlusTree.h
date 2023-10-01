@@ -100,7 +100,7 @@ public:
 
     static void deleteKey(float key);
 
-    void displayStatistics();
+    void displayExp2Results();
 
     ~BPlusTree();
 };

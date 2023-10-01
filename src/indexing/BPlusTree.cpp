@@ -749,7 +749,7 @@ void BPlusTree::printRootKeys()
     }
 }
 
-void BPlusTree::displayStatistics()
+void BPlusTree::displayExp2Results()
 {
     // Experiment 2 Results
     cout << "Experiment 2: Build B+ Tree and report statistics" << endl;

@@ -12,6 +12,7 @@
 #include "memory"
 
 struct BPlusTreeNode;
+struct BPlusTree;
 struct Block;
 
 const int RECORD_SIZE = sizeof(Record);
@@ -41,6 +42,8 @@ public:
     void* saveRecord(Record newRecord);
 
     void saveBPlusTreeNode(BPlusTreeNode *newNode);
+
+    void saveBPlusTree(BPlusTree tree);
 
     Record *loadRecord(void* recordAddress);
 

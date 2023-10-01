@@ -52,10 +52,14 @@ int main() {
 //            tree.displayTree();
         }
 
+        // STORE THE BPLUSTREE ONCE READING IS DONE
+        disk.saveBPlusTree(tree);
+
         cout << "--------------  DATA READING COMPLETE ----------------" << endl;
         cout << "Summary of Memory Pool: " << endl;
         cout << disk.getCurrentMemory() << "MB / "
              << disk.getTotalMemory() << "MB"
+             << endl
              << endl;
 
         datafile.close();
@@ -63,6 +67,11 @@ int main() {
     } else {
         cout << "Data file could not be found at '" << DATA_DIR << "'" << endl;
     }
+
+    // BEGIN EXPERIMENTS
+
+    // We will simulate reading from the disk, by loading the tree from the memory pool.
+    auto disk_tree = (BPlusTree*)(((Block *) disk.bplustree_ptr)->block_ptr);
 
     // Experiment 1 Results
     cout <<  "==================================================================" << endl;
@@ -74,11 +83,23 @@ int main() {
     cout << endl;
 
     // Experiment 2 Results
-    tree.displayStatistics();
+    disk_tree->displayExp2Results();
+
+    // Experiment 3 Results
+//    disk_tree->searchNode(0.5);
+//    disk_tree->displayExp3Results();
+
+    // Experiment 4 Results
+//    disk_tree->searchRange(0.6, 1);
+//    disk_tree->displayExp4Results();
+
+    // Experiment 5 Results
+//    disk_tree->deleteKey(0.35);
+//    disk_tree->displayExp5Results();
 
     cout <<  "==================================================================" << endl;
 
-//   DOCUMENTATION HERE !!
+////   DOCUMENTATION HERE !!
 //    // For demo on how to retrieve content of data records)
 //    auto data = (Block*) disk.current_data_block;
 //    cout << "Number of records in current data block: " << data->num_records << endl;
@@ -88,14 +109,15 @@ int main() {
 //        cout << r->fg_pct_home << endl;
 //    }
 
-//    STILL FIXING DK WHATS WRONG, MAYBE WE CAN JUST FK IT
+////  FIXED BPLUS TREE WHEEE
 //    auto bptree_ptr = (Block*) disk.bplustree_ptr;
-//    auto bptree = (BPlusTreeNode*) bptree_ptr->block_ptr;
-//    for(int i = 0; i < 22; i ++){
-//        cout << bptree->keys[i].key << endl;
+//    auto bptree = (BPlusTree*) bptree_ptr->block_ptr;
+//    cout << bptree->nodes << endl;
+//    auto bptree_root = bptree->root;
+//    cout << bptree_root->size << endl;
+//    for(int i = 0; i < bptree_root->size; i ++){
+//        cout << bptree_root->keys[i].key << endl;
 //    }
-//    cout << bptree_ptr->block_ptr << endl;
-//    cout << bptree->size << endl;
 
     return 0;
 }

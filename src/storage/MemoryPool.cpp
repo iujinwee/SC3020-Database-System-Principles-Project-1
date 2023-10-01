@@ -38,7 +38,7 @@ Block *MemoryPool::allocateBlock() {
          * Allocate memory space for the new block and return the designated memory address
          * We calculate the allocated memory address using the (number of used blocks * block size).
          */
-        auto allocated_memory_add = (char*) mem_pool_ptr + num_used_blocks * block_size + sizeof(Block);
+        auto allocated_memory_add = (char *) mem_pool_ptr + num_used_blocks * block_size + sizeof(Block);
         auto new_block = new Block(allocated_memory_add);
 
         // Update block
@@ -65,7 +65,7 @@ void MemoryPool::allocateRecord() {
         current_data_block = new_block;
         num_used_data_blocks++;
 
-        if(new_block != nullptr){
+        if (new_block != nullptr) {
             cout << "First data record stored at " << new_block->block_ptr << endl;
         }
         return;
@@ -99,18 +99,29 @@ void MemoryPool::allocateRecord() {
 void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
     Block *new_block = allocateBlock();
 
-    if(new_block != nullptr) {
+    if (new_block != nullptr) {
         // Move the content of the BPlusTree node into the designated memory block
         new_block->addNode(&newNode);
+
+        // Update block attributes
+        new_block->size += sizeof(BPlusTreeNode);
+        new_block->num_records++;
+    }
+}
+
+void MemoryPool::saveBPlusTree(BPlusTree tree) {
+    Block *new_block = allocateBlock();
+    if (new_block != nullptr) {
+        new_block->addTree(&tree);
 
         // Save the root of the BPlusTree
         if (bplustree_ptr == nullptr) {
             bplustree_ptr = new_block;
-            cout << "BPlusTree root stored at " << new_block->block_ptr << endl << endl;
+            cout << "BPlusTree stored at " << new_block->block_ptr << endl << endl;
         }
 
         // Update block attributes
-        new_block->size += sizeof(BPlusTreeNode);
+        new_block->size += sizeof(BPlusTree);
         new_block->num_records++;
     }
 }

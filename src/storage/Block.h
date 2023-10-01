@@ -19,6 +19,7 @@ public:
 
     void* addNode(void *nodeAddress);
 
+    void* addTree(void *treeAddress);
 };
 
 #endif //SC3020_DATABASE_SYSTEM_PRINCIPLES_BLOCK_H
