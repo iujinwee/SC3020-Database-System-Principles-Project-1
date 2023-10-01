@@ -7,9 +7,10 @@
 
 using namespace std;
 
-BPlusTree::BPlusTree() = default;
-
 BPlusTree::~BPlusTree() = default;
+
+BPlusTreeNode::~BPlusTreeNode() = default;
+
 
 /*
  *  ==================================
@@ -25,7 +26,7 @@ void BPlusTree::displayTree()
     }
 }
 
-void BPlusTree::insertKey(float key, void *recordAddress)
+void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
 {
     // Empty B+ Tree, insert root node
     if (!root)
@@ -34,6 +35,7 @@ void BPlusTree::insertKey(float key, void *recordAddress)
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
+        disk->saveBPlusTreeNode(root);
     }
     else
     {
@@ -50,7 +52,7 @@ void BPlusTree::insertKey(float key, void *recordAddress)
         else
         {
             // Recursive call on propagate()
-            propagate(target_node, bpKey, recordAddress);
+            propagate(disk, target_node, bpKey, recordAddress);
         }
     }
 }
@@ -540,7 +542,7 @@ void BPlusTree::insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, vo
     cur->size++;
 }
 
-void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
+void BPlusTree::propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
 {
 
     // No longer need to split
@@ -559,6 +561,7 @@ void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
 
     // Split and propagate changes
     auto new_node = split(cur, bpKey, address);
+    disk->saveBPlusTreeNode(new_node);
 
     // Get the smallest key of the right subtree
     auto lb = new_node->keys[0];
@@ -571,7 +574,7 @@ void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
     // Create new root if necessary
     if (cur->parent == nullptr)
     {
-        auto *new_root = new BPlusTreeNode();
+        auto new_root = new BPlusTreeNode();
         new_root->keys[0] = lb;
         new_root->children[0] = (void *)cur;
         cur->parent = new_root;
@@ -579,10 +582,11 @@ void BPlusTree::propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
         root = new_root;
         nodes++;
         levels++;
+        disk->saveBPlusTreeNode(new_root);
     }
 
     // Recursive call on propagate()
-    propagate(cur->parent, lb, (void *)new_node);
+    propagate(disk, cur->parent, lb, (void *)new_node);
 }
 
 BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address)
@@ -745,7 +749,7 @@ void BPlusTree::printRootKeys()
     }
 }
 
-void BPlusTree::displayStatistics()
+void BPlusTree::displayExp2Results()
 {
     // Experiment 2 Results
     cout << "Experiment 2: Build B+ Tree and report statistics" << endl;
@@ -756,3 +760,4 @@ void BPlusTree::displayStatistics()
     printRootKeys();
     cout << endl;
 }
+

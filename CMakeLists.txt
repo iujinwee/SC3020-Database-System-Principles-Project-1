@@ -10,4 +10,6 @@ add_executable(SC3020_Database_System_Principles src/main.cpp
         src/storage/Record.h
         src/indexing/BPlusTree.cpp
         src/indexing/BPlusTree.h
+        src/storage/Block.cpp
+        src/storage/Block.h
 )
