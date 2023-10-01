@@ -281,11 +281,12 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
     // Delete leftNode
     delete leftNode;
 }
+
 // REVIEW CHANGES
-void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
-                                BPlusTreeNode *rightNode)
+void BPlusTree::BorrowFromRight_LeafNode(int num_keys_borrow, BPlusTreeNode *leftNode,
+                                         BPlusTreeNode *rightNode)
 {
-    // Function: Node(leaf/ non-leaf) borrow >=1 keys from right sibling
+    // Function: Node(leaf) borrow >=1 keys from right sibling
 
     int j = leftNode->size - 1; // starting from index where key was deleted in left node
 
@@ -304,25 +305,52 @@ void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
     rightNode = rightNode->ShiftKeysToFront(num_keys_borrow, rightNode);
 
     // find node index for both left and right nodes
-    auto index_leftNode = leftNode->findIndexChild(leftNode);
-    auto index_rightNode = rightNode->findIndexChild(rightNode);
+    // auto index_leftNode = leftNode->findIndexChild(leftNode);
+    // auto index_rightNode = rightNode->findIndexChild(rightNode);
 
     // only update the parent keys if the index of nodes > 0
-    if (index_leftNode > 0)
-    {
-        auto leftParentNode = leftNode->parent;
-        // replace respective key in parent node with smallest key in child node
-        leftParentNode->keys[index_leftNode - 1] = leftNode->keys[0];
-    }
-    if (index_rightNode > 0)
-    {
-        auto rightParentNode = rightNode->parent;
-        // replace respective key in parent node with smallest key in child node
-        rightParentNode->keys[index_rightNode - 1] = rightNode->keys[0];
-    }
+    // if (index_leftNode > 0)
+    // {
+    //     auto leftParentNode = leftNode->parent;
+    //     // replace respective key in parent node with smallest key in child node
+    //     leftParentNode->keys[index_leftNode - 1] = leftNode->keys[0];
+    // }
+    // if (index_rightNode > 0)
+    // {
+    //     auto rightParentNode = rightNode->parent;
+    //     // replace respective key in parent node with smallest key in child node
+    //     rightParentNode->keys[index_rightNode - 1] = rightNode->keys[0];
+    // }
 
     //    upwardPropogation(leftParentNode);
     //    upwardPropogation(rightParentNode);
+}
+
+void BPlusTree::BorrowFromRight_NonLeafNode(int num_keys_borrow, BPlusTreeNode *leftNode,
+                                            BPlusTreeNode *rightNode)
+{
+    int j = leftNode->size;
+
+    // add keys borrowed and children ptrs  from right Node to left node
+    for (int i = 0; i < num_keys_borrow - 1; i++)
+    {
+        if (i == 0)
+        {
+            // create new key that has value= smallest key in 1st children of rightNode
+            leftNode->children[j + 1] = rightNode->children[i];
+            leftNode->keys[j].key = leftNode->children[j + 1]->keys[0].key;
+            leftNode->keys[j].count = leftNode->children[j + 1]->keys[0].count;
+            j++;
+        }
+        // shift keys and children
+        leftNode->keys[j].key = rightNode->keys[i].key;         // add keys from rightNode
+        leftNode->children[j + 1] = rightNode->children[i + 1]; // add children ptr from rightNode
+        j++;                                                    // update index for left node
+    }
+
+    // update size
+    leftNode->size += num_keys_borrow;
+    rightNode->size -= num_keys_borrow - 1;
 }
 
 BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift)
