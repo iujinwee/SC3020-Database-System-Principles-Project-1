@@ -10,7 +10,6 @@
  */
 Block::Block(void* allocatedAddress){
     block_ptr = allocatedAddress;
-    cout << "BLOCK " << allocatedAddress << endl;
 }
 
 /*
@@ -18,9 +17,7 @@ Block::Block(void* allocatedAddress){
  *  Returns the memory address of the stored record.
  */
 void* Block::addRecord(void *recordAddress){
-    // ERROR HELP ME!
-    void* dest_ptr = block_ptr + num_records * RECORD_SIZE;
-    cout << num_records << " " <<  block_ptr << endl;
+    void* dest_ptr = (void*)((char*) block_ptr + num_records * RECORD_SIZE);
     memmove(dest_ptr, recordAddress, RECORD_SIZE);
 
     this->size += RECORD_SIZE;
