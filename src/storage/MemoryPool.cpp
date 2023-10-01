@@ -20,6 +20,7 @@ MemoryPool::MemoryPool(int totalMemorySize, int blockSize) {
     memset(mem_pool_ptr, 0, total_memory_size);
 
     this->current_data_block = nullptr;
+    this->bplustree_ptr = nullptr;
 }
 
 MemoryPool::~MemoryPool() = default;
@@ -33,8 +34,15 @@ Block *MemoryPool::allocateBlock() {
     bool sufficientTotalMemory = current_memory_size + block_size <= total_memory_size;
 
     if (sufficientTotalMemory) {
-        // Allocate memory space for the new block and return the designated memory address
-        auto new_block = new Block((int *) mem_pool_ptr + num_used_blocks * block_size * BYTE);
+        /*
+         * Allocate memory space for the new block and return the designated memory address
+         * Since each block has a fixed size, and is in bytes, we will need to add the bit offset
+         * for each newly allocated block.
+         */
+        auto allocated_memory_add = &mem_pool_ptr + (num_used_blocks * block_size - sizeof(Block));
+        auto new_block = new Block(allocated_memory_add);
+//        cout  << num_used_blocks  << endl;
+//        cout  << (num_used_blocks * block_size - sizeof(Block)) << endl;
 
         // Update block
         current_memory_size += block_size;
@@ -54,10 +62,14 @@ Block *MemoryPool::allocateBlock() {
  */
 void MemoryPool::allocateRecord() {
 
-    // Create block if null
+    // Create block if current data block is null
     if (current_data_block == nullptr) {
         Block *new_block = allocateBlock();
         current_data_block = new_block;
+
+        if(new_block != nullptr){
+            cout << "First data record stored at " << new_block->block_ptr << endl;
+        }
         return;
     }
 
@@ -85,10 +97,17 @@ void MemoryPool::allocateRecord() {
 /*
  *  Allocate memory block for new BPLusTree node, and move contents into allocated space in memory.
  */
-void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
+void MemoryPool::saveBPlusTreeNode(void *newNode) {
     Block *new_block = allocateBlock();
-    if (new_block != nullptr) {
-        memmove(new_block->block_ptr, (void *) newNode, sizeof(BPlusTreeNode));
+
+    // Save the root of the BPlusTree
+    if(bplustree_ptr == nullptr){
+        bplustree_ptr = new_block;
+        cout << "BPlusTree root stored at " << new_block->block_ptr << endl;
+    }
+
+    if(new_block != nullptr){
+        memmove(new_block->block_ptr, newNode, sizeof(BPlusTreeNode));
     }
 }
 
@@ -98,7 +117,7 @@ void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
  */
 void *MemoryPool::saveRecord(Record newRecord) {
     allocateRecord();
-    auto record_address = current_data_block->addRecord((void *) &newRecord);
+    auto record_address = current_data_block->addRecord(&newRecord);
 
     num_used_records += 1;
     num_accessed_blocks += 1;

@@ -48,7 +48,7 @@ int main() {
 
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
-            cout << count++ << endl;
+//            cout << count++ << endl;
 //            tree.displayTree();
         }
 
@@ -78,7 +78,20 @@ int main() {
 
     cout <<  "==================================================================" << endl;
 
+    auto rootb = (Block*) disk.bplustree_ptr;
+    auto root = (BPlusTreeNode*) rootb->block_ptr;
+    auto c = (Block*) disk.current_data_block;
 
+//    for (BPlusTreeKey k : root->keys){
+//        cout << k.key << endl;
+//    }
+//    cout << rootb->num_records << endl;
+//    cout << c->num_records << endl;
+//
+//    for (int i = 0; i < c->num_records; i++){
+//        auto r = (Record*) ((int*) c->block_ptr + i * RECORD_SIZE);
+//        cout << r->fg_pct_home << endl;
+//    }
 
     return 0;
 }

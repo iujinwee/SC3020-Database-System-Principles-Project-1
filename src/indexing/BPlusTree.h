@@ -26,6 +26,7 @@ struct BPlusTreeKey
 
 class BPlusTreeNode
 {
+public:
     bool is_leaf;
     int size;
     BPlusTreeNode *next;   // Stores the next BPlusTree node

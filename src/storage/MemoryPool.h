@@ -28,6 +28,7 @@ class MemoryPool {
 
 public:
     void *mem_pool_ptr;   // Pointer to memory pool
+    void *bplustree_ptr;  // Pointer to BPlusTree
     Block *current_data_block;   // Pointer to current data block
 
     MemoryPool(int totalMemorySize, int blockSize);
@@ -38,7 +39,7 @@ public:
 
     void* saveRecord(Record newRecord);
 
-    void saveBPlusTreeNode(BPlusTreeNode *newNode);
+    void saveBPlusTreeNode(void *newNode);
 
     Record *loadRecord(void* recordAddress);
 
