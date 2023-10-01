@@ -99,6 +99,25 @@ int main() {
 
     cout <<  "==================================================================" << endl;
 
+    // Experiment 3 (KELLY VERSION)
+
+//    auto *record = new Record{};
+//    int flag ;
+//    int counter = 0 ;
+//
+//    int size = sizeof(Record);
+//
+//
+//    for (RecordAddress t: record_address_list)
+//    {
+//        memcpy(record, (char *) (t.address + t.offset), size);
+//
+//        if (record->fg_pct_home == 0.5) count = count + 1 ;
+//
+//    }
+//
+//    cout << " - Number of records with fg_pct_home = 0.5: " << count << endl;
+
 ////   DOCUMENTATION HERE !!
 //    // For demo on how to retrieve content of data records)
 //    auto data = (Block*) disk.current_data_block;
