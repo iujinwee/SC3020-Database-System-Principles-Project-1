@@ -70,7 +70,7 @@ int main() {
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
-    cout << " - Number of blocks for storing the data: " << disk.getNumUsedBlocks() << endl;
+    cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
     cout << endl;
 
     // Experiment 2 Results
@@ -78,19 +78,24 @@ int main() {
 
     cout <<  "==================================================================" << endl;
 
+//   DOCUMENTATION HERE !!
+//    // For demo on how to retrieve content of data records)
+//    auto data = (Block*) disk.current_data_block;
+//    cout << "Number of records in current data block: " << data->num_records << endl;
+//
+//    for (int i = 0; i < data->num_records; i++){
+//        auto r = (Record*) ((char*) data->block_ptr + i * RECORD_SIZE);
+//        cout << r->fg_pct_home << endl;
+//    }
 
-    // For demo purposes
-    auto data = (Block*) disk.current_data_block;
-    cout << "Number of records in current data block: " << data->num_records << endl;
-
-    for (int i = 0; i < data->num_records; i++){
-        auto r = (Record*) ((char*) data->block_ptr + i * RECORD_SIZE);
-        cout << r->fg_pct_home << endl;
-    }
-
-    auto bptree_ptr = (Block*) disk.bplustree_ptr;
-    auto bptree = (BPlusTree*) bptree_ptr->block_ptr;
-    cout << bptree->nodes << endl;
+//    STILL FIXING DK WHATS WRONG, MAYBE WE CAN JUST FK IT
+//    auto bptree_ptr = (Block*) disk.bplustree_ptr;
+//    auto bptree = (BPlusTreeNode*) bptree_ptr->block_ptr;
+//    for(int i = 0; i < 22; i ++){
+//        cout << bptree->keys[i].key << endl;
+//    }
+//    cout << bptree_ptr->block_ptr << endl;
+//    cout << bptree->size << endl;
 
     return 0;
 }

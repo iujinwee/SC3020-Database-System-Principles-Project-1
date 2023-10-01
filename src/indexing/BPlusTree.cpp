@@ -32,10 +32,10 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
     if (!root)
     {
         root = new BPlusTreeNode(true);
-        disk->saveBPlusTreeNode(root);
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
+        disk->saveBPlusTreeNode(root);
     }
     else
     {
@@ -575,7 +575,6 @@ void BPlusTree::propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpK
     if (cur->parent == nullptr)
     {
         auto new_root = new BPlusTreeNode();
-        disk->saveBPlusTreeNode(new_root);
         new_root->keys[0] = lb;
         new_root->children[0] = (void *)cur;
         cur->parent = new_root;
@@ -583,6 +582,7 @@ void BPlusTree::propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpK
         root = new_root;
         nodes++;
         levels++;
+        disk->saveBPlusTreeNode(new_root);
     }
 
     // Recursive call on propagate()

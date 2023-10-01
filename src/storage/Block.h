@@ -16,6 +16,9 @@ public:
     explicit Block(void* allocatedAddress);
 
     void* addRecord(void *recordAddress);
+
+    void* addNode(void *nodeAddress);
+
 };
 
 #endif //SC3020_DATABASE_SYSTEM_PRINCIPLES_BLOCK_H

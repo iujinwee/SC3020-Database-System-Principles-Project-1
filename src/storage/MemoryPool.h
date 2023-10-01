@@ -22,6 +22,7 @@ class MemoryPool {
     int total_memory_size;           // Total size of the memory pool
     int current_memory_size = 0;     // Current size of the memory pool
     int num_used_blocks = 0;         // Count of used blocks
+    int num_used_data_blocks = 0;         // Count of used blocks
     int num_used_records = 0;        // Count of initialised records
     int num_accessed_blocks = 0;     // Count of accessed blocks
     int block_size;
@@ -39,7 +40,7 @@ public:
 
     void* saveRecord(Record newRecord);
 
-    void saveBPlusTreeNode(void *newNode);
+    void saveBPlusTreeNode(BPlusTreeNode *newNode);
 
     Record *loadRecord(void* recordAddress);
 
@@ -49,7 +50,7 @@ public:
 
     [[nodiscard]] double getCurrentMemory() const;
 
-    [[nodiscard]] int getNumUsedBlocks() const;
+    [[nodiscard]] int getNumUsedDataBlocks() const;
 
     [[nodiscard]] int getNumUsedRecords() const;
 

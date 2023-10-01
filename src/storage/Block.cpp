@@ -25,3 +25,14 @@ void* Block::addRecord(void *recordAddress){
 
     return dest_ptr;
 };
+
+void* Block::addNode(void *nodeAddress){
+    auto node_size = (int)sizeof(BPlusTreeNode);
+    void* dest_ptr = (void*)((char*) block_ptr);
+    memmove(dest_ptr, nodeAddress, node_size);
+
+    this->size += node_size;
+    this->num_records++;
+
+    return dest_ptr;
+}

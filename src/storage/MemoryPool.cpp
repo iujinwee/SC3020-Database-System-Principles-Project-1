@@ -63,6 +63,7 @@ void MemoryPool::allocateRecord() {
     if (current_data_block == nullptr) {
         Block *new_block = allocateBlock();
         current_data_block = new_block;
+        num_used_data_blocks++;
 
         if(new_block != nullptr){
             cout << "First data record stored at " << new_block->block_ptr << endl;
@@ -78,6 +79,7 @@ void MemoryPool::allocateRecord() {
         // Allocates new block and replace current
         Block *new_block = allocateBlock();
         current_data_block = new_block;
+        num_used_data_blocks++;
 
         if (!new_block) {
             string error = "Insufficient Memory " +
@@ -94,24 +96,23 @@ void MemoryPool::allocateRecord() {
 /*
  *  Allocate memory block for new BPLusTree node, and move contents into allocated space in memory.
  */
-void MemoryPool::saveBPlusTreeNode(void *newNode) {
+void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
     Block *new_block = allocateBlock();
 
-    // Move the content of the BPlusTree node into the designated memory block
-    auto dest_ptr = new_block->block_ptr;
-    memmove(dest_ptr, newNode, sizeof(BPlusTreeNode));
+    if(new_block != nullptr) {
+        // Move the content of the BPlusTree node into the designated memory block
+        new_block->addNode(&newNode);
 
-    cout << newNode << endl;
-    cout << sizeof(BPlusTreeNode)<< endl;
-    // Save the root of the BPlusTree
-    if(bplustree_ptr == nullptr){
-        bplustree_ptr = new_block;
-        cout << "BPlusTree root stored at " << new_block->block_ptr << endl;
+        // Save the root of the BPlusTree
+        if (bplustree_ptr == nullptr) {
+            bplustree_ptr = new_block;
+            cout << "BPlusTree root stored at " << new_block->block_ptr << endl << endl;
+        }
+
+        // Update block attributes
+        new_block->size += sizeof(BPlusTreeNode);
+        new_block->num_records++;
     }
-
-    // Update block attributes
-    new_block->size += sizeof(BPlusTreeNode);
-    new_block->num_records++;
 }
 
 
@@ -167,8 +168,8 @@ double MemoryPool::getCurrentMemory() const {
     return (double) current_memory_size / (1024 * 1024);
 }
 
-int MemoryPool::getNumUsedBlocks() const {
-    return num_used_blocks;
+int MemoryPool::getNumUsedDataBlocks() const {
+    return num_used_data_blocks;
 }
 
 int MemoryPool::getNumUsedRecords() const {
