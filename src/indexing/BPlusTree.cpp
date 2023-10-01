@@ -326,50 +326,8 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
     delete leftNode;
 }
 
-void BPlusTree::BorrowFromRight_LeafNode(int num_keys_borrow, BPlusTreeNode *leftNode,
-                                         BPlusTreeNode *rightNode)
-{
-    // Function: Node(leaf) borrow >=1 keys from right sibling
-
-    int j = leftNode->size; // starting from index where key was deleted in left node
-
-    // add keys borrowed and children ptrs  from right Node to left node
-    for (int i = 0; i < num_keys_borrow; i++)
-    {
-        leftNode->keys[j] = rightNode->keys[i];         // add keys from rightNode (key value)
-        leftNode->children[j] = rightNode->children[i]; // add children ptr from rightNode
-        j++;                                            // update index for left node
-    }
-    // update size
-    leftNode->size += num_keys_borrow;
-    rightNode->size -= num_keys_borrow;
-    // shift remaining keys and children in rightNode to start of key array
-    rightNode = rightNode->ShiftKeysToFront_leafNode(num_keys_borrow, rightNode);
-
-    // find node index for both left and right nodes
-    // auto index_leftNode = leftNode->findIndexChild(leftNode);
-    // auto index_rightNode = rightNode->findIndexChild(rightNode);
-
-    // only update the parent keys if the index of nodes > 0
-    // if (index_leftNode > 0)
-    // {
-    //     auto leftParentNode = leftNode->parent;
-    //     // replace respective key in parent node with smallest key in child node
-    //     leftParentNode->keys[index_leftNode - 1] = leftNode->keys[0];
-    // }
-    // if (index_rightNode > 0)
-    // {
-    //     auto rightParentNode = rightNode->parent;
-    //     // replace respective key in parent node with smallest key in child node
-    //     rightParentNode->keys[index_rightNode - 1] = rightNode->keys[0];
-    // }
-
-    //    upwardPropogation(leftParentNode);
-    //    upwardPropogation(rightParentNode);
-}
-
-void BPlusTree::BorrowFromRight_NonLeafNode(int num_keys_borrow, BPlusTreeNode *leftNode,
-                                            BPlusTreeNode *rightNode)
+void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
+                                BPlusTreeNode *rightNode)
 {
     int j = leftNode->size;
 
