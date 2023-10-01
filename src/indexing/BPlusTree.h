@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 23;
+const int m = 22; // 23
 struct MemoryPool;
 
 /*
@@ -90,8 +90,6 @@ public:
     BPlusTreeNode *root = nullptr;
     int nodes = 0;
     int levels = 0;
-
-    BPlusTree();
 
     void displayTree();
 

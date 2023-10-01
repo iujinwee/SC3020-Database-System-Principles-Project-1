@@ -7,21 +7,16 @@
 
 #include "../indexing/BPlusTree.h"
 #include "Record.h"
+#include "Block.h"
 #include "iostream"
 #include "memory"
 
 struct BPlusTreeNode;
+struct Block;
 
-const int record_size = sizeof(Record);
+const int RECORD_SIZE = sizeof(Record);
+const int BYTE = 8;
 
-class Block {
-public:
-    int num_records = 0;
-    int block_size;
-    int size = 0;
-
-    explicit Block(int size);
-};
 
 class MemoryPool {
     int total_memory_size;           // Total size of the memory pool
@@ -39,13 +34,11 @@ public:
 
     Block* allocateBlock();
 
-    void* allocateRecord(Block* cur);
-
-    void* allocateBPlusTreeNode();
-
-    void saveBPlusTreeNode(BPlusTreeNode *newNode);
+    void allocateRecord();
 
     void* saveRecord(Record newRecord);
+
+    void saveBPlusTreeNode(BPlusTreeNode *newNode);
 
     Record *loadRecord(void* recordAddress);
 

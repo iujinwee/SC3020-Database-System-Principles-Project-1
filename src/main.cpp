@@ -26,6 +26,7 @@ int main() {
 
     // Initialize B+ Tree
     BPlusTree tree;
+    int count = 0;
 
     bool header = true;
     if (datafile.is_open()) {
@@ -47,6 +48,7 @@ int main() {
 
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
+            cout << count++ << endl;
 //            tree.displayTree();
         }
 
@@ -76,11 +78,6 @@ int main() {
 
     cout <<  "==================================================================" << endl;
 
-
-//    cout << record_address_list.size() << endl;
-//    for (RecordAddress t: record_address_list) {
-//        MemoryPool::displayRecord(t);
-//    }
 
 
     return 0;
