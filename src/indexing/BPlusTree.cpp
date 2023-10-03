@@ -142,6 +142,8 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
                         if (node->next->size - missing >= floor((m + 1) / 2))
                         {
                             BorrowFromRight(missing, node, node->next);
+                            // propagate update key of right
+                            checkKey(node->next);
                             return 0;
                         }
                         else
@@ -180,9 +182,10 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             delete node;
             return 1;
         }
+        
         else if (node == root & node->size < floor(m / 2))
         {
-            root = (BPlusTreeNode *)root->children[0];
+            return 0;
         }
         else if (node->size < floor(m / 2))
         {
@@ -193,6 +196,8 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             if (node->next->size - missing >= floor(m / 2))
             {
                 BorrowFromRight(missing, node, node->next);
+                // propagate update key of right
+                checkKey(findNextNonLeafNode(node));
                 return 0;
             }
             else
