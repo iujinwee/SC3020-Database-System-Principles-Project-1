@@ -6,10 +6,12 @@
 #define SC3020_DATABASE_SYSTEM_PRINCIPLES_BPLUSTREE_H
 
 #include "../storage//Record.h"
+#include "../storage/MemoryPool.h"
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 23;
+const int m = 22; // 23
+struct MemoryPool;
 
 /*
  *  Key structure stores the
@@ -24,6 +26,7 @@ struct BPlusTreeKey
 
 class BPlusTreeNode
 {
+public:
     bool is_leaf;
     int size;
     BPlusTreeNode *next;   // Stores the next BPlusTree node
@@ -42,6 +45,9 @@ class BPlusTreeNode
         size = 0;
     }
 
+    ~BPlusTreeNode();
+
+    int deleteKeyInNode(BPlusTreeNode *node, int keyToDelete);
     void deleteKeyInLeafNode();
 
     int findIndexChild(BPlusTreeNode *childNode);
@@ -58,7 +64,7 @@ class BPlusTree
 private:
     static BPlusTreeKey getSmallestRightSubtree(BPlusTreeNode *node);
 
-    void propagate(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
+    void propagate(MemoryPool *disk, BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
     BPlusTreeNode *split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
@@ -87,20 +93,18 @@ private:
 
 public:
     BPlusTreeNode *root = nullptr;
-    int nodes;
-    int levels;
-
-    explicit BPlusTree();
+    int nodes = 0;
+    int levels = 0;
 
     void displayTree();
 
     BPlusTreeNode *searchNode(float key);
 
-    void insertKey(float key, void *recordAddress);
+    void insertKey(MemoryPool *disk, float key, void *recordAddress);
 
     int deleteKey(BPlusTreeNode *node, float dkey);
 
-    void displayStatistics();
+    void displayExp2Results();
 
     BPlusTreeKey findLB_rightSubTree(BPlusTreeNode *node, int index_key);
 
