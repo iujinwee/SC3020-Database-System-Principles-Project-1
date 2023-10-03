@@ -330,27 +330,41 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
 void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
                                 BPlusTreeNode *rightNode)
 {
+    // Left Non Leaf Node borrows keys from Right Non Leaf Node
     int j = leftNode->size;
 
+    // create empty keys first (num keys to borrow +1 )
+    for (int i = 0; i < num_keys_borrow + 1; i++)
+    {
+        leftNode->keys[j] = BPlusTreeKey{};
+        leftNode->children[j + 1] = nullptr;
+    }
+    j = leftNode->size;
+
     // add keys borrowed and children ptrs  from right Node to left node
-    for (int i = 0; i < num_keys_borrow - 1; i++)
+    for (int i = 0; i <= num_keys_borrow - 1; i++)
     {
         if (i == 0)
         {
             // create new key that has value= smallest key in 1st children of rightNode
             leftNode->children[j + 1] = rightNode->children[i];                                     // shift right node child over
-            (static_cast<BPlusTreeNode *>(rightNode->children[i]))->parent = leftNode;              // reassign parent
+            (static_cast<BPlusTreeNode *>(leftNode->children[i]))->parent = leftNode;               // reassign parent
             leftNode->keys[j] = (static_cast<BPlusTreeNode *>(leftNode->children[j + 1]))->keys[0]; // access key member
             j++;
         }
         // shift keys and children
-        leftNode->keys[j] = rightNode->keys[i];                 // add keys from rightNode
-        leftNode->children[j + 1] = rightNode->children[i + 1]; // add children ptr from rightNode
-        j++;                                                    // update index for left node
+        leftNode->keys[j] = rightNode->keys[i];                                   // add keys from rightNode
+        leftNode->children[j + 1] = rightNode->children[i + 1];                   // add children ptr from rightNode
+        (static_cast<BPlusTreeNode *>(leftNode->children[i]))->parent = leftNode; // reassign parent
+        j++;                                                                      // update index for left node
+    }
+    for (int i = 0; i < num_keys_borrow; i++)
+    {
+        rightNode->deleteKeyInNonLeafNode();
     }
 
     // update size
-    leftNode->size += num_keys_borrow;
+    leftNode->size += num_keys_borrow + 1;
     rightNode->size -= num_keys_borrow - 1;
 }
 
@@ -449,7 +463,7 @@ void BPlusTreeNode::deleteKeyInLeafNode()
     // Delete data in main memory pointed to by the children pointer
     if (children[0] != nullptr)
     {
-        // Assuming children[0] points to the data you want to delete
+        // Children[0] points to the data you want to delete
         delete static_cast<Record *>(children[0]);
     }
 
