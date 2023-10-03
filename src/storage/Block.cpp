@@ -48,7 +48,7 @@ void* Block::addNode(void *nodeAddress){
     memmove(dest_ptr, nodeAddress, node_size);
 
     this->size += node_size;
-    this->num_records++;
+    // this->num_records++;
 
     return dest_ptr;
 }
@@ -58,7 +58,7 @@ void* Block::deleteNode(void *nodeAddress){
     memset(nodeAddress, 0, node_size);
 
     this->size -= node_size;
-    this->num_records--;
+    // this->num_records--;
 
     return nodeAddress;
 }
@@ -69,7 +69,7 @@ void* Block::addTree(void *treeAddress){
     memmove(dest_ptr, treeAddress, node_size);
 
     this->size += node_size;
-    this->num_records++;
+    // this->num_records++;
 
     return dest_ptr;
 }
