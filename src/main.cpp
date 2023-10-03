@@ -105,16 +105,17 @@ int main()
     //  BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
     //  node->ShiftKeysToBack(node, 1);
 
-    // 2. BorrowFromRight
+    // 2. Test BorrowFromRight
     //  BPlusTreeNode *leftNode = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
     //  BPlusTreeNode *rightNode = static_cast<BPlusTreeNode *>(disk_tree->root->children[2]);
     //  disk_tree->BorrowFromRight(1, leftNode, rightNode);
     //  disk_tree->displayTree();
 
-    // 3. findLB_rightSubTree
-    BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
-    BPlusTreeKey key = disk_tree->findLB_rightSubTree(node, 0);
-    cout << " LB of right subtree of given index : " << key.key << endl;
+    // 3. Test findIndexChild
+    // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
+    // BPlusTreeNode *childNode = static_cast<BPlusTreeNode *>(node->children[2]);
+    // int i = node->findIndexChild(childNode);
+    // std::cout << "index of child is " << i << '\n';
 
     // Experiment 4 Results
     //    disk_tree->searchRange(0.6, 1);

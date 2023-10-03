@@ -442,12 +442,11 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront_leafNode(int start_index_remainin
 int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode)
 {
     auto parentNode = childNode->parent;
-    for (int i = 0; i < parentNode->size; i++)
+    for (int i = 0; i < parentNode->size + 1; i++)
     {
         if (parentNode->children[i] == childNode)
         {
             // Found the leaf node in the parent's children array
-            std::cout << "index of child is " << i; // for checking purpose- delete later
             return i;
         }
     }
