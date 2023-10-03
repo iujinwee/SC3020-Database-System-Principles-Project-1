@@ -41,9 +41,13 @@ public:
 
     void* saveRecord(Record newRecord);
 
+    void* deleteRecord(Record* newRecord);
+
     void saveBPlusTreeNode(BPlusTreeNode *newNode);
 
     void saveBPlusTree(BPlusTree tree);
+
+    void deleteBPlusTreeNode(BPlusTreeNode *newNode);
 
     Record *loadRecord(void* recordAddress);
 

@@ -47,8 +47,7 @@ public:
 
     ~BPlusTreeNode();
 
-    int deleteKeyInNode(BPlusTreeNode *node, int keyToDelete);
-    void deleteKeyInLeafNode();
+    void deleteKeyInLeafNode(MemoryPool *disk);
 
     int findIndexChild(BPlusTreeNode *childNode);
 
@@ -102,7 +101,7 @@ public:
 
     void insertKey(MemoryPool *disk, float key, void *recordAddress);
 
-    int deleteKey(BPlusTreeNode *node, float dkey);
+    int deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey);
 
     void displayExp2Results();
 

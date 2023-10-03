@@ -16,6 +16,12 @@ Block::Block(void* allocatedAddress){
  *  Stores the Record contents in the allocated memory address given by the recordAddress.
  *  Returns the memory address of the stored record.
  */
+
+Block* Block::findBlock(void *recordAddress){
+    Block* dBlock = (Block*)((char*) recordAddress - num_records * RECORD_SIZE);
+    return dBlock;
+}
+
 void* Block::addRecord(void *recordAddress){
     void* dest_ptr = (void*)((char*) block_ptr + num_records * RECORD_SIZE);
     memmove(dest_ptr, recordAddress, RECORD_SIZE);
@@ -24,6 +30,16 @@ void* Block::addRecord(void *recordAddress){
     this->num_records++;
 
     return dest_ptr;
+};
+
+void* Block::deleteRecord(void *recordAddress){
+
+    memset(recordAddress, 0, RECORD_SIZE);
+
+    this->size -= RECORD_SIZE;
+    this->num_records--;
+
+    return recordAddress;
 };
 
 void* Block::addNode(void *nodeAddress){
@@ -35,6 +51,16 @@ void* Block::addNode(void *nodeAddress){
     this->num_records++;
 
     return dest_ptr;
+}
+
+void* Block::deleteNode(void *nodeAddress){
+    auto node_size = (int)sizeof(BPlusTreeNode);
+    memset(nodeAddress, 0, node_size);
+
+    this->size -= node_size;
+    this->num_records--;
+
+    return nodeAddress;
 }
 
 void* Block::addTree(void *treeAddress){

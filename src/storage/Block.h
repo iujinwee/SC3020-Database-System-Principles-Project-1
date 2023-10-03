@@ -15,9 +15,15 @@ public:
 
     explicit Block(void* allocatedAddress);
 
+    Block* findBlock(void *recordAddress);
+
     void* addRecord(void *recordAddress);
 
     void* addNode(void *nodeAddress);
+
+    void* deleteRecord(void *recordAddress);
+
+    void* deleteNode(void *nodeAddress);
 
     void* addTree(void *treeAddress);
 };

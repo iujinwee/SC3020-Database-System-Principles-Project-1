@@ -4,12 +4,14 @@
 
 #include "BPlusTree.h"
 #include <list>
+#include "Block.h"
 
 using namespace std;
 
 BPlusTree::~BPlusTree() = default;
 
 BPlusTreeNode::~BPlusTreeNode() = default;
+
 
 /*
  *  ==================================
@@ -99,7 +101,7 @@ BPlusTreeNode *BPlusTree::searchNode(float key)
     return nullptr;
 }
 
-int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
+int BPlusTree::deleteKey(MemoryPool *disk,BPlusTreeNode *node, float dkey)
 {
     if (root == nullptr)
     {
@@ -108,8 +110,12 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
     }
     else if (root->is_leaf)
     {
-        root->deleteKeyInLeafNode();
-        return 1;
+        for (int i = 0; i < root->size; i++){
+            if(root->keys[i].key<dkey){
+                root->deleteKeyInLeafNode(disk);
+                return 1;
+            }
+        }
     }
     else if (node->is_leaf)
     {
@@ -118,9 +124,9 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             // delete node if largest index<dkey
             for (int i = 0; i < node->size; i++)
             {
-                node->deleteKeyInLeafNode();
+                node->deleteKeyInLeafNode(disk);
             }
-            delete node;
+            disk->deleteBPlusTreeNode(node);
             return 1;
         }
         else
@@ -129,7 +135,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             {
                 if (node->keys[i].key < dkey)
                 {
-                    node->deleteKeyInLeafNode();
+                    node->deleteKeyInLeafNode(disk);
                 }
                 else
                 {
@@ -164,7 +170,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
         int full_delete = 0;
         for (int i = 0; i < node->size; i++)
         {
-            full_delete = deleteKey((BPlusTreeNode *)node->children[i], dkey);
+            full_delete = deleteKey(disk,(BPlusTreeNode *)node->children[i], dkey);
             if (full_delete)
             {
                 node->deleteKeyInNonLeafNode();
@@ -179,7 +185,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
         // check structure
         if (node->size == 0)
         {
-            delete node;
+            disk->deleteBPlusTreeNode(node);
             return 1;
         }
         
@@ -211,6 +217,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
         else
         {
             // propage the update the left most key
+            checkKey(node);
             return 0;
         }
     }
@@ -426,7 +433,7 @@ int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode)
     return -1;
 }
 
-void BPlusTreeNode::deleteKeyInLeafNode()
+void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
 {
     // Function: Deletes keys in node that are <= key, along with its respective child ptr
     // This function is for leaf nodes only
@@ -435,7 +442,8 @@ void BPlusTreeNode::deleteKeyInLeafNode()
     if (children[0] != nullptr)
     {
         // Assuming children[0] points to the data you want to delete
-        delete static_cast<Record *>(children[0]);
+        Record* dRecord = (Record*)children[0]; 
+        disk->deleteRecord(dRecord);
     }
 
     // delete current key and shift behind keys and ptrs forward
