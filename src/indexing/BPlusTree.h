@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 22; // 23
+const int m = 3; // 22
 struct MemoryPool;
 
 /*
@@ -86,11 +86,6 @@ private:
 
     static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    void MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
-    void MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
-
-    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
-
 public:
     BPlusTreeNode *root = nullptr;
     int nodes = 0;
@@ -111,6 +106,12 @@ public:
     BPlusTreeNode *findNextNonLeafNode(BPlusTreeNode *node);
 
     void checkKey(BPlusTreeNode *node);
+
+    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    void MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    void MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
     ~BPlusTree();
 };
