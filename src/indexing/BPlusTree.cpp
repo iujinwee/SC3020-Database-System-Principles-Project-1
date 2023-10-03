@@ -11,7 +11,6 @@ BPlusTree::~BPlusTree() = default;
 
 BPlusTreeNode::~BPlusTreeNode() = default;
 
-
 /*
  *  ==================================
  *  ===    PUBLIC KEY FUNCTION     ===
@@ -210,6 +209,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             return 0;
         }
     }
+    return 0;
 }
 
 /*
@@ -339,8 +339,9 @@ void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
         if (i == 0)
         {
             // create new key that has value= smallest key in 1st children of rightNode
-            leftNode->children[j + 1] = rightNode->children[i];
-            leftNode->keys[j] = leftNode->children[j + 1]->keys[0];
+            leftNode->children[j + 1] = rightNode->children[i];                                     // shift right node child over
+            (static_cast<BPlusTreeNode *>(rightNode->children[i]))->parent = leftNode;              // reassign parent
+            leftNode->keys[j] = (static_cast<BPlusTreeNode *>(leftNode->children[j + 1]))->keys[0]; // access key member
             j++;
         }
         // shift keys and children
@@ -382,6 +383,7 @@ BPlusTreeNode *BPlusTreeNode::ShiftKeysToBack(BPlusTreeNode *node, int num_index
     { // if non leaf node, add first ptr
         node->children[num_indexes_shift] = node->children[0];
     }
+    return node;
 }
 
 BPlusTreeNode *BPlusTreeNode::ShiftKeysToFront_leafNode(int start_index_remaining_keys, BPlusTreeNode *node)
@@ -428,7 +430,7 @@ void BPlusTreeNode::deleteKeyInLeafNode()
     if (children[0] != nullptr)
     {
         // Assuming children[0] points to the data you want to delete
-        delete static_cast<DataType *>(children[0]);
+        delete static_cast<Record *>(children[0]);
     }
 
     // delete current key and shift behind keys and ptrs forward
@@ -878,4 +880,3 @@ void BPlusTree::displayExp2Results()
     printRootKeys();
     cout << endl;
 }
-
