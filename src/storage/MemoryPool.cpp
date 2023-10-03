@@ -142,6 +142,7 @@ void MemoryPool::saveBPlusTree(BPlusTree tree) {
  */
 void *MemoryPool::saveRecord(Record newRecord) {
     allocateRecord();
+    newRecord.block_id = num_used_data_blocks;
     auto record_address = current_data_block->addRecord(&newRecord);
 
     num_used_records += 1;
@@ -214,8 +215,8 @@ int MemoryPool::getRecordSize() const {
 }
 
 int MemoryPool::getNumRecordsInBlock() const {
-    int utilised_block_size = block_size - (block_size % RECORD_SIZE);
-    return utilised_block_size / RECORD_SIZE;
+    int utilised_block_size = (int) (block_size - sizeof(Block) / RECORD_SIZE);
+    return utilised_block_size;
 }
 
 
