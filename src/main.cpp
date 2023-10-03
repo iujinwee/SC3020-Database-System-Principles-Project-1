@@ -5,11 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
-string DATA_DIR = "../data/games.txt";
+string DATA_DIR = "C:/Users/Kelly Khoo/Downloads/SC3020-Database-System-Principles/data/games.txt";
+ 
 
 int main() {
 
@@ -20,6 +22,10 @@ int main() {
     // Allocating memory space in MM for memory pool
     MemoryPool disk(MEMORY_POOL_SIZE, BLOCK_SIZE);
     cout << "Allocating " << disk.getTotalMemory() << "MB for memory pool\n" << endl;
+
+
+    
+
 
     // Reading data from games.txt into memory pool
     ifstream datafile(DATA_DIR);
@@ -86,8 +92,33 @@ int main() {
     disk_tree->displayExp2Results();
 
     // Experiment 3 Results
-//    disk_tree->searchNode(0.5);
-//    disk_tree->displayExp3Results();
+    cout <<  "==================================================================" << endl;
+    cout << "Experiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
+    tree.displayExp3Results(&disk);
+
+    // Experiment 4 Results
+    cout <<  "==================================================================" << endl;
+    cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
+    // tree.searchKey(&disk, 0.6, 1.0);
+    // number of index nodes the process accesses and average of “FG3_PCT_home” ; 
+    tree.displayExp3Results(&disk);
+
+
+
+
+    // Retrieve records with "FG_PCT_Home" = 0.5
+
+    //tree.searchKey(&disk, 0.5);
+    //tree.displayExp3Results(&disk);
+   
+
+    // disk_tree->displayExp3Results();
+
+    // Bruteforce Linear Scan
+
+    
+
+    
 
     // Experiment 4 Results
 //    disk_tree->searchRange(0.6, 1);

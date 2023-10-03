@@ -4,6 +4,7 @@
 
 #include "BPlusTree.h"
 #include <list>
+#include "../storage//Block.h"  // kelly
 
 using namespace std;
 
@@ -57,46 +58,6 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
     }
 }
 
-BPlusTreeNode *BPlusTree::searchNode(float key)
-{
-    // If tree is empty
-    if (root == nullptr)
-    {
-        cout << "B+ Tree is empty\n";
-    }
-    else
-    {
-        BPlusTreeNode *current_node = root;
-        while (!current_node->is_leaf)
-        {
-            for (int i = 0; i < current_node->size; i++)
-            {
-                if (key < current_node->keys[i].key)
-                {
-                    current_node = (BPlusTreeNode *)current_node->children[i];
-                    continue;
-                }
-
-                if (i == current_node->size - 1)
-                {
-                    current_node = (BPlusTreeNode *)current_node->children[i + 1];
-                    continue;
-                }
-            }
-        }
-
-        for (int i = 0; i < current_node->size; i++)
-        {
-            if (current_node->keys[i].key == key)
-            {
-                cout << "Found " << key << endl;
-                return current_node;
-            }
-        }
-    }
-    cout << "Could not find " << key << endl;
-    return nullptr;
-}
 
 // void BPlusTree::deleteKey(float key)
 //{
@@ -405,7 +366,7 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
     }
 }
 
-BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const
+BPlusTreeNode *BPlusTree::searchInsertionNode(float key) 
 {
     // If tree is empty
     if (root == nullptr)
@@ -419,6 +380,7 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key) const
         while (!current_node->is_leaf)
         {
             current_node = (BPlusTreeNode *)current_node->children[0];
+            indexblks++;
         }
 
         // Find insertion node by travelling horizontally (using next ptr)
@@ -760,4 +722,113 @@ void BPlusTree::displayExp2Results()
     printRootKeys();
     cout << endl;
 }
+
+
+void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
+{
+    // If tree is empty
+    if (root == nullptr)
+    {
+        cout << "B+ Tree is empty\n";
+    }
+    else
+    {
+        cout << " - Records: " << endl;
+        //find node where first instance of lower key appears
+        auto *current_node = searchInsertionNode(lowerkey);
+
+        while (current_node->keys[0].key <= upperkey)
+        {
+            for (int i = 0; i < current_node->size; i++)
+            {
+                if (current_node->keys[i].key <= upperkey)
+                {
+                    auto temp_address = current_node->children[i] ;
+                    SearchAddresslist.push_back(temp_address);
+                    disk->displayRecord(temp_address);
+                }
+
+            }
+
+            if (current_node->next != nullptr)
+            {
+                current_node = current_node->next;
+            }
+
+            else
+            {
+                break;
+            }
+    
+        }
+
+    }
+}
+
+void BPlusTree::displayExp3Results(MemoryPool *disk)
+{
+    int num ;
+    searchKey(disk, 0.5, 0.5);
+    cout << " - the number of index nodes the process accesses: " << indexblks << endl;
+    cout << " - the average of FG3_PCT_home values of the records that are returned" << getAverage(disk) << endl;
+    // getNumDataBlock() ;
+    //disk->getBlocksAccessedByForce(0.5,0.5) ;
+    cout << "no of data blks from brute force:" << disk->getBlocksAccessedByBruteForce(0.5,0.5) << endl;
+}
+
+float BPlusTree::getAverage(MemoryPool *disk)
+{
+    float sum=0;
+    float average=0;
+    float value ;
+    int ID ;
+
+    for (int i=0; i < SearchAddresslist.size(); i++)
+    {
+        value = disk->loadRecordfcg3(SearchAddresslist[i]) ;
+        //cout << "reteieve fcg3 value is: " << value << endl;
+        sum = sum + value ;
+
+        // testing
+        // ID = Block::getblockID(SearchAddresslist[i]) ;
+        // cout << "block ID for address : " << ID << endl;
+    }
+
+    if (SearchAddresslist.size() != 0)
+    {
+        cout << "sum" << sum << endl;
+        cout << "SearchAddresslist.size() " << SearchAddresslist.size() << endl;
+        average = sum / SearchAddresslist.size();
+        return average;
+    }
+
+    else
+    {
+        cout << "no such record with fcg value = 0.5" << endl;
+        return 0 ;
+    }
+
+
+
+}
+
+
+void BPlusTree::getNumDataBlock()
+{
+    int ID ;
+    Block *block ;
+
+    for (int i=0; i < SearchAddresslist.size(); i++)
+    {
+        Block *block ;
+       // ID = block->getblockID(SearchAddresslist[i]) ;
+        //cout << "block ID for address : " << ID << endl;
+         
+    }
+}
+
+
+
+
+
 

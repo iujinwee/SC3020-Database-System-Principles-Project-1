@@ -10,6 +10,7 @@
  */
 Block::Block(void* allocatedAddress){
     block_ptr = allocatedAddress;
+
 }
 
 /*
@@ -22,6 +23,7 @@ void* Block::addRecord(void *recordAddress){
 
     this->size += RECORD_SIZE;
     this->num_records++;
+    
 
     return dest_ptr;
 };
@@ -47,3 +49,8 @@ void* Block::addTree(void *treeAddress){
 
     return dest_ptr;
 }
+
+//int Block::getblockID(void *recordAddress)
+//{
+ //   return(blockID) ;
+//}

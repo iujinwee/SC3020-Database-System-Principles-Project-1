@@ -73,7 +73,7 @@ private:
 
     void printNode(BPlusTreeNode *node, int level);
 
-    [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key) const;
+    [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key);
 
     static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
 
@@ -91,6 +91,8 @@ public:
     BPlusTreeNode *root = nullptr;
     int nodes = 0;
     int levels = 0;
+    int indexblks = 0;
+    vector <void *> SearchAddresslist;
 
     void displayTree();
 
@@ -101,6 +103,14 @@ public:
     static void deleteKey(float key);
 
     void displayExp2Results();
+
+    void displayExp3Results(MemoryPool *disk);
+
+    void searchKey(MemoryPool *disk, float lowerkey, float upperkey);
+
+    float getAverage(MemoryPool *disk);
+
+    void  getNumDataBlock() ;
 
     ~BPlusTree();
 };
