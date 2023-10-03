@@ -100,7 +100,7 @@ int main()
     //    disk_tree->displayExp3Results();
     //
 
-    // TESTING EXPT 3 HELPER FUNCTIONS
+    /* ----------------TESTING EXPT 3 HELPER FUNCTIONS------------------------------------------ */
     // 1. Test ShiftKeysToBack
     //  BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
     //  node->ShiftKeysToBack(node, 1);
@@ -116,6 +116,21 @@ int main()
     // BPlusTreeNode *childNode = static_cast<BPlusTreeNode *>(node->children[2]);
     // int i = node->findIndexChild(childNode);
     // std::cout << "index of child is " << i << '\n';
+
+    // 4. Test MergeWithRight_LeafNode
+    // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
+    // BPlusTreeNode *childNode = static_cast<BPlusTreeNode *>(node->children[2]);
+    // childNode->deleteKeyInLeafNode();
+    // disk_tree->MergeWithRight_LeafNode(childNode->size, childNode, childNode->next);
+    // disk_tree->displayTree();
+
+    // 5. Test MergeWithRight_NonLeafNode
+    // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
+    // node->deleteKeyInNonLeafNode();
+    // disk_tree->MergeWithRight_NonLeafNode(node->size, node, node->next);
+    // disk_tree->displayTree();
+
+    /* --------------------------------------------------------------------------------------- */
 
     // Experiment 4 Results
     //    disk_tree->searchRange(0.6, 1);

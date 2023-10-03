@@ -182,7 +182,7 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
             delete node;
             return 1;
         }
-        
+
         else if (node == root & node->size < floor(m / 2))
         {
             return 0;
@@ -222,22 +222,6 @@ int BPlusTree::deleteKey(BPlusTreeNode *node, float dkey)
  *  ====  PRIVATE HELPER FUNCTION  ====
  *  ===================================
  */
-// void BPlusTree::upwardPropogationDeletion() { // for non leaf/root
-
-// check if sufficient keys > m/2 ||  num children = no keys+1
-// if fail to satisfy either
-// num keys to borrow = m/2 - current size
-// check if right node>m/2, after borrowing
-// if yes, borrow
-// borrowfromright()
-// upwardPropogationDeletion()
-// else merge
-// mergewithright()
-// upwardPropogationDeletion()
-
-// if root and only 1 child
-// delete root
-//}
 
 void BPlusTree::checkKey(BPlusTreeNode *node)
 {
@@ -279,32 +263,6 @@ void BPlusTree::MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftN
 
     // Delete leftNode
     delete leftNode;
-
-    // // Update keys and children in parent
-
-    // auto index_deleted_node = leftNode->findIndexChild(leftNode);
-    // auto parent_deleted_node = leftNode->parent;
-
-    // // if both leaf nodes share same parent (deleted leaf node is index 0 or middle)
-    // if (leftNode->parent == rightNode->parent)
-    // {
-    //     // shift keys and children ptr in parent node
-    //     for (int i = index_deleted_node; i < parent_deleted_node->size; i++)
-    //     {
-    //         parent_deleted_node->keys[i] = parent_deleted_node->keys[i + 1];
-    //         parent_deleted_node->children[i] = parent_deleted_node->children[i + 1];
-    //         parent_deleted_node->size--;
-    //     }
-    //     parent_deleted_node->keys[parent_deleted_node->size - 1] = BPlusTreeKey{}; // remove last key
-    //     parent_deleted_node->children[parent_deleted_node->size - 1] = nullptr;    // remove last ptr
-    // }
-    // else
-    // { // leaf node is the last node of parent
-    //     // Delete corresponding key and ptr in leftNode parent
-    //     parent_deleted_node->keys[index_deleted_node - 1] = BPlusTreeKey{};
-    //     parent_deleted_node->children[index_deleted_node] = nullptr;
-    //     parent_deleted_node->size--;
-    // }
 }
 
 void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
@@ -326,7 +284,8 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
         rightNode->children[i + 1] = leftNode->children[i + 1];
         (static_cast<BPlusTreeNode *>(rightNode->children[i + 1]))->parent = rightNode; // reassign parent
     }
-    rightNode->children[num_keys_merge] = leftNode->children[num_keys_merge];
+    rightNode->children[0] = leftNode->children[0];
+    (static_cast<BPlusTreeNode *>(rightNode->children[0]))->parent = rightNode; // reassign parent
 
     // Delete leftNode
     delete leftNode;
@@ -468,7 +427,7 @@ void BPlusTreeNode::deleteKeyInLeafNode()
     if (children[0] != nullptr)
     {
         // Children[0] points to the data you want to delete
-        delete static_cast<Record *>(children[0]);
+        delete static_cast<Record *>(children[0]); // Does not work
     }
 
     // delete current key and shift behind keys and ptrs forward
