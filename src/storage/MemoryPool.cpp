@@ -3,9 +3,11 @@
 //
 
 #include "MemoryPool.h"
+#include <vector>
 
 using namespace std;
 
+vector <void *> block_ptr_list ; 
 
 /*
  *  Create a fixed-size memory pool with the given total memory size
@@ -25,7 +27,6 @@ MemoryPool::MemoryPool(int totalMemorySize, int blockSize) {
 
 MemoryPool::~MemoryPool() = default;
 
-
 /*
  *  Allocate new block within the memory pool if sufficient remaining memory space in the pool.
  *  Returns the address of the new block if created
@@ -39,11 +40,20 @@ Block *MemoryPool::allocateBlock() {
          * We calculate the allocated memory address using the (number of used blocks * block size).
          */
         auto allocated_memory_add = (char *) mem_pool_ptr + num_used_blocks * block_size + sizeof(Block);
+        
+        num_used_blocks += 1;
+
         auto new_block = new Block(allocated_memory_add);
+
+        // new_block->blockID = num_used_blocks ; // Kelly
 
         // Update block
         current_memory_size += block_size;
-        num_used_blocks += 1;
+        // num_used_blocks += 1;
+
+        // Kelly
+        //push new block ptr to list of block pointers
+        block_ptr_list.push_back(allocated_memory_add);
 
         return new_block;
     }
@@ -170,6 +180,14 @@ void MemoryPool::displayRecord(void *recordAddress) {
          << endl;
 }
 
+float MemoryPool::loadRecordfcg3(void *recordAddress)
+{
+    auto *record = new Record;
+    memcpy(record, recordAddress, RECORD_SIZE);
+
+    return record->fg3_pct_home;
+
+}
 
 double MemoryPool::getTotalMemory() const {
     return round(total_memory_size / (1024 * 1024));
@@ -198,5 +216,81 @@ int MemoryPool::getRecordSize() const {
 int MemoryPool::getNumRecordsInBlock() const {
     int utilised_block_size = block_size - (block_size % RECORD_SIZE);
     return utilised_block_size / RECORD_SIZE;
+}
+
+
+/*void MemoryPool::getBlocksAccessedByForce(float lower, float upper)
+{
+    cout << "size of block ptr list  " << block_ptr_list.size() << endl;
+    int numRecord = 0 ;
+
+    for (int i = 0; i < block_ptr_list.size(); i++)
+    {
+       // cout << "Block ptr " << block_ptr_list[i] << endl;
+       int usedSize = 0 ;
+       int numRecord = 0 ;
+
+       while (usedSize <= block_size)
+       {
+       void* recordAddress = (void*)((char*) block_ptr_list[i] + numRecord * RECORD_SIZE);
+
+       auto *record = new Record;
+       record = loadRecord(recordAddress) ;
+      
+       if (record == nullptr) break ;
+       else
+       {
+       if (record->fg_pct_home == 0.5) displayRecord(recordAddress) ;
+
+       numRecord = numRecord + 1;
+       usedSize = usedSize + RECORD_SIZE ;
+       }
+       }
+
+    }
+
+    return ;
+}*/
+
+int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
+{
+    int datablks = 0;
+
+    for (int i = 0; i < block_ptr_list.size(); i++)
+    {
+        int num_records = 0;
+        int used_size =0;
+        
+        while (used_size <= block_size)
+        {
+            auto record = new Record();
+            void* record_ptr = (void*)((char*) block_ptr_list[i] + num_records * RECORD_SIZE);
+
+            if (record != nullptr)
+            {
+                record = loadRecord(record_ptr);
+            }
+
+            else
+            {
+                break;
+            }
+
+            float value = record->fg_pct_home;
+
+            /*if (value >= lowerkey && value <= upperkey)
+            {
+                displayRecord(record);
+            }*/
+
+            used_size = used_size + RECORD_SIZE;
+            num_records++;
+        } 
+
+        datablks++;
+    
+    }
+
+    return datablks;
 }
 

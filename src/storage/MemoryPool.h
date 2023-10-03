@@ -11,6 +11,7 @@
 #include "iostream"
 #include "memory"
 
+
 struct BPlusTreeNode;
 struct BPlusTree;
 struct Block;
@@ -18,6 +19,7 @@ struct Block;
 const int RECORD_SIZE = sizeof(Record);
 const int BYTE = 8;
 
+// const int no_block_ptr = 262144 ; // kelly memory size div by block size
 
 class MemoryPool {
     int total_memory_size;           // Total size of the memory pool
@@ -35,6 +37,8 @@ public:
 
     MemoryPool(int totalMemorySize, int blockSize);
 
+
+
     Block* allocateBlock();
 
     void allocateRecord();
@@ -48,6 +52,16 @@ public:
     Record *loadRecord(void* recordAddress);
 
     void displayRecord(void* recordAddress);
+
+    void getAverage();
+
+    float loadRecordfcg3(void *recordAddress);
+
+    // vector <void *> block_ptr_list ;  // Kelly
+
+    //void getBlocksAccessedByForce(float lower, float upper) ;  
+
+    int getBlocksAccessedByBruteForce(float lowerkey, float upperkey);
 
     [[nodiscard]] double getTotalMemory() const;
 
