@@ -5,6 +5,9 @@
 #include "BPlusTree.h"
 #include <list>
 #include "../storage//Block.h"  // kelly
+#include <chrono> 
+#include <iostream>
+
 
 using namespace std;
 
@@ -369,6 +372,8 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 BPlusTreeNode *BPlusTree::searchInsertionNode(float key) 
 {
     // If tree is empty
+    indexblks = 0 ;
+    
     if (root == nullptr)
     {
         cout << "B+ Tree is empty\n";
@@ -769,11 +774,33 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
 {
     int num ;
    
+   
+    auto start = std::chrono::high_resolution_clock::now();
+
     searchKey(disk, 0.5, 0.5);
-    cout << " - the number of index nodes the process accesses: " << indexblks << endl;
-    cout << " - the average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
-    cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
-    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.5,0.5) << endl;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time = end - start;
+    cout << " - Running time of Retrieval process: " << elapsed_time.count() << " seconds" << endl;
+
+    cout << " - The number of index nodes the process accesses: " << indexblks << endl;
+    cout << " - The average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
+    cout << " - No. of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
+    //cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
+    
+    /*
+   
+    auto start1 = std::chrono::high_resolution_clock::now();
+
+    int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0.5,0.5);
+
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time1 = end1 - start1;
+
+    cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
+    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    */
+
      
 }
 

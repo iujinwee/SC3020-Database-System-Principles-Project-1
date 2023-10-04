@@ -99,7 +99,7 @@ int main() {
     // Experiment 4 Results
     cout <<  "==================================================================" << endl;
     cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
-    tree.displayExp4Results(&disk);
+    // tree.displayExp4Results(&disk);
 
 
 

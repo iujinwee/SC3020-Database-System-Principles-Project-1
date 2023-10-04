@@ -51,10 +51,7 @@ Block *MemoryPool::allocateBlock() {
         current_memory_size += block_size;
         // num_used_blocks += 1;
 
-        // Kelly
-        //push new block ptr to list of block pointers
-        block_ptr_list.push_back(allocated_memory_add);
-
+        
         return new_block;
     }
 
@@ -77,6 +74,10 @@ void MemoryPool::allocateRecord() {
 
         if (new_block != nullptr) {
             cout << "First data record stored at " << new_block->block_ptr << endl;
+        // Kelly
+        //push new block ptr to list of block pointers
+        block_ptr_list.push_back(new_block->block_ptr);
+
         }
         return;
     }
@@ -88,6 +89,9 @@ void MemoryPool::allocateRecord() {
 
         // Allocates new block and replace current
         Block *new_block = allocateBlock();
+        
+        block_ptr_list.push_back(new_block->block_ptr);
+        
         current_data_block = new_block;
         num_used_data_blocks++;
 
@@ -227,11 +231,12 @@ int MemoryPool::getBlockID(void *recordAddress)
     return record->block_id ;
 }
 
-
-/*void MemoryPool::getBlocksAccessedByForce(float lower, float upper)
+/*
+void MemoryPool::getBlocksAccessedByForce(float lower, float upper)
 {
     cout << "size of block ptr list  " << block_ptr_list.size() << endl;
     int numRecord = 0 ;
+    int datablks = 0;
 
     for (int i = 0; i < block_ptr_list.size(); i++)
     {
@@ -255,26 +260,31 @@ int MemoryPool::getBlockID(void *recordAddress)
        usedSize = usedSize + RECORD_SIZE ;
        }
        }
+       datablks++;
 
     }
 
-    return ;
-}*/
+    return datablks; ;
+} 
+*/
+
 
 int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 {
     int datablks = 0;
 
-
+ 
     for (int i = 0; i < block_ptr_list.size(); i++)
     {
         int num_records = 0;
         int used_size =0;
         
-        while (used_size <= block_size)
+        while (used_size < block_size)
         {
             auto record = new Record();
             void* record_ptr = (void*)((char*) block_ptr_list[i] + num_records * RECORD_SIZE);
+
+           // cout << " i num records: " << i << "  " << num_records << "  " << record_ptr << endl;
 
             if (record != nullptr)
             {
@@ -288,10 +298,13 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 
             float value = record->fg_pct_home;
 
-            /*if (value >= lowerkey && value <= upperkey)
+            if (value >= lowerkey && value <= upperkey)
             {
+
                 displayRecord(record);
-            }*/
+                BFSearchAddresslist.push_back(record_ptr);
+
+            }
 
             used_size = used_size + RECORD_SIZE;
             num_records++;
@@ -300,7 +313,8 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
         datablks++;
     
     }
-
+ //  cout << "block_ptr_list.size: " <<  block_ptr_list.size() << endl;
+  cout << "BFSearchAddresslist: " <<  BFSearchAddresslist.size() << endl;
     return datablks;
 }
 

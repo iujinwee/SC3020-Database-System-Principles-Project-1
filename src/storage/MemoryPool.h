@@ -10,6 +10,7 @@
 #include "Block.h"
 #include "iostream"
 #include "memory"
+#include <vector>
 
 
 struct BPlusTreeNode;
@@ -19,7 +20,6 @@ struct Block;
 const int RECORD_SIZE = sizeof(Record);
 const int BYTE = 8;
 
-// const int no_block_ptr = 262144 ; // kelly memory size div by block size
 
 class MemoryPool {
     int total_memory_size;           // Total size of the memory pool
@@ -37,7 +37,7 @@ public:
 
     MemoryPool(int totalMemorySize, int blockSize);
 
-
+    vector <void *> BFSearchAddresslist;
 
     Block* allocateBlock();
 
