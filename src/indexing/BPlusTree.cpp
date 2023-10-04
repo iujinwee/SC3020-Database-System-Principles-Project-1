@@ -91,35 +91,40 @@ int BPlusTree::deleteKey(MemoryPool *disk,BPlusTreeNode *node, float dkey)
         }
         else
         {
+            int nd=0;
             for (int i = 0; i < node->size; i++)
             {
-                if (node->keys[i].key < dkey)
-                {
-                    node->deleteKeyInLeafNode(disk);
+                if (node->keys[i].key <= dkey){
+                    nd++;
                 }
                 else
                 {
-                    // check if need borrow/merge before return
-                    if (node->size < floor((m + 1) / 2))
-                    {
-                        // number of missing keys
-                        int missing = floor((m + 1) / 2) - node->size;
-                        // if right can borrow
-                        if (node->next->size - missing >= floor((m + 1) / 2))
-                        {
-                            BorrowFromRight(missing, node, node->next);
-                            // propagate update key of right
-                            checkKey(node->next);
-                            return 0;
-                        }
-                        else
-                        {
-                            MergeWithRight_LeafNode(missing, node, node->next);
-                            // propagate update key of right
-                            checkKey(node->next);
-                            return 1;
-                        }
-                    }
+                   break;
+                }
+            }
+            for(int i = 0; i<nd;i++){
+                node->deleteKeyInLeafNode(disk);
+            }
+             // check if need borrow/merge before return
+            if (node->size < floor((m + 1) / 2))
+            {
+                // number of missing keys
+                int missing = floor((m + 1) / 2) - node->size;
+                // if right can borrow
+                if (node->next->size - missing >= floor((m + 1) / 2))
+                {
+                    BorrowFromRight(missing, node, node->next);
+                    // propagate update key of right
+                    checkKey(node->next);
+                    return 0;
+                }
+                else
+                {
+                    BPlusTreeNode* nNode = node->next;
+                    MergeWithRight_LeafNode(missing, node, nNode);
+                    // propagate update key of right
+                    checkKey(nNode);
+                    return 1;
                 }
             }
             return 0;
@@ -194,20 +199,25 @@ void BPlusTree::checkKey(BPlusTreeNode *node)
 {
     if (node != root)
     {
-        int index = node->findIndexChild(node) - 1;
-        BPlusTreeKey LB = findLB_rightSubTree(node->parent, index);
-        if (node->parent->keys[index].key != LB.key | node->parent->keys[index].count != LB.count)
-        {
-            node->parent->keys[index] = LB;
+        int index = node->parent->findIndexChild(node);
+        if(index==0){
             checkKey(node->parent);
+        } else{
+            BPlusTreeKey LB = findLB_rightSubTree(node->parent, index);
+            if (node->parent->keys[index-1].key != LB.key | node->parent->keys[index-1].count != LB.count)
+            {
+                node->parent->keys[index-1] = LB;
+                checkKey(node->parent);
+            }
         }
+        
     }
 }
 
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {
     // For any given node, find
-    node = (BPlusTreeNode *)node->children[index_key + 1];
+    node = (BPlusTreeNode *)node->children[index_key ];
     while (!node->is_leaf)
     {
         node = (BPlusTreeNode *)node->children[0];
@@ -375,7 +385,7 @@ int BPlusTreeNode::findIndexChild(BPlusTreeNode *childNode)
     auto parentNode = childNode->parent;
     for (int i = 0; i < parentNode->size + 1; i++)
     {
-        if (parentNode->children[i] == childNode)
+        if (parentNode->children[i] == (void *)childNode)
         {
             // Found the leaf node in the parent's children array
             return i;

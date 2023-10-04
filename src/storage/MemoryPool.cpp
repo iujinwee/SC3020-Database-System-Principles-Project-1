@@ -127,7 +127,7 @@ void MemoryPool::deleteBPlusTreeNode(BPlusTreeNode *node) {
 
         Block *dBlock = (Block*) node;
         // Move the content of the BPlusTree node into the designated memory block
-        dBlock->deleteNode(&dBlock);
+        dBlock->deleteNode( (void*) node);
 
         // Update block attributes
         // dBlock->size-=sizeof(BPlusTreeNode);
