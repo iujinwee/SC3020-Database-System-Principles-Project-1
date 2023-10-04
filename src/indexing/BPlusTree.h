@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 22; // 23
+const int m = 3;
 struct MemoryPool;
 
 /*
@@ -47,15 +47,15 @@ public:
 
     ~BPlusTreeNode();
 
-    int deleteKeyInNode(BPlusTreeNode *node, int keyToDelete);
+    void deleteKeyInLeafNode(MemoryPool *disk);
 
     int findIndexChild(BPlusTreeNode *childNode);
 
-    void ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
+    BPlusTreeNode *ShiftKeysToBack(BPlusTreeNode *node, int num_indexes_shift);
 
-    void deleteKeyInNonLeafNode(BPlusTreeNode *node, int index_to_delete);
+    void deleteKeyInNonLeafNode();
 
-    BPlusTreeNode *ShiftKeysToFront(int start_index_remaining_keys, BPlusTreeNode *node);
+    BPlusTreeNode *ShiftKeysToFront_leafNode(int start_index_remaining_keys, BPlusTreeNode *node);
 };
 
 class BPlusTree
@@ -71,7 +71,7 @@ private:
 
     void printRootKeys();
 
-    void printNode(BPlusTreeNode *node, int level);
+    
 
     [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key);
 
@@ -85,8 +85,6 @@ private:
 
     static void insertIntoNonLeafNode(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *address);
 
-    static void MergeWithRight(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
-
 public:
     BPlusTreeNode *root = nullptr;
     int nodes = 0;
@@ -94,14 +92,16 @@ public:
     int indexblks = 0;
     vector <void *> SearchAddresslist;
 
-    
+
     void displayTree();
+
+    void printNode(BPlusTreeNode *node, int level);
 
     BPlusTreeNode *searchNode(float key);
 
     void insertKey(MemoryPool *disk, float key, void *recordAddress);
 
-    static void deleteKey(float key);
+    int deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey);
 
     void displayExp2Results();
 
@@ -114,6 +114,18 @@ public:
     float getAverage(MemoryPool *disk);
 
     int  getNumDataBlock(MemoryPool *disk) ;
+
+    BPlusTreeKey findLB_rightSubTree(BPlusTreeNode *node, int index_key);
+
+    BPlusTreeNode *findNextNonLeafNode(BPlusTreeNode *node);
+
+    void checkKey(BPlusTreeNode *node);
+
+    void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    void MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+
+    void MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
     ~BPlusTree();
 };
