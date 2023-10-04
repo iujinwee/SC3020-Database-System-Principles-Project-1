@@ -12,7 +12,6 @@ BPlusTree::~BPlusTree() = default;
 
 BPlusTreeNode::~BPlusTreeNode() = default;
 
-
 /*
  *  ==================================
  *  ===    PUBLIC KEY FUNCTION     ===
@@ -60,8 +59,7 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
     }
 }
 
-
-int BPlusTree::deleteKey(MemoryPool *disk,BPlusTreeNode *node, float dkey)
+int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
 {
     if (root == nullptr)
     {
@@ -70,8 +68,10 @@ int BPlusTree::deleteKey(MemoryPool *disk,BPlusTreeNode *node, float dkey)
     }
     else if (root->is_leaf)
     {
-        for (int i = 0; i < root->size; i++){
-            if(root->keys[i].key<dkey){
+        for (int i = 0; i < root->size; i++)
+        {
+            if (root->keys[i].key < dkey)
+            {
                 root->deleteKeyInLeafNode(disk);
                 return 1;
             }
@@ -135,7 +135,7 @@ int BPlusTree::deleteKey(MemoryPool *disk,BPlusTreeNode *node, float dkey)
         int full_delete = 0;
         for (int i = 0; i < node->size; i++)
         {
-            full_delete = deleteKey(disk,(BPlusTreeNode *)node->children[i], dkey);
+            full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[i], dkey);
             if (full_delete)
             {
                 node->deleteKeyInNonLeafNode();
@@ -404,7 +404,7 @@ void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
     if (children[0] != nullptr)
     {
         // Assuming children[0] points to the data you want to delete
-        Record* dRecord = (Record*)children[0]; 
+        Record *dRecord = (Record *)children[0];
         disk->deletemRecord(dRecord);
     }
 
@@ -503,7 +503,7 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
 {
     // If tree is empty
-    indexblks = 0 ;
+    indexblks = 0;
 
     if (root == nullptr)
     {
@@ -859,7 +859,6 @@ void BPlusTree::displayExp2Results()
     cout << endl;
 }
 
-
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
     // If tree is empty
@@ -869,7 +868,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
     }
     else
     {
-        //find node where first instance of lower key appears
+        // find node where first instance of lower key appears
         auto *current_node = searchInsertionNode(lowerkey);
         int count = 0;
 
@@ -879,12 +878,11 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             {
                 if (current_node->keys[i].key <= upperkey)
                 {
-                    auto temp_address = current_node->children[i] ;
+                    auto temp_address = current_node->children[i];
                     SearchAddresslist.push_back(temp_address);
                     // disk->displayRecord(temp_address);
                     count++;
                 }
-
             }
 
             if (current_node->next != nullptr)
@@ -896,7 +894,6 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             {
                 break;
             }
-
         }
         cout << "- Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
     }
@@ -904,8 +901,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 
 void BPlusTree::displayExp3Results(MemoryPool *disk)
 {
-    int num ;
-
+    int num;
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -918,7 +914,7 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     cout << " - The number of index nodes the process accesses: " << indexblks << endl;
     cout << " - The average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
     cout << " - No. of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
-    //cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
+    // cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
 
     /*
 
@@ -932,36 +928,31 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
     cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
     */
-
-
 }
 
 void BPlusTree::displayExp4Results(MemoryPool *disk)
 {
-    int num ;
+    int num;
 
     searchKey(disk, 0.6, 1.0);
     cout << " - the number of index nodes the process accesses: " << indexblks << endl;
     cout << " - the average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
     cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
-    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.6,1.0) << endl;
-
+    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.6, 1.0) << endl;
 }
-
-
 
 float BPlusTree::getAverage(MemoryPool *disk)
 {
-    float sum=0;
-    float average=0;
-    float value ;
-    int ID ;
+    float sum = 0;
+    float average = 0;
+    float value;
+    int ID;
 
-    for (int i=0; i < SearchAddresslist.size(); i++)
+    for (int i = 0; i < SearchAddresslist.size(); i++)
     {
-        value = disk->loadRecordfcg3(SearchAddresslist[i]) ;
-        //cout << "reteieve fcg3 value is: " << value << endl;
-        sum = sum + value ;
+        value = disk->loadRecordfcg3(SearchAddresslist[i]);
+        // cout << "reteieve fcg3 value is: " << value << endl;
+        sum = sum + value;
 
         // testing
         // ID = Block::getblockAddress(SearchAddresslist[i]) ;
@@ -979,11 +970,9 @@ float BPlusTree::getAverage(MemoryPool *disk)
     else
     {
         cout << "no such record with fcg value = 0.5" << endl;
-        return 0 ;
+        return 0;
     }
-
 }
-
 
 /* int BPlusTree::getNumDataBlock(MemoryPool *disk)
 {
@@ -1016,18 +1005,18 @@ float BPlusTree::getAverage(MemoryPool *disk)
 int BPlusTree::getNumDataBlock(MemoryPool *disk)
 {
 
-    void* ID1;
-    vector <void*> IdArray;
-    int count =0;
+    void *ID1;
+    vector<void *> IdArray;
+    int count = 0;
     int j;
 
-    for (int i = 0; i< SearchAddresslist.size(); i++)
+    for (int i = 0; i < SearchAddresslist.size(); i++)
     {
         ID1 = disk->getBlockAddress(SearchAddresslist[i]);
         IdArray.push_back(ID1);
     }
 
-    for (int i = 1; i< IdArray.size(); i++)
+    for (int i = 1; i < IdArray.size(); i++)
     {
         for (j = 0; j < i; j++)
         {
@@ -1037,20 +1026,39 @@ int BPlusTree::getNumDataBlock(MemoryPool *disk)
             }
         }
 
-        if (i==j)
+        if (i == j)
         {
             count++;
-
         }
     }
 
     return count;
 }
 
+void BPlusTree::displayExp5Results(MemoryPool *disk)
+{
+    auto start = std::chrono::high_resolution_clock::now();
 
+    BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk->root);
+    deleteKey(MemoryPool * disk, node, 0.35);
 
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time = end - start;
 
+    cout << " - Number of Nodes of Updated B+ Tree: " << nodes << endl;
+    cout << " - Number of Levels of Updated B+ Tree: " << levels << endl;
+    cout << " - Content of root node: ";
+    printRootKeys();
+    cout << endl;
+    cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
 
+    // auto start1 = std::chrono::high_resolution_clock::now();
 
+    // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
 
+    // auto end1 = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed_time1 = end1 - start1;
 
+    // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
+    // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+}
