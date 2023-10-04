@@ -768,13 +768,28 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 void BPlusTree::displayExp3Results(MemoryPool *disk)
 {
     int num ;
+   
     searchKey(disk, 0.5, 0.5);
     cout << " - the number of index nodes the process accesses: " << indexblks << endl;
-    cout << " - the average of FG3_PCT_home values of the records that are returned" << getAverage(disk) << endl;
-    // getNumDataBlock() ;
-    //disk->getBlocksAccessedByForce(0.5,0.5) ;
-    cout << "no of data blks from brute force:" << disk->getBlocksAccessedByBruteForce(0.5,0.5) << endl;
+    cout << " - the average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
+    cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
+    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.5,0.5) << endl;
+     
 }
+
+void BPlusTree::displayExp4Results(MemoryPool *disk)
+{
+    int num ;
+   
+    searchKey(disk, 0.6, 1.0);
+    cout << " - the number of index nodes the process accesses: " << indexblks << endl;
+    cout << " - the average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
+    cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
+    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.6,1.0) << endl;
+     
+}
+
+
 
 float BPlusTree::getAverage(MemoryPool *disk)
 {
@@ -796,8 +811,8 @@ float BPlusTree::getAverage(MemoryPool *disk)
 
     if (SearchAddresslist.size() != 0)
     {
-        cout << "sum" << sum << endl;
-        cout << "SearchAddresslist.size() " << SearchAddresslist.size() << endl;
+        // cout << "sum" << sum << endl;
+        // cout << "SearchAddresslist.size() " << SearchAddresslist.size() << endl;
         average = sum / SearchAddresslist.size();
         return average;
     }
@@ -808,24 +823,71 @@ float BPlusTree::getAverage(MemoryPool *disk)
         return 0 ;
     }
 
-
-
 }
 
 
-void BPlusTree::getNumDataBlock()
+/* int BPlusTree::getNumDataBlock(MemoryPool *disk)
 {
-    int ID ;
-    Block *block ;
+    int ID1 = 0 ;
+    int ID2 = 0 ;
+    int count = 0 ;
+    int j ;
 
-    for (int i=0; i < SearchAddresslist.size(); i++)
+      for (int i=1; i < SearchAddresslist.size(); i++)
     {
-        Block *block ;
-       // ID = block->getblockID(SearchAddresslist[i]) ;
-        //cout << "block ID for address : " << ID << endl;
+        ID1 = disk->getBlockID(SearchAddresslist[i]) ;
+
+        for (j=0; j < i; j++)
+        {
+            ID2 = disk->getBlockID(SearchAddresslist[j]) ;
+            if  (ID1 == ID2) break ;
+        }
+
+        if (i == j) 
+        { 
+            count++ ;
          
+        }
     }
+
+    return count;
+         
+} */
+
+int BPlusTree::getNumDataBlock(MemoryPool *disk)
+{
+    int ID1 = 0;
+    vector <int> IdArray; 
+    int count =0;
+    int j;
+
+    for (int i = 0; i< SearchAddresslist.size(); i++)
+    {
+        ID1 = disk->getBlockID(SearchAddresslist[i]);
+        IdArray.push_back(ID1);
+    }
+
+    for (int i = 1; i< IdArray.size(); i++)
+    {
+        for (j = 0; j < i; j++)
+        {
+            if (IdArray[i] == IdArray[j])
+            {
+                break;
+            }
+        } 
+
+        if (i==j)
+        {
+            count++;
+
+        }
+    }
+
+    return count;
 }
+
+
 
 
 

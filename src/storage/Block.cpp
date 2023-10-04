@@ -50,7 +50,3 @@ void* Block::addTree(void *treeAddress){
     return dest_ptr;
 }
 
-//int Block::getblockID(void *recordAddress)
-//{
- //   return(blockID) ;
-//}

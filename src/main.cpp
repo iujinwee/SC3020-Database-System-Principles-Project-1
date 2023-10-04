@@ -99,9 +99,7 @@ int main() {
     // Experiment 4 Results
     cout <<  "==================================================================" << endl;
     cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
-    // tree.searchKey(&disk, 0.6, 1.0);
-    // number of index nodes the process accesses and average of “FG3_PCT_home” ; 
-    tree.displayExp3Results(&disk);
+    tree.displayExp4Results(&disk);
 
 
 

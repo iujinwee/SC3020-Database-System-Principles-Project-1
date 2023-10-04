@@ -57,6 +57,8 @@ public:
 
     float loadRecordfcg3(void *recordAddress);
 
+    int getBlockID(void *recordAddress);
+
     // vector <void *> block_ptr_list ;  // Kelly
 
     //void getBlocksAccessedByForce(float lower, float upper) ;  

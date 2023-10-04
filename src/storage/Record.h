@@ -31,6 +31,8 @@ public:
     void store(const string &data);
 
     [[nodiscard]] string getDate() const;
+
+    uint32_t getBlockID(void *recordAddress) ;
 };
 
 

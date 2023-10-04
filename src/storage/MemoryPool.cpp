@@ -219,6 +219,14 @@ int MemoryPool::getNumRecordsInBlock() const {
     return utilised_block_size;
 }
 
+int MemoryPool::getBlockID(void *recordAddress)
+{
+    auto *record = new Record;
+    memcpy(record, recordAddress, RECORD_SIZE);
+
+    return record->block_id ;
+}
+
 
 /*void MemoryPool::getBlocksAccessedByForce(float lower, float upper)
 {
@@ -257,6 +265,7 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 {
     int datablks = 0;
 
+
     for (int i = 0; i < block_ptr_list.size(); i++)
     {
         int num_records = 0;
@@ -294,4 +303,8 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 
     return datablks;
 }
+
+
+
+
 

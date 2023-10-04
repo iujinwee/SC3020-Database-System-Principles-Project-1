@@ -106,11 +106,13 @@ public:
 
     void displayExp3Results(MemoryPool *disk);
 
+    void displayExp4Results(MemoryPool *disk);
+
     void searchKey(MemoryPool *disk, float lowerkey, float upperkey);
 
     float getAverage(MemoryPool *disk);
 
-    void  getNumDataBlock() ;
+    int  getNumDataBlock(MemoryPool *disk) ;
 
     ~BPlusTree();
 };
