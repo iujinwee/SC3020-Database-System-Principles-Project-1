@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 3;
+const int m = 22;
 struct MemoryPool;
 
 /*
@@ -110,7 +110,7 @@ public:
 
     void searchKey(MemoryPool *disk, float lowerkey, float upperkey);
 
-    float getAverage(MemoryPool *disk);
+    double getAverage(MemoryPool *disk);
 
     int getNumDataBlock(MemoryPool *disk);
 

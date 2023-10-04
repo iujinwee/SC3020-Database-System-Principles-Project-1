@@ -250,8 +250,7 @@ int MemoryPool::getRecordSize() const {
 }
 
 int MemoryPool::getNumRecordsInBlock() const {
-    int utilised_block_size = (int) (block_size - sizeof(Block) / RECORD_SIZE);
-    return utilised_block_size;
+    return (int) ((block_size - sizeof(Block)) / RECORD_SIZE);
 }
 
 void* MemoryPool::getBlockAddress(void *recordAddress)

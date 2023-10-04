@@ -93,20 +93,16 @@ int main()
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
     cout << endl;
-    tree.displayTree();
-
 
     // Experiment 2 Results
-    // disk_tree->displayExp2Results();
+    disk_tree->displayExp2Results();
 
     // Experiment 3 Results
-    cout <<  "==================================================================" << endl;
-    cout << "Experiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
+    cout << "\nExperiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
     tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
-    cout <<  "==================================================================" << endl;
-    cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
+    cout << "\nExperiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
     // tree.displayExp4Results(&disk);
 
     // Experiment 5 Results
