@@ -35,6 +35,7 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
     if (!root)
     {
         root = new BPlusTreeNode(true);
+        root->size++;
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
