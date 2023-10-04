@@ -10,8 +10,7 @@
 using namespace std;
 
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
-//string DATA_DIR = "../data/games.txt";
-string DATA_DIR = "C:/Users/Kelly Khoo/Downloads/SC3020-Database-System-Principles/data/games.txt";
+string DATA_DIR = "../data/games.txt";
 
 int main()
 {
