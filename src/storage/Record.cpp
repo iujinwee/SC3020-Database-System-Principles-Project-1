@@ -63,3 +63,8 @@ string Record::getDate() const {
            to_string((int) (bin_game_date >> 5 & 0x0F)) + "/" +
            to_string((int) (bin_game_date >> 9 & 0x3FFF));
 }
+
+uint32_t Record::getBlockID(void *recordAddress)
+{
+    return(block_id) ;   
+}

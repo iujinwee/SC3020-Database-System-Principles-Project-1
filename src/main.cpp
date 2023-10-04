@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -96,11 +97,39 @@ int main()
     disk_tree->displayExp2Results();
 
     // Experiment 3 Results
+    cout <<  "==================================================================" << endl;
+    cout << "Experiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
+    tree.displayExp3Results(&disk);
+
+    // Experiment 4 Results
+    cout <<  "==================================================================" << endl;
+    cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
+    // tree.displayExp4Results(&disk);
+
+    // Experiment 5 Results
+    //    disk_tree->deleteKey(0.35);
+    //    disk_tree->displayExp5Results();
+
+    cout << "==================================================================" << endl;
+
+
+    // KELLY CODE
+    // Retrieve records with "FG_PCT_Home" = 0.5
+
+    //tree.searchKey(&disk, 0.5);
+    //tree.displayExp3Results(&disk);
+
+
+    // disk_tree->displayExp3Results();
     //    disk_tree->searchNode(0.5);
     //    disk_tree->displayExp3Results();
     //
 
-    /* ----------------TESTING EXPT 3 HELPER FUNCTIONS------------------------------------------ */
+
+
+    // ZHIQI & CLARE
+
+    /* ----------------TESTING EXPT 5 HELPER FUNCTIONS------------------------------------------ */
     // 1. Test ShiftKeysToBack
     //  BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
     //  node->ShiftKeysToBack(node, 1);
@@ -132,15 +161,10 @@ int main()
 
     /* --------------------------------------------------------------------------------------- */
 
-    // Experiment 4 Results
-    //    disk_tree->searchRange(0.6, 1);
-    //    disk_tree->displayExp4Results();
+    // Bruteforce Linear Scan
 
-    // Experiment 5 Results
-    //    disk_tree->deleteKey(0.35);
-    //    disk_tree->displayExp5Results();
 
-    cout << "==================================================================" << endl;
+
 
     // Experiment 3 (KELLY VERSION)
 

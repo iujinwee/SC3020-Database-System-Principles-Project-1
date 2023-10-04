@@ -13,6 +13,7 @@
 using namespace std;
 
 struct Record {
+    uint32_t block_id;      // Stores the data block ID it belongs to
     uint32_t bin_game_date;  // Binary representation of Game Date DD|MM|YYYY
     uint32_t team_id_home;   // Team ID, 32 bits
     uint16_t pts_home;       // Points
@@ -30,6 +31,8 @@ public:
     void store(const string &data);
 
     [[nodiscard]] string getDate() const;
+
+    uint32_t getBlockID(void *recordAddress) ;
 };
 
 

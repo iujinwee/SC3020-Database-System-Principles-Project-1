@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 3; // 22
+const int m = 3;
 struct MemoryPool;
 
 /*
@@ -73,7 +73,7 @@ private:
 
     void printNode(BPlusTreeNode *node, int level);
 
-    [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key) const;
+    [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key);
 
     static void swapTemp(BPlusTreeNode *node, int index, BPlusTreeKey *temp, void **temp_address);
 
@@ -89,6 +89,9 @@ public:
     BPlusTreeNode *root = nullptr;
     int nodes = 0;
     int levels = 0;
+    int indexblks = 0;
+    vector <void *> SearchAddresslist;
+
 
     void displayTree();
 
@@ -99,6 +102,16 @@ public:
     int deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey);
 
     void displayExp2Results();
+
+    void displayExp3Results(MemoryPool *disk);
+
+    void displayExp4Results(MemoryPool *disk);
+
+    void searchKey(MemoryPool *disk, float lowerkey, float upperkey);
+
+    float getAverage(MemoryPool *disk);
+
+    int  getNumDataBlock(MemoryPool *disk) ;
 
     BPlusTreeKey findLB_rightSubTree(BPlusTreeNode *node, int index_key);
 
