@@ -10,6 +10,8 @@
 #include "Block.h"
 #include "iostream"
 #include "memory"
+#include <vector>
+
 
 struct BPlusTreeNode;
 struct BPlusTree;
@@ -35,6 +37,8 @@ public:
 
     MemoryPool(int totalMemorySize, int blockSize);
 
+    vector <void *> BFSearchAddresslist;
+
     Block* allocateBlock();
 
     void allocateRecord();
@@ -52,6 +56,18 @@ public:
     Record *loadRecord(void* recordAddress);
 
     void displayRecord(void* recordAddress);
+
+    void getAverage();
+
+    float loadRecordfcg3(void *recordAddress);
+
+    int getBlockID(void *recordAddress);
+
+    // vector <void *> block_ptr_list ;  // Kelly
+
+    //void getBlocksAccessedByForce(float lower, float upper) ;  
+
+    int getBlocksAccessedByBruteForce(float lowerkey, float upperkey);
 
     [[nodiscard]] double getTotalMemory() const;
 

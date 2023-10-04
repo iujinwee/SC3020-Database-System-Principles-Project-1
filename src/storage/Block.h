@@ -11,6 +11,9 @@ public:
     int num_records = 0;
     int size = sizeof(Block);
 
+    //int blockID ;  // kelly
+    
+
     void* block_ptr;
 
     explicit Block(void* allocatedAddress);
@@ -26,6 +29,9 @@ public:
     void* deleteNode(void *nodeAddress);
 
     void* addTree(void *treeAddress);
+
+    
+
 };
 
 #endif //SC3020_DATABASE_SYSTEM_PRINCIPLES_BLOCK_H
