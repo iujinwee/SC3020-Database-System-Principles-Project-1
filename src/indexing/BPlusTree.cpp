@@ -738,9 +738,9 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
     }
     else
     {
-        cout << " - Records: " << endl;
         //find node where first instance of lower key appears
         auto *current_node = searchInsertionNode(lowerkey);
+        int count = 0;
 
         while (current_node->keys[0].key <= upperkey)
         {
@@ -750,7 +750,8 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
                 {
                     auto temp_address = current_node->children[i] ;
                     SearchAddresslist.push_back(temp_address);
-                    disk->displayRecord(temp_address);
+                    // disk->displayRecord(temp_address);
+                    count++;
                 }
 
             }
@@ -766,7 +767,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
     
         }
-
+        cout << "- Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
     }
 }
 
@@ -832,7 +833,7 @@ float BPlusTree::getAverage(MemoryPool *disk)
         sum = sum + value ;
 
         // testing
-        // ID = Block::getblockID(SearchAddresslist[i]) ;
+        // ID = Block::getblockAddress(SearchAddresslist[i]) ;
         // cout << "block ID for address : " << ID << endl;
     }
 
@@ -862,11 +863,11 @@ float BPlusTree::getAverage(MemoryPool *disk)
 
       for (int i=1; i < SearchAddresslist.size(); i++)
     {
-        ID1 = disk->getBlockID(SearchAddresslist[i]) ;
+        ID1 = disk->getBlockAddress(SearchAddresslist[i]) ;
 
         for (j=0; j < i; j++)
         {
-            ID2 = disk->getBlockID(SearchAddresslist[j]) ;
+            ID2 = disk->getBlockAddress(SearchAddresslist[j]) ;
             if  (ID1 == ID2) break ;
         }
 
@@ -883,14 +884,14 @@ float BPlusTree::getAverage(MemoryPool *disk)
 
 int BPlusTree::getNumDataBlock(MemoryPool *disk)
 {
-    int ID1 = 0;
-    vector <int> IdArray; 
+    void* ID1;
+    vector <void*> IdArray;
     int count =0;
     int j;
 
     for (int i = 0; i< SearchAddresslist.size(); i++)
     {
-        ID1 = disk->getBlockID(SearchAddresslist[i]);
+        ID1 = disk->getBlockAddress(SearchAddresslist[i]);
         IdArray.push_back(ID1);
     }
 

@@ -11,7 +11,7 @@ public:
     int num_records = 0;
     int size = sizeof(Block);
 
-    //int blockID ;  // kelly
+    //int blockAddress ;  // kelly
     
 
     void* block_ptr;

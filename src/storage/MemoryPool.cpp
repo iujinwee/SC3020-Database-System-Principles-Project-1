@@ -45,7 +45,7 @@ Block *MemoryPool::allocateBlock() {
 
         auto new_block = new Block(allocated_memory_add);
 
-        // new_block->blockID = num_used_blocks ; // Kelly
+        // new_block->blockAddress = num_used_blocks ; // Kelly
 
         // Update block
         current_memory_size += block_size;
@@ -146,7 +146,7 @@ void MemoryPool::saveBPlusTree(BPlusTree tree) {
  */
 void *MemoryPool::saveRecord(Record newRecord) {
     allocateRecord();
-    newRecord.block_id = num_used_data_blocks;
+    newRecord.block_add = current_data_block;
     auto record_address = current_data_block->addRecord(&newRecord);
 
     num_used_records += 1;
@@ -223,12 +223,12 @@ int MemoryPool::getNumRecordsInBlock() const {
     return utilised_block_size;
 }
 
-int MemoryPool::getBlockID(void *recordAddress)
+void* MemoryPool::getBlockAddress(void *recordAddress)
 {
     auto *record = new Record;
     memcpy(record, recordAddress, RECORD_SIZE);
 
-    return record->block_id ;
+    return record->block_add ;
 }
 
 /*
