@@ -5,6 +5,7 @@
 #include "BPlusTree.h"
 #include <list>
 #include "Block.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -867,11 +868,12 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
         {
             for (int i = 0; i < current_node->size; i++)
             {
-                if (current_node->keys[i].key <= upperkey)
+                if (current_node->keys[i].key >= lowerkey &&
+                    current_node->keys[i].key <= upperkey)
                 {
                     auto temp_address = current_node->children[i] ;
                     SearchAddresslist.push_back(temp_address);
-                    // disk->displayRecord(temp_address);
+//                    disk->displayRecord(temp_address);
                     count++;
                 }
 
@@ -888,14 +890,13 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        cout << "- Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
     }
 }
 
 void BPlusTree::displayExp3Results(MemoryPool *disk)
 {
     int num ;
-
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -904,9 +905,8 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time = end - start;
     cout << " - Running time of Retrieval process: " << elapsed_time.count() << " seconds" << endl;
-
     cout << " - The number of index nodes the process accesses: " << indexblks << endl;
-    cout << " - The average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
+    cout << " - The average of FG3_PCT_home values of the records that are returned: " << setprecision(8) << getAverage(disk) << endl;
     cout << " - No. of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
     //cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
 
@@ -940,11 +940,11 @@ void BPlusTree::displayExp4Results(MemoryPool *disk)
 
 
 
-float BPlusTree::getAverage(MemoryPool *disk)
+double BPlusTree::getAverage(MemoryPool *disk)
 {
-    float sum=0;
-    float average=0;
-    float value ;
+    double sum=0;
+    double average=0;
+    double value;
     int ID ;
 
     for (int i=0; i < SearchAddresslist.size(); i++)

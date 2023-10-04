@@ -32,7 +32,6 @@ int main()
     // Initialize B+ Tree
     BPlusTree tree;
     int count = 0;
-    int data_limit = 20;
 
     bool header = true;
     if (datafile.is_open())
@@ -41,7 +40,7 @@ int main()
              << endl;
         string line;
 
-        while (getline(datafile, line) && data_limit > 0) /*DATA LIMIT FOR DELETION TESTING REMOVE LATER*/
+        while (getline(datafile, line))
         {
 
             // Skip header of the txt file
@@ -59,8 +58,7 @@ int main()
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
-            tree.displayTree();
-            data_limit--;
+            // tree.displayTree();
         }
 
         // STORE THE BPLUSTREE ONCE READING IS DONE
@@ -95,16 +93,14 @@ int main()
     cout << endl;
 
     // Experiment 2 Results
-    // disk_tree->displayExp2Results();
+    disk_tree->displayExp2Results();
 
     // Experiment 3 Results
-    cout <<  "==================================================================" << endl;
-    cout << "Experiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
+    cout << "\nExperiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
     tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
-    cout <<  "==================================================================" << endl;
-    cout << "Experiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
+    cout << "\nExperiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
     // tree.displayExp4Results(&disk);
 
     // Experiment 5 Results
