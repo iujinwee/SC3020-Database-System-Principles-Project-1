@@ -10,7 +10,7 @@
 #include <vector>
 
 const int BLOCK_SIZE = 400;
-const int m = 22;
+const int m = 3;
 struct MemoryPool;
 
 /*

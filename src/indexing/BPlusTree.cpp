@@ -1036,30 +1036,30 @@ int BPlusTree::getNumDataBlock(MemoryPool *disk)
     return count;
 }
 
-void BPlusTree::displayExp5Results(MemoryPool *disk)
-{
-    auto start = std::chrono::high_resolution_clock::now();
-
-    BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk->root);
-    deleteKey(MemoryPool * disk, node, 0.35);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_time = end - start;
-
-    cout << " - Number of Nodes of Updated B+ Tree: " << nodes << endl;
-    cout << " - Number of Levels of Updated B+ Tree: " << levels << endl;
-    cout << " - Content of root node: ";
-    printRootKeys();
-    cout << endl;
-    cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
-
-    // auto start1 = std::chrono::high_resolution_clock::now();
-
-    // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
-
-    // auto end1 = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsed_time1 = end1 - start1;
-
-    // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-    // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
-}
+//void BPlusTree::displayExp5Results(MemoryPool *disk)
+//{
+//    auto start = std::chrono::high_resolution_clock::now();
+//
+//    BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk->root);
+//    deleteKey(MemoryPool * disk, node, 0.35);
+//
+//    auto end = std::chrono::high_resolution_clock::now();
+//    std::chrono::duration<double> elapsed_time = end - start;
+//
+//    cout << " - Number of Nodes of Updated B+ Tree: " << nodes << endl;
+//    cout << " - Number of Levels of Updated B+ Tree: " << levels << endl;
+//    cout << " - Content of root node: ";
+//    printRootKeys();
+//    cout << endl;
+//    cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
+//
+//    // auto start1 = std::chrono::high_resolution_clock::now();
+//
+//    // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
+//
+//    // auto end1 = std::chrono::high_resolution_clock::now();
+//    // std::chrono::duration<double> elapsed_time1 = end1 - start1;
+//
+//    // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
+//    // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+//}
