@@ -10,8 +10,8 @@
 using namespace std;
 
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
-string DATA_DIR = "../data/games.txt";
-
+//string DATA_DIR = "../data/games.txt";
+string DATA_DIR = "C:/Users/Kelly Khoo/Downloads/SC3020-Database-System-Principles/data/games.txt";
 
 int main()
 {
@@ -96,12 +96,12 @@ int main()
     disk_tree->displayExp2Results();
 
     // Experiment 3 Results
-    cout << "\nExperiment 3: retrieve those movies with the “FG_PCT_home” equal to 0.5" << endl;
+    cout << "\nExperiment 3: Retrieve those movies with the atttribute FG_PCT_home equal to 0.5" << endl;
     tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
-    cout << "\nExperiment 4: retrieve those movies with the attribute “FG_PCT_home” from 0.6 to 1" << endl;
-    // tree.displayExp4Results(&disk);
+    cout << "\nExperiment 4: retrieve those movies with the attribute FG_PCT_home from 0.6 to 1" << endl;
+    tree.displayExp4Results(&disk);
 
     // Experiment 5 Results
     //    disk_tree->deleteKey(0.35);

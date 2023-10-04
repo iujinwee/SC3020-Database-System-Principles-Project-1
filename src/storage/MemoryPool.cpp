@@ -303,7 +303,6 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 {
     int datablks = 0;
 
- 
     for (int i = 0; i < block_ptr_list.size(); i++)
     {
         int num_records = 0;
@@ -331,7 +330,7 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
             if (value >= lowerkey && value <= upperkey)
             {
 
-                displayRecord(record);
+                // displayRecord(record);
                 BFSearchAddresslist.push_back(record_ptr);
 
             }

@@ -4,8 +4,9 @@
 
 #include "BPlusTree.h"
 #include <list>
-#include "Block.h"
+#include "../storage//Block.h"
 #include <iomanip>
+#include <chrono>
 
 using namespace std;
 
@@ -853,6 +854,9 @@ void BPlusTree::displayExp2Results()
 
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
+    
+    SearchAddresslist.clear() ;
+    
     // If tree is empty
     if (root == nullptr)
     {
@@ -890,7 +894,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        // cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
     }
 }
 
@@ -910,7 +914,7 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     cout << " - No. of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
     //cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
 
-    /*
+    
 
     auto start1 = std::chrono::high_resolution_clock::now();
 
@@ -921,7 +925,7 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
 
     cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
     cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
-    */
+    
 
 
 }
