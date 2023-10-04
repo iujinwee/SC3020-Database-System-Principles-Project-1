@@ -118,9 +118,23 @@ void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
         new_block->addNode(&newNode);
 
         // Update block attributes
-        new_block->size += sizeof(BPlusTreeNode);
-        new_block->num_records++;
+        // new_block->size += sizeof(BPlusTreeNode);
+        // new_block->num_records++;
     }
+}
+
+void MemoryPool::deleteBPlusTreeNode(BPlusTreeNode *node) {
+
+        Block *dBlock = (Block*) node;
+        // Move the content of the BPlusTree node into the designated memory block
+        dBlock->deleteNode(&dBlock);
+
+        // Update block attributes
+        // dBlock->size-=sizeof(BPlusTreeNode);
+        // dBlock->num_records--;
+        // Update block
+        current_memory_size -= block_size;
+        num_used_blocks -= 1;
 }
 
 void MemoryPool::saveBPlusTree(BPlusTree tree) {
@@ -153,6 +167,23 @@ void *MemoryPool::saveRecord(Record newRecord) {
     num_accessed_blocks += 1;
 
     return record_address;
+}
+
+void *MemoryPool::deletemRecord(Record* dRecord) {
+
+    Block* dBlock = dBlock->findBlock(dRecord);
+    cout << "==================================================================" << endl;
+    dBlock->deleteRecord(dRecord);
+
+    if(dBlock->size==0){
+        delete dBlock;
+        num_used_data_blocks--;
+
+    }
+
+    num_used_records -= 1;
+
+    return dRecord;
 }
 
 
