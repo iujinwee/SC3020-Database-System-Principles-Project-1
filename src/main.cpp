@@ -93,7 +93,7 @@ int main()
     cout << endl;
 
     // Experiment 2 Results
-    disk_tree->displayExp2Results();
+    // disk_tree->displayExp2Results();
 
     // Experiment 3 Results
     //    disk_tree->searchNode(0.5);
@@ -129,6 +129,14 @@ int main()
     // node->deleteKeyInNonLeafNode();
     // disk_tree->MergeWithRight_NonLeafNode(node->size, node, node->next);
     // disk_tree->displayTree();
+    // disk_tree->deleteKey(&disk,disk_tree->root,0.4);
+    BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
+    node = static_cast<BPlusTreeNode *>(node->children[0]);
+    disk_tree->printNode(node,0);
+    node->deleteKeyInLeafNode(&disk);
+     disk_tree->printNode(node,0);
+    // disk_tree->displayTree();
+    
 
     /* --------------------------------------------------------------------------------------- */
 

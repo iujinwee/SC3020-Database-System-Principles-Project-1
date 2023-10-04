@@ -435,7 +435,7 @@ void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
     {
         // Assuming children[0] points to the data you want to delete
         Record* dRecord = (Record*)children[0]; 
-        disk->deleteRecord(dRecord);
+        disk->deletemRecord(dRecord);
     }
 
     // delete current key and shift behind keys and ptrs forward

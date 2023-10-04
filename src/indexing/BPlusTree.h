@@ -71,7 +71,7 @@ private:
 
     void printRootKeys();
 
-    void printNode(BPlusTreeNode *node, int level);
+    
 
     [[nodiscard]] BPlusTreeNode *searchInsertionNode(float key) const;
 
@@ -91,6 +91,8 @@ public:
     int levels = 0;
 
     void displayTree();
+
+    void printNode(BPlusTreeNode *node, int level);
 
     BPlusTreeNode *searchNode(float key);
 

@@ -41,7 +41,7 @@ public:
 
     void* saveRecord(Record newRecord);
 
-    void* deleteRecord(Record* newRecord);
+    void* deletemRecord(Record* newRecord);
 
     void saveBPlusTreeNode(BPlusTreeNode *newNode);
 

@@ -154,11 +154,12 @@ void *MemoryPool::saveRecord(Record newRecord) {
     return record_address;
 }
 
-void *MemoryPool::deleteRecord(Record* dRecord) {
+void *MemoryPool::deletemRecord(Record* dRecord) {
 
     Block* dBlock = dBlock->findBlock(dRecord);
+    cout << "==================================================================" << endl;
     dBlock->deleteRecord(dRecord);
-    
+
     if(dBlock->size==0){
         delete dBlock;
         num_used_data_blocks--;

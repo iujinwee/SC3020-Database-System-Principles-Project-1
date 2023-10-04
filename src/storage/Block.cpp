@@ -33,11 +33,10 @@ void* Block::addRecord(void *recordAddress){
 };
 
 void* Block::deleteRecord(void *recordAddress){
-
-    memset(recordAddress, 0, RECORD_SIZE);
-
     this->size -= RECORD_SIZE;
     this->num_records--;
+    
+    memset(recordAddress, 0, RECORD_SIZE);
 
     return recordAddress;
 };
