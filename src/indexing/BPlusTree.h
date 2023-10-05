@@ -122,9 +122,9 @@ public:
 
     void BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    void MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+    void MergeWithRight_LeafNode(MemoryPool *disk, int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
-    void MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
+    void MergeWithRight_NonLeafNode(MemoryPool *disk, int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode);
 
     ~BPlusTree();
 };

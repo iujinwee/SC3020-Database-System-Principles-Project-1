@@ -124,7 +124,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 else
                 {
                     BPlusTreeNode* nNode = node->next;
-                    MergeWithRight_LeafNode(node->size, node, nNode);
+                    MergeWithRight_LeafNode(disk,node->size, node, nNode);
                     // propagate update key of right
                     checkKey(nNode);
                     return 1;
@@ -187,7 +187,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             }
             else
             {
-                MergeWithRight_NonLeafNode(node->size, node, nNode);
+                MergeWithRight_NonLeafNode(disk, node->size, node, nNode);
                 // propagate update key of right
                 checkKey(nNode);
                 return 1;
@@ -218,9 +218,9 @@ void BPlusTree::checkKey(BPlusTreeNode *node)
             checkKey(node->parent);
         } else{
             BPlusTreeKey LB = findLB_rightSubTree(node->parent, index);
-            if (node->parent->keys[index-1].key != LB.key | node->parent->keys[index-1].count != LB.count)
+            if (node->parent->keys[index].key != LB.key | node->parent->keys[index].count != LB.count)
             {
-                node->parent->keys[index-1] = LB;
+                node->parent->keys[index] = LB;
                 checkKey(node->parent);
             }
         }
@@ -234,7 +234,7 @@ BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
     if(node->is_leaf){
         return node->keys[0];
     } else{
-        node = (BPlusTreeNode *)node->children[index_key ];
+        node = (BPlusTreeNode *)node->children[index_key+1 ];
         while (!node->is_leaf)
         {
             node = (BPlusTreeNode *)node->children[0];
@@ -244,7 +244,7 @@ BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 
 }
 
-void BPlusTree::MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+void BPlusTree::MergeWithRight_LeafNode(MemoryPool *disk, int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
 {
     // Shift keys and children of right node to the back
     rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge);
@@ -258,20 +258,20 @@ void BPlusTree::MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftN
     }
 
     // Delete leftNode
-    delete leftNode;
+    disk->deleteBPlusTreeNode(leftNode);
 }
 
-void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
+void BPlusTree::MergeWithRight_NonLeafNode(MemoryPool *disk, int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
 {
 
     // num_keys_merge = number keys merging fron leftnode
     //+1 to create new key
 
     // Shift keys and children of right node to the back, leaving 1 empty space prior to first key
-    rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge + 1);
+    rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge +1);
 
     // create new key
-    rightNode->keys[num_keys_merge] = findLB_rightSubTree(rightNode, num_keys_merge+1); // take smallest key of right subtree
+    rightNode->keys[num_keys_merge] = findLB_rightSubTree(rightNode, num_keys_merge); // take smallest key of right subtree
 
     // Move keys and children ptr from leftNode over to rightNode
     for (int i = 0; i < num_keys_merge; i++)
@@ -284,7 +284,7 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
     (static_cast<BPlusTreeNode *>(rightNode->children[0]))->parent = rightNode; // reassign parent
 
     // Delete leftNode
-    delete leftNode;
+    disk->deleteBPlusTreeNode(leftNode);
 }
 
 void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
@@ -306,16 +306,21 @@ void BPlusTree::BorrowFromRight(int num_keys_borrow, BPlusTreeNode *leftNode,
     {
         if (i == 0)
         {
+            // // create new key that has value= smallest key in 1st children of rightNode
+            // leftNode->children[j + 1] = rightNode->children[i];                                     // shift right node child over
+            // (static_cast<BPlusTreeNode *>(leftNode->children[i]))->parent = leftNode;               // reassign parent
+            // leftNode->keys[j] = (static_cast<BPlusTreeNode *>(leftNode->children[j + 1]))->keys[0]; // access key member
+            // j++;
+
             // create new key that has value= smallest key in 1st children of rightNode
-            leftNode->children[j + 1] = rightNode->children[i];                                     // shift right node child over
+            leftNode->children[j+1] = rightNode->children[i];                                     // shift right node child over
             (static_cast<BPlusTreeNode *>(leftNode->children[i]))->parent = leftNode;               // reassign parent
-            leftNode->keys[j] = (static_cast<BPlusTreeNode *>(leftNode->children[j + 1]))->keys[0]; // access key member
-            j++;
+            leftNode->keys[j] = findLB_rightSubTree(leftNode,j);
         }
         // shift keys and children
-        leftNode->keys[j] = rightNode->keys[i];                                   // add keys from rightNode
-        leftNode->children[j + 1] = rightNode->children[i + 1];                   // add children ptr from rightNode
-        (static_cast<BPlusTreeNode *>(leftNode->children[i]))->parent = leftNode; // reassign parent
+        leftNode->keys[j+i] = rightNode->keys[i];                                   // add keys from rightNode
+        leftNode->children[j + 1 +i] = rightNode->children[i];                   // add children ptr from rightNode
+        (static_cast<BPlusTreeNode *>(leftNode->children[j + 1 +i]))->parent = leftNode; // reassign parent
         j++;                                                                      // update index for left node
     }
     for (int i = 0; i < num_keys_borrow; i++)
