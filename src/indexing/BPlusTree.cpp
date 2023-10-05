@@ -33,6 +33,7 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
     if (!root)
     {
         root = new BPlusTreeNode(true);
+        root->size++;
         nodes = 1;
         levels = 1;
         addNewKey(root, 0, key, 1, recordAddress);
@@ -83,7 +84,8 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         if (node->keys[node->size - 1].key <= dkey)
         {
             // delete node if largest index<dkey
-            for (int i = 0; i < node->size; i++)
+            int dsize=node->size;
+            for (int i = 0; i < dsize; i++)
             {
                 node->deleteKeyInLeafNode(disk);
             }
@@ -122,7 +124,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 else
                 {
                     BPlusTreeNode* nNode = node->next;
-                    MergeWithRight_LeafNode(missing, node, nNode);
+                    MergeWithRight_LeafNode(node->size, node, nNode);
                     // propagate update key of right
                     checkKey(nNode);
                     return 1;
@@ -134,29 +136,38 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
     else if (!node->is_leaf)
     {
         int full_delete = 0;
-        for (int i = 0; i < node->size; i++)
+        int nd=0;
+        int dsize=node->size+1;
+        for (int i = 0; i < dsize; i++)
         {
             full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[i], dkey);
             if (full_delete)
             {
-                node->deleteKeyInNonLeafNode();
-            }
-            else
-            {
-                // update left and propagte upwards
-                checkKey((BPlusTreeNode *)node->children[0]);
-                break;
+                nd++;
             }
         }
+        if(nd>node->size){
+            nd=node->size;
+        }
+        for(int i= 0; i<nd;i++){
+            node->deleteKeyInNonLeafNode();
+        }
+
         // check structure
-        if (node->size == 0)
+        if (node->size <= 0&node!=root)
         {
             disk->deleteBPlusTreeNode(node);
             return 1;
         }
 
+        else if(node->size==0&node==root){
+            root=(BPlusTreeNode *) node->children[0];
+            return 0;
+        }
+        
         else if (node == root & node->size < floor(m / 2))
         {
+            checkKey((BPlusTreeNode *)node->children[0]);
             return 0;
         }
         else if (node->size < floor(m / 2))
@@ -164,19 +175,21 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             // check if need borrow/merge before return
             //  number of missing keys
             int missing = floor(m / 2) - node->size;
+            //find next node
+            BPlusTreeNode* nNode = findNextNonLeafNode(node);
             // if right can borrow
-            if (node->next->size - missing >= floor(m / 2))
+            if ((nNode->size - missing) >= floor(m / 2))
             {
-                BorrowFromRight(missing, node, node->next);
+                BorrowFromRight(missing, node, nNode);
                 // propagate update key of right
-                checkKey(findNextNonLeafNode(node));
+                checkKey(nNode);
                 return 0;
             }
             else
             {
-                MergeWithRight_NonLeafNode(missing, node, findNextNonLeafNode(node));
+                MergeWithRight_NonLeafNode(node->size, node, nNode);
                 // propagate update key of right
-                checkKey(findNextNonLeafNode(node));
+                checkKey(nNode);
                 return 1;
             }
         }
@@ -218,12 +231,17 @@ void BPlusTree::checkKey(BPlusTreeNode *node)
 BPlusTreeKey BPlusTree::findLB_rightSubTree(BPlusTreeNode *node, int index_key)
 {
     // For any given node, find
-    node = (BPlusTreeNode *)node->children[index_key ];
-    while (!node->is_leaf)
-    {
-        node = (BPlusTreeNode *)node->children[0];
+    if(node->is_leaf){
+        return node->keys[0];
+    } else{
+        node = (BPlusTreeNode *)node->children[index_key ];
+        while (!node->is_leaf)
+        {
+            node = (BPlusTreeNode *)node->children[0];
+        }
+        return node->keys[0];
     }
-    return node->keys[0];
+
 }
 
 void BPlusTree::MergeWithRight_LeafNode(int num_keys_merge, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode)
@@ -253,7 +271,7 @@ void BPlusTree::MergeWithRight_NonLeafNode(int num_keys_merge, BPlusTreeNode *le
     rightNode = rightNode->ShiftKeysToBack(rightNode, num_keys_merge + 1);
 
     // create new key
-    rightNode->keys[num_keys_merge] = findLB_rightSubTree(rightNode, num_keys_merge); // take smallest key of right subtree
+    rightNode->keys[num_keys_merge] = findLB_rightSubTree(rightNode, num_keys_merge+1); // take smallest key of right subtree
 
     // Move keys and children ptr from leftNode over to rightNode
     for (int i = 0; i < num_keys_merge; i++)
@@ -410,11 +428,12 @@ void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
     }
 
     // delete current key and shift behind keys and ptrs forward
-    for (int j = 0; j < size - 1; j++)
+    for (int j = 0; j < size -1; j++)
     {
         keys[j] = keys[j + 1];
         children[j] = children[j + 1];
     }
+    
     keys[size - 1] = BPlusTreeKey{};
     children[size - 1] = children[size];
     children[size] = nullptr;
@@ -427,6 +446,7 @@ void BPlusTreeNode::deleteKeyInNonLeafNode()
     // This function is for non leaf nodes only
 
     // delete current key and shift behind keys and ptrs forward
+
     for (int j = 0; j < size - 1; j++)
     {
         keys[j] = keys[j + 1];
@@ -444,7 +464,7 @@ BPlusTreeNode *BPlusTree::findNextNonLeafNode(BPlusTreeNode *node)
     while (node->parent != root)
     {
 
-        if (node->findIndexChild(node) == node->parent->size - 1)
+        if (node->findIndexChild(node)!=0&node->findIndexChild(node) == node->parent->size )
         {
             node = node->parent;
             level++;

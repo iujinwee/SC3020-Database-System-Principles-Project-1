@@ -32,7 +32,7 @@ int main()
     // Initialize B+ Tree
     BPlusTree tree;
     int count = 0;
-    int data_limit = 20;
+    // int data_limit = 24;
 
     bool header = true;
     if (datafile.is_open())
@@ -41,7 +41,8 @@ int main()
              << endl;
         string line;
 
-        while (getline(datafile, line) && data_limit > 0) /*DATA LIMIT FOR DELETION TESTING REMOVE LATER*/
+        while (getline(datafile, line)) /*DATA LIMIT FOR DELETION TESTING REMOVE LATER*/
+        // while (getline(datafile, line) && data_limit > 0) /*DATA LIMIT FOR DELETION TESTING REMOVE LATER*/
         {
 
             // Skip header of the txt file
@@ -60,7 +61,7 @@ int main()
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
             // tree.displayTree();
-            data_limit--;
+            // data_limit--;
         }
 
         // STORE THE BPLUSTREE ONCE READING IS DONE
@@ -93,6 +94,7 @@ int main()
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
     cout << endl;
+    disk_tree->displayTree();
 
     // Experiment 2 Results
     disk_tree->displayExp2Results();
@@ -157,13 +159,14 @@ int main()
     // node->deleteKeyInNonLeafNode();
     // disk_tree->MergeWithRight_NonLeafNode(node->size, node, node->next);
     // disk_tree->displayTree();
-    disk_tree->deleteKey(&disk,disk_tree->root,0.43);
+  
+    disk_tree->deleteKey(&disk,disk_tree->root,0.35);
     // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
     // node = static_cast<BPlusTreeNode *>(node->children[0]);
     // disk_tree->printNode(node,0);
     // node->deleteKeyInLeafNode(&disk);
     //  disk_tree->printNode(node,0);
-    disk_tree->displayTree();
+    // disk_tree->displayTree();
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
 
     

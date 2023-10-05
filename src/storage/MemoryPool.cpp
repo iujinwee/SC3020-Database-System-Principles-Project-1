@@ -172,7 +172,6 @@ void *MemoryPool::saveRecord(Record newRecord) {
 void *MemoryPool::deletemRecord(Record* dRecord) {
 
     Block* dBlock = dBlock->findBlock(dRecord);
-    cout << "==================================================================" << endl;
     dBlock->deleteRecord(dRecord);
 
     if(dBlock->size==0){
