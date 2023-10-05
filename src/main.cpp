@@ -130,11 +130,25 @@ int main()
     //  BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
     //  node->ShiftKeysToBack(node, 1);
 
-    // 2. Test BorrowFromRight
-    //  BPlusTreeNode *leftNode = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
-    //  BPlusTreeNode *rightNode = static_cast<BPlusTreeNode *>(disk_tree->root->children[2]);
-    //  disk_tree->BorrowFromRight(1, leftNode, rightNode);
-    //  disk_tree->displayTree();
+    // 2. Test BorrowFromRight_LeafNode
+    // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[1]);
+    // BPlusTreeNode *leftNode = static_cast<BPlusTreeNode *>(node->children[2]);
+    // BPlusTreeNode *rightNode = static_cast<BPlusTreeNode *>(node->children[3]);
+    // leftNode->deleteKeyInLeafNode(&disk);
+    // leftNode->deleteKeyInLeafNode(&disk);
+    // disk_tree->BorrowFromRight_LeafNode(1, leftNode, rightNode, &disk);
+    // disk_tree->displayTree();
+
+    // 3. Test BorrowFromRight_NonLeafNode
+    // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root);
+    // BPlusTreeNode *leftNode = static_cast<BPlusTreeNode *>(node->children[0]);
+    // BPlusTreeNode *rightNode = static_cast<BPlusTreeNode *>(node->children[1]);
+    // for (int i = 0; i < m; i++)
+    // {
+    //     leftNode->deleteKeyInNonLeafNode(); // delete entire left node
+    // }
+    // disk_tree->BorrowFromRight_NonLeafNode(1, leftNode, rightNode);
+    // disk_tree->displayTree();
 
     // 3. Test findIndexChild
     // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
@@ -154,7 +168,7 @@ int main()
     // node->deleteKeyInNonLeafNode();
     // disk_tree->MergeWithRight_NonLeafNode(node->size, node, node->next);
     // disk_tree->displayTree();
-    disk_tree->deleteKey(&disk,disk_tree->root,0.43);
+    disk_tree->deleteKey(&disk, disk_tree->root, 0.43);
     // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
     // node = static_cast<BPlusTreeNode *>(node->children[0]);
     // disk_tree->printNode(node,0);
