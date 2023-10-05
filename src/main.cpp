@@ -12,7 +12,6 @@ using namespace std;
 int MEMORY_POOL_SIZE = 100 * 1024 * 1024; // 100MB
 string DATA_DIR = "../data/games.txt";
 
-
 int main()
 {
 
@@ -113,20 +112,16 @@ int main()
 
     cout << "==================================================================" << endl;
 
-
     // KELLY CODE
     // Retrieve records with "FG_PCT_Home" = 0.5
 
-    //tree.searchKey(&disk, 0.5);
-    //tree.displayExp3Results(&disk);
-
+    // tree.searchKey(&disk, 0.5);
+    // tree.displayExp3Results(&disk);
 
     // disk_tree->displayExp3Results();
     //    disk_tree->searchNode(0.5);
     //    disk_tree->displayExp3Results();
     //
-
-
 
     // ZHIQI & CLARE
 
@@ -159,8 +154,7 @@ int main()
     // node->deleteKeyInNonLeafNode();
     // disk_tree->MergeWithRight_NonLeafNode(node->size, node, node->next);
     // disk_tree->displayTree();
-  
-    disk_tree->deleteKey(&disk,disk_tree->root,0.35);
+    disk_tree->deleteKey(&disk,disk_tree->root,0.43);
     // BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk_tree->root->children[0]);
     // node = static_cast<BPlusTreeNode *>(node->children[0]);
     // disk_tree->printNode(node,0);
@@ -169,14 +163,9 @@ int main()
     // disk_tree->displayTree();
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
 
-    
-
     /* --------------------------------------------------------------------------------------- */
 
     // Bruteforce Linear Scan
-
-
-
 
     // Experiment 3 (KELLY VERSION)
 
