@@ -62,7 +62,7 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
 }
 
 int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
-{
+{   
     if (root == nullptr)
     {
         cout << "B+Tree is empty\n";
@@ -95,21 +95,23 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         else
         {
             int nd = 0;
-            for (int i = 0; i < node->size; i++)
+            int dsize = node->size;
+            for (int i = 0; i < dsize; i++)
             {
                 if (node->keys[i].key <= dkey)
                 {
                     nd++;
+                    if(i!=dsize){
+                        node->deleteKeyInLeafNode(disk);
+                    }
                 }
                 else
                 {
                     break;
                 }
             }
-            for (int i = 0; i < nd; i++)
-            {
-                node->deleteKeyInLeafNode(disk);
-            }
+
+
             // check if need borrow/merge before return
             if (node->size < floor((m + 1) / 2))
             {
@@ -127,12 +129,20 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 else
                 {
                     BPlusTreeNode *nNode = node->next;
+                    int index=node->findIndexChild(node);
                     MergeWithRight_LeafNode(disk, node->size, node, nNode);
                     // propagate update key of right
-                    checkKey(nNode);
-                    return 1;
+                    if(index==0){
+                        node->parent->deleteKeyInNonLeafNode();
+                        checkKey(nNode);
+                        return 0;
+                    } else{
+                        checkKey(nNode);
+                        return 1;
+                    }
                 }
             }
+            checkKey(node);
             return 0;
         }
     }
@@ -147,16 +157,19 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             if (full_delete)
             {
                 nd++;
+                if(i!=dsize-1){
+                    node->deleteKeyInNonLeafNode();
+                }
+                
+            } else{
+                break;
             }
         }
-        if (nd > node->size)
+        if (nd > dsize)
         {
-            nd = node->size;
-        }
-        for (int i = 0; i < nd; i++)
-        {
-            node->deleteKeyInNonLeafNode();
-        }
+            nd = dsize;
+        } 
+
 
         // check structure
         if (node->size <= 0 & node != root)
@@ -194,16 +207,27 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             }
             else
             {
+                int index=node->findIndexChild(node);
                 MergeWithRight_NonLeafNode(disk, node->size, node, nNode);
                 // propagate update key of right
-                checkKey(nNode);
-                return 1;
+                if(index==0){
+                    node->parent->deleteKeyInNonLeafNode();
+                    checkKey(nNode);
+                    return 0;
+                } else{
+                    checkKey(nNode);
+                    return 1;
+                }
             }
         }
-        else
+        else if(nd>0)
         {
             // propage the update the left most key
             checkKey(node);
+            return 0;
+        }
+        else
+        {
             return 0;
         }
     }
@@ -324,12 +348,14 @@ void BPlusTree::BorrowFromRight_NonLeafNode(int num_keys_borrow, BPlusTreeNode *
             leftNode->keys[j] = findLB_rightSubTree(leftNode, j);
 
             j++;
+        } else{
+            // shift keys and children
+            leftNode->keys[j] = rightNode->keys[i-1];                                       // add keys from rightNode
+            leftNode->children[j + 1] = rightNode->children[i ];                       // add children ptr from rightNode
+            (static_cast<BPlusTreeNode *>(leftNode->children[j ]))->parent = leftNode; // reassign parent
+            j++;   
         }
-        // shift keys and children
-        leftNode->keys[j] = rightNode->keys[i];                                       // add keys from rightNode
-        leftNode->children[j + 1] = rightNode->children[i + 1];                       // add children ptr from rightNode
-        (static_cast<BPlusTreeNode *>(leftNode->children[j + 1]))->parent = leftNode; // reassign parent
-        j++;                                                                          // update index for left node
+                                                                               // update index for left node
     }
     for (int i = 0; i < num_keys_borrow; i++)
     {
@@ -337,7 +363,7 @@ void BPlusTree::BorrowFromRight_NonLeafNode(int num_keys_borrow, BPlusTreeNode *
     }
 
     // update size
-    leftNode->size += num_keys_borrow + 1;
+    leftNode->size += num_keys_borrow;
 }
 
 void BPlusTree::BorrowFromRight_LeafNode(int num_keys_borrow, BPlusTreeNode *leftNode, BPlusTreeNode *rightNode, MemoryPool *disk)
@@ -507,23 +533,22 @@ BPlusTreeNode *BPlusTree::findNextNonLeafNode(BPlusTreeNode *node)
     while (node->parent != root)
     {
 
-        if (node->findIndexChild(node) != 0 & node->findIndexChild(node) == node->parent->size)
+        if ( node->findIndexChild(node)== node->parent->size)
         {
             node = node->parent;
             level++;
         }
         else
         {
-            node = (BPlusTreeNode *)node->parent->children[node->findIndexChild(node) + 1];
             if (level == 0)
             {
+                node = (BPlusTreeNode *)node->parent->children[node->findIndexChild(node) + 1];
                 return node;
             }
             break;
         }
-        break;
     }
-    if (node->parent != root & node->findIndexChild(node) == node->parent->size - 1)
+    if (node->parent == root & node->findIndexChild(node) == node->parent->size)
     {
         std::cout << "No more next node";
         return NULL;
@@ -555,13 +580,13 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 
     std::cout << "| Size: " << node->size << std::endl;
 
-    if (!node->is_leaf)
-    {
-        for (int i = 0; i <= node->size; ++i)
-        {
-            printNode((BPlusTreeNode *)node->children[i], level + 1);
-        }
-    }
+    // if (!node->is_leaf)
+    // {
+    //     for (int i = 0; i <= node->size; ++i)
+    //     {
+    //         printNode((BPlusTreeNode *)node->children[i], level + 1);
+    //     }
+    // } 
 }
 
 BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
@@ -981,7 +1006,7 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     // cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
 
     /*
-
+    
     auto start1 = std::chrono::high_resolution_clock::now();
 
     int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0.5,0.5);
@@ -1004,6 +1029,7 @@ void BPlusTree::displayExp4Results(MemoryPool *disk)
     cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
     cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.6, 1.0) << endl;
 }
+
 
 double BPlusTree::getAverage(MemoryPool *disk)
 {
@@ -1099,30 +1125,46 @@ int BPlusTree::getNumDataBlock(MemoryPool *disk)
     return count;
 }
 
-// void BPlusTree::displayExp5Results(MemoryPool *disk)
-//{
-//     auto start = std::chrono::high_resolution_clock::now();
-//
-//     BPlusTreeNode *node = static_cast<BPlusTreeNode *>(disk->root);
-//     deleteKey(MemoryPool * disk, node, 0.35);
-//
-//     auto end = std::chrono::high_resolution_clock::now();
-//     std::chrono::duration<double> elapsed_time = end - start;
-//
-//     cout << " - Number of Nodes of Updated B+ Tree: " << nodes << endl;
-//     cout << " - Number of Levels of Updated B+ Tree: " << levels << endl;
-//     cout << " - Content of root node: ";
-//     printRootKeys();
-//     cout << endl;
-//     cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
-//
-//     // auto start1 = std::chrono::high_resolution_clock::now();
-//
-//     // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
-//
-//     // auto end1 = std::chrono::high_resolution_clock::now();
-//     // std::chrono::duration<double> elapsed_time1 = end1 - start1;
-//
-//     // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-//     // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
-// }
+void BPlusTree::displayExp5Results(MemoryPool *disk)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    deleteKey(disk, root, 0.35);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time = end - start;
+
+    cout << " - Number of Nodes of Updated B+ Tree: " << nodes << endl;
+    cout << " - Number of Levels of Updated B+ Tree: " << levels << endl;
+    cout << " - Content of root node: ";
+    printRootKeys();
+    cout << endl;
+    cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
+
+    auto *current_node = root;
+    while(!current_node->is_leaf){
+        current_node=(BPlusTreeNode *)current_node->children[0];
+        printNode(current_node,0);
+    }
+    int total=0;
+    printNode(current_node,0);
+    cout<<"current total"<<total<<endl;
+    while(current_node->next!=nullptr){
+        total+=current_node->size;
+        current_node=current_node->next;
+        printNode(current_node,0);
+        cout<<"current total"<<total<<endl;
+    }
+    total+=current_node->size;
+    cout << "Size of records " << total << endl;
+
+    // auto start1 = std::chrono::high_resolution_clock::now();
+
+    // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
+
+    // auto end1 = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed_time1 = end1 - start1;
+
+    // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
+    // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+}
