@@ -217,7 +217,7 @@ void BPlusTree::checkKey(BPlusTreeNode *node)
         if(index==0){
             checkKey(node->parent);
         } else{
-            BPlusTreeKey LB = findLB_rightSubTree(node->parent, index);
+            BPlusTreeKey LB = findLB_rightSubTree(node->parent, index-1);
             if (node->parent->keys[index].key != LB.key | node->parent->keys[index].count != LB.count)
             {
                 node->parent->keys[index] = LB;
