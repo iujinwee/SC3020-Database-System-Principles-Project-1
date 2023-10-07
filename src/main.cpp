@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -58,6 +57,9 @@ int main()
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
             // tree.displayTree();
+
+
+             count++;
         }
 
         // STORE THE BPLUSTREE ONCE READING IS DONE
@@ -81,9 +83,10 @@ int main()
 
     // We will simulate reading from the disk, by loading the tree from the memory pool.
     auto disk_tree = (BPlusTree *)(((Block *)disk.bplustree_ptr)->block_ptr);
+    // disk_tree->displayTree();
 
     // Experiment 1 Results
-    cout << "==================================================================" << endl;
+    cout << "==================================================================================================================================================================" << endl;
     cout << "Experiment 1: Reading data text file into DB system." << endl;
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
@@ -91,23 +94,36 @@ int main()
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
     cout << endl;
 
+
+    // BPlusTreeNode* node=(BPlusTreeNode*) disk_tree->root;
+    // while(!node->is_leaf){
+    //     disk_tree->printNode(node,0);
+    //     node=(BPlusTreeNode*) node->children[0];
+    // }
+    // disk_tree->printNode(node,0);
+    // cout<<"Reach leaf node------"<<endl;
+    // // while(node->next!=nullptr){
+    //     node=(BPlusTreeNode*) node->next;
+    //     disk_tree->printNode(node,0);
+    // }
     // Experiment 2 Results
     disk_tree->displayExp2Results();
 
     // Experiment 3 Results
     cout << "\nExperiment 3: Retrieve those movies with the atttribute FG_PCT_home equal to 0.5" << endl;
-    tree.displayExp3Results(&disk);
+     tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
     cout << "\nExperiment 4: retrieve those movies with the attribute FG_PCT_home from 0.6 to 1" << endl;
-    tree.displayExp4Results(&disk);
+     tree.displayExp4Results(&disk);
 
     // Experiment 5 Results
     //    disk_tree->deleteKey(0.35);
-    //    disk_tree->displayExp5Results();
+    cout << "\nExperiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively" << endl;
 
-    cout << "==================================================================" << endl;
+//    disk_tree->displayExp5Results(&disk);
 
+    cout << "==================================================================================================================================================================" << endl;
 
     // KELLY CODE
     // Retrieve records with "FG_PCT_Home" = 0.5
