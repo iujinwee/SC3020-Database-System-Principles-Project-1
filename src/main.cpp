@@ -60,7 +60,7 @@ int main()
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
-//            tree.displayTree();
+            tree.displayTree();
 
 
              count++;

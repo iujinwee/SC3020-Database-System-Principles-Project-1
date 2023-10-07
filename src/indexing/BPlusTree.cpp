@@ -508,6 +508,10 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
         while (!current_node->is_leaf) {
             for (int i = current_node->size-1; i >= 0; i--) {
 
+                if(current_node->is_leaf){
+                    break;
+                }
+
                 // If key is larger, go to right node
                 if (key >= current_node->keys[i].key) {
 
@@ -515,6 +519,8 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
                     if (target_node != nullptr) {
                         current_node = target_node;
                         continue;
+                    }else{
+                        break;
                     }
                 }
 
@@ -804,11 +810,11 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                         // Reassign parent
                         ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
                     }
-
-                    // Delete the last key in current
-                    cur->keys[index] = BPlusTreeKey{};
-                    cur->children[index + 1] = nullptr;
-                    cur->size--;
+//
+//                    // Delete the last key in current
+//                    cur->keys[index] = BPlusTreeKey{};
+//                    cur->children[index + 1] = nullptr;
+//                    cur->size--;
 
                     index++;
                     continue;
