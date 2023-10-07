@@ -852,7 +852,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
     nodes++;
 
     // Split node
-    int split_index = (int)ceil(m / 2) + 1;
+    int split_index = (int)ceil(m / 2) - 1;
     int index = 0;
     int new_index = 0;
     auto temp = bpKey;
@@ -940,33 +940,28 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                         // Reassign parent
                         ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
                     }
-//
-//                    // Delete the last key in current
-//                    cur->keys[index] = BPlusTreeKey{};
-//                    cur->children[index + 1] = nullptr;
-//                    cur->size--;
 
                     index++;
                     continue;
                 }
 
                 // transfer to new node
-                new_node->keys[new_index] = cur->keys[index];
-                new_node->children[new_index+1] = cur->children[index+1];
+                new_node->keys[new_index] = temp;
+                new_node->children[new_index+1] = temp_address;
 
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
                 cur->children[index + 1] = nullptr;
-
-                // check if new temp is smaller
-                bool newTempSmaller = new_node->keys[new_index].key > temp.key ||
-                        (new_node->keys[new_index].key == temp.key &&
-                        new_node->keys[new_index].count > temp.count);
-
-                // if temp is smaller, swap then re-assign
-                if(newTempSmaller){
-                    swapNonLeafTemp(new_node, new_index, &temp, &temp_address);
-                }
+//
+//                // check if new temp is smaller
+//                bool newTempSmaller = new_node->keys[new_index].key > temp.key ||
+//                        (new_node->keys[new_index].key == temp.key &&
+//                        new_node->keys[new_index].count > temp.count);
+//
+//                // if temp is smaller, swap then re-assign
+//                if(newTempSmaller){
+//                    swapNonLeafTemp(new_node, new_index, &temp, &temp_address);
+//                }
 
                 // Reassign parent
                 ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
@@ -977,14 +972,15 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 new_index++;
             }
 
-            if(index == m-1){
-                // transfer temp to new node
-                new_node->keys[new_index] = temp;
-                new_node->children[new_index+1] = temp_address;
-
-                // Reassign parent
-                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
-            }
+//            if(index == m-1){
+//                // transfer temp to new node
+//                new_node->keys[new_index] = temp;
+//                new_node->children[new_index+1] = temp_address;
+//                new_node->size++;
+//
+//                // Reassign parent
+//                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
+//            }
 
             index++;
         }
