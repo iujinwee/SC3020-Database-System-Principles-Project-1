@@ -641,6 +641,7 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
                 if(current_node->is_leaf){
                     break;
                 }
+                indexblks++;
 
                 // If key to be inserted is lesser than current node key, go to the left children
                 if(current_node->keys[i].key > key){
@@ -1054,7 +1055,7 @@ void BPlusTree::displayExp2Results()
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
     
-    SearchAddresslist.clear() ;
+    SearchAddresslist.clear();
     
     // If tree is empty
     if (root == nullptr)
@@ -1064,7 +1065,34 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
     else
     {
         //find node where first instance of lower key appears
-        auto *current_node = searchInsertionNode(lowerkey);
+        auto current_node = (BPlusTreeNode *) root;
+        while (!current_node->is_leaf) {
+            for (int i = 0; i < current_node->size; i++) {
+                if(current_node->is_leaf){
+                    break;
+                }
+                indexblks++;
+
+                // If key to be inserted is lesser than current node key, go to the left children
+                if(current_node->keys[i].key >= lowerkey){
+                    current_node = (BPlusTreeNode *)current_node->children[i];
+                    break;
+                }
+                    // Key to be inserted is greater than or equal to current node key
+                else{
+                    // Terminate and enter to the right-most children if all exhausted
+                    if(i == current_node->size-1){
+                        current_node = (BPlusTreeNode *) current_node->children[i+1];
+                        break;
+                    }
+
+                    // Iterate to next key
+                    continue;
+                }
+
+            }
+        }
+
         int count = 0;
 
         while (current_node->keys[0].key <= upperkey)
@@ -1076,7 +1104,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
                 {
                     auto temp_address = current_node->children[i] ;
                     SearchAddresslist.push_back(temp_address);
-//                    disk->displayRecord(temp_address);
+                    // disk->displayRecord(temp_address);
                     count++;
                 }
 
