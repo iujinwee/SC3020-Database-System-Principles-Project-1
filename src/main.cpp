@@ -53,13 +53,10 @@ int main()
             new_record.store(line);
             auto new_record_address = disk.saveRecord(new_record);
 
-            if(new_record.fg_pct_home == float(0.516)){
-                cout << endl;
-            }
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
-//            tree.displayTree();
+            // tree.displayTree();
 
 
              count++;
