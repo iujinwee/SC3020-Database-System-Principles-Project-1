@@ -103,7 +103,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             int dsize = node->size;
             for (int i = 0; i < dsize; i++)
             {
-                if (node->keys[i].key <= dkey)
+                if (node->keys[0].key <= dkey)
                 {
                     nd++;
                     if(i!=dsize){
@@ -160,7 +160,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         printNode(node,0);
         for (int i = 0; i < dsize; i++)
         {
-            full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[i], dkey);
+            full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[0], dkey);
             if (full_delete)
             {
                 nd++;
@@ -168,6 +168,8 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                     node->deleteKeyInNonLeafNode();
                 }
                 
+            } else{
+                break;
             }
         }
         if (nd > dsize)
@@ -589,10 +591,10 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 
     if (!node->is_leaf)
     {
-         for (int i = 0; i <= node->size; ++i)
-         {
-             printNode((BPlusTreeNode *)node->children[i], level + 1);
-         }
+        //  for (int i = 0; i <= node->size; ++i)
+        //  {
+        //      printNode((BPlusTreeNode *)node->children[i], level + 1);
+        //  }
     }
 }
 
