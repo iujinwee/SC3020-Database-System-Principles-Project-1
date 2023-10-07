@@ -589,10 +589,10 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 
     if (!node->is_leaf)
     {
-        //  for (int i = 0; i <= node->size; ++i)
-        //  {
-        //      printNode((BPlusTreeNode *)node->children[i], level + 1);
-        //  }
+         for (int i = 0; i <= node->size; ++i)
+         {
+             printNode((BPlusTreeNode *)node->children[i], level + 1);
+         }
     }
 }
 
@@ -1219,11 +1219,11 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     cout << endl;
     cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
 
-    auto *current_node = root;
-    while(!current_node->is_leaf){
-        current_node=(BPlusTreeNode *)current_node->children[0];
+    // auto *current_node = root;
+    // while(!current_node->is_leaf){
+    //     current_node=(BPlusTreeNode *)current_node->children[0];
 
-    }
+    // }
 
     // auto start1 = std::chrono::high_resolution_clock::now();
 
