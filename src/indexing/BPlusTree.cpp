@@ -771,13 +771,13 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 cur->keys[index] = BPlusTreeKey{};
                 cur->children[index + 1] = nullptr;
 
-                // check if new temp is larger
-                bool newTempLarger = new_node->keys[index].key < temp.key ||
-                        (new_node->keys[index].key == temp.key &&
-                        new_node->keys[index].count < temp.count);
+                // check if new temp is smaller
+                bool newTempSmaller = new_node->keys[new_index].key > temp.key ||
+                        (new_node->keys[new_index].key == temp.key &&
+                        new_node->keys[new_index].count > temp.count);
 
                 // if temp is smaller, swap then re-assign
-                if(newTempLarger){
+                if(newTempSmaller){
                     swapNonLeafTemp(new_node, new_index, &temp, &temp_address);
                 }
 
