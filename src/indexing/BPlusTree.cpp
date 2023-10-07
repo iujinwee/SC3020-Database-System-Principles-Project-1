@@ -760,6 +760,17 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 if (index == split_index)
                 {
                     smallest_children = cur->children[index + 1];
+
+                    if(index == m-1){
+                        // transfer temp to new node
+                        new_node->keys[new_index] = temp;
+                        new_node->children[new_index+1] = temp_address;
+                        new_node->size++;
+
+                        // Reassign parent
+                        ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
+                    }
+
                     index++;
                     continue;
                 }
@@ -791,7 +802,6 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 new_index++;
             }
 
-            //
             if(index == m-1){
                 // transfer temp to new node
                 new_node->keys[new_index] = temp;
