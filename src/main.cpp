@@ -55,7 +55,7 @@ int main()
             auto new_record_address = disk.saveRecord(new_record);
 
             if(new_record.fg_pct_home == float(0.458)){
-                cout;
+                
             }
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
@@ -100,20 +100,34 @@ int main()
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
     cout << endl;
 
+
+    // BPlusTreeNode* node=(BPlusTreeNode*) disk_tree->root;
+    // while(!node->is_leaf){
+    //     disk_tree->printNode(node,0);
+    //     node=(BPlusTreeNode*) node->children[0];
+    // }
+    // disk_tree->printNode(node,0);
+    // cout<<"Reach leaf node------"<<endl;
+    // // while(node->next!=nullptr){
+    //     node=(BPlusTreeNode*) node->next;
+    //     disk_tree->printNode(node,0);
+    // }
     // Experiment 2 Results
-    disk_tree->displayExp2Results();
+    // disk_tree->displayExp2Results();
 
     // Experiment 3 Results
     cout << "\nExperiment 3: Retrieve those movies with the atttribute FG_PCT_home equal to 0.5" << endl;
-    tree.displayExp3Results(&disk);
+    // tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
     cout << "\nExperiment 4: retrieve those movies with the attribute FG_PCT_home from 0.6 to 1" << endl;
-    tree.displayExp4Results(&disk);
+    // tree.displayExp4Results(&disk);
 
     // Experiment 5 Results
     //    disk_tree->deleteKey(0.35);
-    //    disk_tree->displayExp5Results();
+    cout << "\nExperiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively" << endl;
+
+    disk_tree->displayExp5Results(&disk);
 
     cout << "==================================================================" << endl;
 
