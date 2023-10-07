@@ -855,9 +855,8 @@ void BPlusTree::displayExp2Results()
 
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
-    
     SearchAddresslist.clear() ;
-    
+
     // If tree is empty
     if (root == nullptr)
     {
@@ -878,7 +877,6 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
                 {
                     auto temp_address = current_node->children[i] ;
                     SearchAddresslist.push_back(temp_address);
-//                    disk->displayRecord(temp_address);
                     count++;
                 }
 
@@ -895,14 +893,13 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        // cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        
     }
 }
 
 void BPlusTree::displayExp3Results(MemoryPool *disk)
 {
-    int num ;
-
+    
     auto start = std::chrono::high_resolution_clock::now();
 
     searchKey(disk, 0.5, 0.5);
@@ -910,9 +907,9 @@ void BPlusTree::displayExp3Results(MemoryPool *disk)
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time = end - start;
     cout << " - Running time of Retrieval process: " << elapsed_time.count() << " seconds" << endl;
-    cout << " - The number of index nodes the process accesses: " << indexblks << endl;
-    cout << " - The average of FG3_PCT_home values of the records that are returned: " << setprecision(8) << getAverage(disk) << endl;
-    cout << " - No. of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
+    cout << " - Number of index nodes the process accesses: " << indexblks << endl;
+    cout << " - Average of FG3_PCT_home values of the records that are returned: " << setprecision(8) << getAverage(disk) << endl;
+    cout << " - Number of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
     //cout << " - Running time of retrieval process: " <<  duration << "nanoseconds" << end1;
 
     
@@ -935,11 +932,26 @@ void BPlusTree::displayExp4Results(MemoryPool *disk)
 {
     int num ;
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     searchKey(disk, 0.6, 1.0);
-    cout << " - the number of index nodes the process accesses: " << indexblks << endl;
-    cout << " - the average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
-    cout << "-  no of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
-    cout << "-  no of data blocks from brute force: " << disk->getBlocksAccessedByBruteForce(0.6,1.0) << endl;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time = end - start;
+
+    cout << " - Running time of Retrieval process: " << elapsed_time.count() << " seconds" << endl;
+    cout << " - Number of index nodes the process accesses: " << indexblks << endl;
+    cout << " - Average of FG3_PCT_home values of the records that are returned: " << getAverage(disk) << endl;
+    cout << "-  Number of data blocks the process accesses: " << getNumDataBlock(disk) << endl;
+
+    auto start1 = std::chrono::high_resolution_clock::now();
+    cout << "-  Number of Data Blocks Accessed by Brute Force: " << disk->getBlocksAccessedByBruteForce(0.6,1.0) << endl;
+
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time1 = end1 - start1;
+
+    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    
 
 }
 
@@ -1015,6 +1027,8 @@ int BPlusTree::getNumDataBlock(MemoryPool *disk)
     vector <void*> IdArray;
     int count =0;
     int j;
+
+    IdArray.clear();
 
     for (int i = 0; i< SearchAddresslist.size(); i++)
     {
