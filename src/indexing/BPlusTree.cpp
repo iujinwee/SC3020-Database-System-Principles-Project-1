@@ -852,7 +852,7 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
     nodes++;
 
     // Split node
-    int split_index = (int)ceil(m / 2) - 1;
+    int split_index = (int)ceil(m / 2);
     int index = 0;
     int new_index = 0;
     auto temp = bpKey;
@@ -926,28 +926,17 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 {
                     smallest_children = cur->children[index + 1];
 
-                    if(index == m-1){
-                        // delete from cur
-                        cur->keys[index] = BPlusTreeKey{};
-                        cur->children[index + 1] = nullptr;
-                        cur->size--;
-
-                        // transfer temp to new node
-                        new_node->keys[new_index] = temp;
-                        new_node->children[new_index+1] = temp_address;
-                        new_node->size++;
-
-                        // Reassign parent
-                        ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
-                    }
+                    cur->keys[split_index] = BPlusTreeKey{};
+                    cur->children[split_index+1] = nullptr;
+                    cur->size--;
 
                     index++;
                     continue;
                 }
 
                 // transfer to new node
-                new_node->keys[new_index] = temp;
-                new_node->children[new_index+1] = temp_address;
+                new_node->keys[new_index] = cur->keys[index];
+                new_node->children[new_index+1] = cur->children[index+1];
 
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
@@ -984,6 +973,13 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
 
             index++;
         }
+        // Insert temp (LARGEST) at the end
+        new_node->keys[new_index] = temp;
+        new_node->children[new_index+1] = temp_address;
+        new_node->size++;
+
+        // Reassign parent
+        ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
 
         // Insert the smallest children of new_node (HARD-CODED)
         new_node->children[0] = smallest_children;
