@@ -54,10 +54,16 @@ int main()
             new_record.store(line);
             auto new_record_address = disk.saveRecord(new_record);
 
+            if(new_record.fg_pct_home == float(0.458)){
+                cout;
+            }
             // Add to B+ Tree sequentially
             tree.insertKey(&disk, new_record.fg_pct_home, new_record_address);
             //            cout << count++ << endl;
-            // tree.displayTree();
+//            tree.displayTree();
+
+
+             count++;
         }
 
         // STORE THE BPLUSTREE ONCE READING IS DONE
@@ -70,6 +76,8 @@ int main()
              << endl
              << endl;
 
+        tree.displayTree();
+
         datafile.close();
     }
     else
@@ -81,6 +89,7 @@ int main()
 
     // We will simulate reading from the disk, by loading the tree from the memory pool.
     auto disk_tree = (BPlusTree *)(((Block *)disk.bplustree_ptr)->block_ptr);
+//    disk_tree->displayTree();
 
     // Experiment 1 Results
     cout << "==================================================================" << endl;

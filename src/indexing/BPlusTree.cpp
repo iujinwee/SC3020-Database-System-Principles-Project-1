@@ -763,21 +763,38 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                     smallest_children = cur->children[index + 1];
                 }
 
-                // transfer temp to new node
-                new_node->keys[new_index] = temp;
-                new_node->children[new_index + 1] = temp_address;
-
-                // Reassign parent
-                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
+                // transfer to new node
+                new_node->keys[new_index] = cur->keys[index];
+                new_node->children[new_index+1] = cur->children[index+1];
 
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
                 cur->children[index + 1] = nullptr;
 
+                // check if new temp is larger
+                bool newTempLarger = new_node->keys[index].key < temp.key ||
+                        (new_node->keys[index].key == temp.key &&
+                        new_node->keys[index].count < temp.count);
+
+                // if temp is smaller, swap then re-assign
+                if(newTempLarger){
+                    swapNonLeafTemp(new_node, new_index, &temp, &temp_address);
+                }
+
+                // Reassign parent
+                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
+
                 // update size
                 new_node->size++;
                 cur->size--;
                 new_index++;
+            }
+
+            //
+            if(index == m-1){
+                // transfer temp to new node
+                new_node->keys[new_index] = temp;
+                new_node->children[new_index+1] = temp_address;
             }
 
             index++;
