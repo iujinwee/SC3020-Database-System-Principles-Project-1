@@ -89,7 +89,7 @@ int main()
 
     // We will simulate reading from the disk, by loading the tree from the memory pool.
     auto disk_tree = (BPlusTree *)(((Block *)disk.bplustree_ptr)->block_ptr);
-//    disk_tree->displayTree();
+   disk_tree->displayTree();
 
     // Experiment 1 Results
     cout << "==================================================================" << endl;
