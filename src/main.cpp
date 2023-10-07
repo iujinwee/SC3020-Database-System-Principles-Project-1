@@ -111,7 +111,7 @@ int main()
 
     // Experiment 3 Results
     cout << "\nExperiment 3: Retrieve those movies with the atttribute FG_PCT_home equal to 0.5" << endl;
-     tree.displayExp3Results(&disk);
+    //  tree.displayExp3Results(&disk);
 
     // Experiment 4 Results
     cout << "\nExperiment 4: retrieve those movies with the attribute FG_PCT_home from 0.6 to 1" << endl;
@@ -121,9 +121,11 @@ int main()
     //    disk_tree->deleteKey(0.35);
     cout << "\nExperiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively" << endl;
 
-//    disk_tree->displayExp5Results(&disk);
+   disk_tree->displayExp5Results(&disk);
 
     cout << "==================================================================================================================================================================" << endl;
+
+    cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
 
     // KELLY CODE
     // Retrieve records with "FG_PCT_Home" = 0.5
