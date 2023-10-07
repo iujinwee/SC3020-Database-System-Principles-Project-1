@@ -3,8 +3,6 @@
 //
 
 #include "BPlusTree.h"
-#include <list>
-#include "../storage//Block.h"
 #include <iomanip>
 #include <chrono>
 
@@ -607,33 +605,6 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
     }
     else
     {
-//        auto current_node = (BPlusTreeNode *) root;
-//        while (!current_node->is_leaf) {
-//            for (int i = current_node->size-1; i >= 0; i--) {
-//
-//                if(current_node->is_leaf){
-//                    break;
-//                }
-//
-//                // If key is larger, go to right node
-//                if (key >= current_node->keys[i].key) {
-//
-//                    auto target_node = (BPlusTreeNode *) current_node->children[i+1];
-//                    if (target_node != nullptr) {
-//                        current_node = target_node;
-//                        break;
-//                    }
-//
-//                }
-//
-//                // If all nodes exhausted, go to left node
-//                if (i == 0) {
-//                    current_node = (BPlusTreeNode *) current_node->children[0];
-//                    continue;
-//                }
-//            }
-//        }
-
         // NEW INSERTION CODE (EUGENE)
         auto current_node = (BPlusTreeNode *) root;
         while (!current_node->is_leaf) {
@@ -662,41 +633,6 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
 
             }
         }
-
-//        // Check if sibling node has the key, if so, return the sibling node
-//        if (current_node->next != nullptr) {
-//            BPlusTreeNode *sibling_node = current_node->next;
-//            if (sibling_node->keys[0].key == key) {
-//                return sibling_node;
-//            }
-//        }
-
-//        // Transverse to the lowest left node
-//        while (!current_node->is_leaf)
-//        {
-//            current_node = (BPlusTreeNode *)current_node->children[0];
-//            indexblks++;
-//        }
-//
-//        // Find insertion node by travelling horizontally (using next ptr)
-//        while (current_node->keys[0].key <= key)
-//        {
-//            if (current_node->next != nullptr)
-//            {
-//                if (current_node->next->keys[0].key <= key)
-//                {
-//                    current_node = current_node->next;
-//                }
-//                else
-//                {
-//                    break;
-//                }
-//            }
-//            else
-//            {
-//                break;
-//            }
-//        }
         return current_node;
     }
     return nullptr;
@@ -942,16 +878,6 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 // delete from cur
                 cur->keys[index] = BPlusTreeKey{};
                 cur->children[index + 1] = nullptr;
-//
-//                // check if new temp is smaller
-//                bool newTempSmaller = new_node->keys[new_index].key > temp.key ||
-//                        (new_node->keys[new_index].key == temp.key &&
-//                        new_node->keys[new_index].count > temp.count);
-//
-//                // if temp is smaller, swap then re-assign
-//                if(newTempSmaller){
-//                    swapNonLeafTemp(new_node, new_index, &temp, &temp_address);
-//                }
 
                 // Reassign parent
                 ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
@@ -961,16 +887,6 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                 cur->size--;
                 new_index++;
             }
-
-//            if(index == m-1){
-//                // transfer temp to new node
-//                new_node->keys[new_index] = temp;
-//                new_node->children[new_index+1] = temp_address;
-//                new_node->size++;
-//
-//                // Reassign parent
-//                ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
-//            }
 
             index++;
         }
@@ -1121,7 +1037,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        // cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
     }
 }
 

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -87,10 +86,10 @@ int main()
 
     // We will simulate reading from the disk, by loading the tree from the memory pool.
     auto disk_tree = (BPlusTree *)(((Block *)disk.bplustree_ptr)->block_ptr);
-    disk_tree->displayTree();
+    // disk_tree->displayTree();
 
     // Experiment 1 Results
-    cout << "==================================================================" << endl;
+    cout << "==================================================================================================================================================================" << endl;
     cout << "Experiment 1: Reading data text file into DB system." << endl;
     cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
@@ -111,7 +110,7 @@ int main()
     //     disk_tree->printNode(node,0);
     // }
     // Experiment 2 Results
-    // disk_tree->displayExp2Results();
+    disk_tree->displayExp2Results();
 
     // Experiment 3 Results
     cout << "\nExperiment 3: Retrieve those movies with the atttribute FG_PCT_home equal to 0.5" << endl;
@@ -127,8 +126,7 @@ int main()
 
 //    disk_tree->displayExp5Results(&disk);
 
-    cout << "==================================================================" << endl;
-
+    cout << "==================================================================================================================================================================" << endl;
 
     // KELLY CODE
     // Retrieve records with "FG_PCT_Home" = 0.5
