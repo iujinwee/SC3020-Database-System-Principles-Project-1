@@ -302,6 +302,8 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 {
     int datablks = 0;
 
+    BFSearchAddresslist.clear() ;
+
     for (int i = 0; i < block_ptr_list.size(); i++)
     {
         int num_records = 0;
@@ -342,7 +344,7 @@ int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
     
     }
  //  cout << "block_ptr_list.size: " <<  block_ptr_list.size() << endl;
-  cout << "BFSearchAddresslist: " <<  BFSearchAddresslist.size() << endl;
+ // cout << "BFSearchAddresslist: " <<  BFSearchAddresslist.size() << endl;
     return datablks;
 }
 
