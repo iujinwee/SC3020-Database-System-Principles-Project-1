@@ -85,7 +85,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
     else if (node->is_leaf)
     {
         cout<<"Check leaf with key starting "<<node->keys[0].key<<endl;
-        printNode(node,0);
+        // printNode(node,0);
         if (node->keys[node->size - 1].key <= dkey)
         {
             // delete node if largest index<dkey
@@ -502,7 +502,6 @@ void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
         // Assuming children[0] points to the data you want to delete
         Record *dRecord = (Record *)children[0];
         disk->deletemRecord(dRecord);
-        cout<<"Delete record "<<keys->key<<endl;
     }
 
     // delete current key and shift behind keys and ptrs forward
@@ -618,8 +617,9 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
                     auto target_node = (BPlusTreeNode *) current_node->children[i+1];
                     if (target_node != nullptr) {
                         current_node = target_node;
-                        continue;
+                        break;
                     }
+
                 }
 
                 // If all nodes exhausted, go to left node
