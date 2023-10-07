@@ -513,11 +513,11 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
         }
 
         // Find insertion node by travelling horizontally (using next ptr)
-        while (current_node->keys[0].key < key)
+        while (current_node->keys[0].key <= key)
         {
             if (current_node->next != nullptr)
             {
-                if (current_node->next->keys[0].key < key)
+                if (current_node->next->keys[0].key <= key)
                 {
                     current_node = current_node->next;
                 }
