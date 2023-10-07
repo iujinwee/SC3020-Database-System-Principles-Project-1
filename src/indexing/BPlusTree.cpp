@@ -504,33 +504,62 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
     }
     else
     {
-        auto *current_node = (BPlusTreeNode *)root;
-        // Transverse to the lowest left node
-        while (!current_node->is_leaf)
-        {
-            current_node = (BPlusTreeNode *)current_node->children[0];
-            indexblks++;
+        auto current_node = (BPlusTreeNode *) root;
+        while (!current_node->is_leaf) {
+            for (int i = current_node->size-1; i >= 0; i--) {
+
+                // If key is larger, go to right node
+                if (key >= current_node->keys[i].key) {
+
+                    auto target_node = (BPlusTreeNode *) current_node->children[i+1];
+                    if (target_node != nullptr) {
+                        current_node = target_node;
+                        continue;
+                    }
+                }
+
+                // If all nodes exhausted, go to left node
+                if (i == 0) {
+                    current_node = (BPlusTreeNode *) current_node->children[0];
+                    continue;
+                }
+            }
         }
 
-        // Find insertion node by travelling horizontally (using next ptr)
-        while (current_node->keys[0].key <= key)
-        {
-            if (current_node->next != nullptr)
-            {
-                if (current_node->next->keys[0].key <= key)
-                {
-                    current_node = current_node->next;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;
-            }
-        }
+//        // Check if sibling node has the key, if so, return the sibling node
+//        if (current_node->next != nullptr) {
+//            BPlusTreeNode *sibling_node = current_node->next;
+//            if (sibling_node->keys[0].key == key) {
+//                return sibling_node;
+//            }
+//        }
+
+//        // Transverse to the lowest left node
+//        while (!current_node->is_leaf)
+//        {
+//            current_node = (BPlusTreeNode *)current_node->children[0];
+//            indexblks++;
+//        }
+//
+//        // Find insertion node by travelling horizontally (using next ptr)
+//        while (current_node->keys[0].key <= key)
+//        {
+//            if (current_node->next != nullptr)
+//            {
+//                if (current_node->next->keys[0].key <= key)
+//                {
+//                    current_node = current_node->next;
+//                }
+//                else
+//                {
+//                    break;
+//                }
+//            }
+//            else
+//            {
+//                break;
+//            }
+//        }
         return current_node;
     }
     return nullptr;
@@ -762,6 +791,11 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                     smallest_children = cur->children[index + 1];
 
                     if(index == m-1){
+                        // delete from cur
+                        cur->keys[index] = BPlusTreeKey{};
+                        cur->children[index + 1] = nullptr;
+                        cur->size--;
+
                         // transfer temp to new node
                         new_node->keys[new_index] = temp;
                         new_node->children[new_index+1] = temp_address;
@@ -770,6 +804,11 @@ BPlusTreeNode *BPlusTree::split(BPlusTreeNode *cur, BPlusTreeKey bpKey, void *ad
                         // Reassign parent
                         ((BPlusTreeNode *)new_node->children[new_index + 1])->parent = new_node;
                     }
+
+                    // Delete the last key in current
+                    cur->keys[index] = BPlusTreeKey{};
+                    cur->children[index + 1] = nullptr;
+                    cur->size--;
 
                     index++;
                     continue;
