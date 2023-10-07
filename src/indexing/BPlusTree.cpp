@@ -81,6 +81,8 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
     }
     else if (node->is_leaf)
     {
+        cout<<"Check leaf with key starting "<<node->keys[0].key<<endl;
+        printNode(node,0);
         if (node->keys[node->size - 1].key <= dkey)
         {
             // delete node if largest index<dkey
@@ -151,6 +153,8 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         int full_delete = 0;
         int nd = 0;
         int dsize = node->size + 1;
+        cout<<"Check nonleaf with key starting "<<node->keys[0].key<<endl;
+        printNode(node,0);
         for (int i = 0; i < dsize; i++)
         {
             full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[i], dkey);
@@ -161,8 +165,6 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                     node->deleteKeyInNonLeafNode();
                 }
                 
-            } else{
-                break;
             }
         }
         if (nd > dsize)
@@ -172,7 +174,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
 
 
         // check structure
-        if (node->size <= 0 & node != root)
+        if (node->size == 0 & node != root & node->children = nullptr)
         {
             disk->deleteBPlusTreeNode(node);
             return 1;
@@ -494,6 +496,7 @@ void BPlusTreeNode::deleteKeyInLeafNode(MemoryPool *disk)
         // Assuming children[0] points to the data you want to delete
         Record *dRecord = (Record *)children[0];
         disk->deletemRecord(dRecord);
+        cout<<"Delete record "<<keys->key<<endl;
     }
 
     // delete current key and shift behind keys and ptrs forward
@@ -1144,19 +1147,8 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     auto *current_node = root;
     while(!current_node->is_leaf){
         current_node=(BPlusTreeNode *)current_node->children[0];
-        printNode(current_node,0);
+
     }
-    int total=0;
-    printNode(current_node,0);
-    cout<<"current total"<<total<<endl;
-    while(current_node->next!=nullptr){
-        total+=current_node->size;
-        current_node=current_node->next;
-        printNode(current_node,0);
-        cout<<"current total"<<total<<endl;
-    }
-    total+=current_node->size;
-    cout << "Size of records " << total << endl;
 
     // auto start1 = std::chrono::high_resolution_clock::now();
 
