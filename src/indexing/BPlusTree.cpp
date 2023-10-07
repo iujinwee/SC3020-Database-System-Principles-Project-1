@@ -82,7 +82,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
     }
     else if (node->is_leaf)
     {
-        cout<<"Check leaf with key starting "<<node->keys[0].key<<endl;
+        // cout<<"Check leaf with key starting "<<node->keys[0].key<<" with size: "<<node->size<<endl;
         // printNode(node,0);
         if (node->keys[node->size - 1].key <= dkey)
         {
@@ -132,11 +132,12 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 else
                 {
                     BPlusTreeNode *nNode = node->next;
+                    BPlusTreeNode *nParent = (BPlusTreeNode *) node->parent;
                     int index=node->findIndexChild(node);
                     MergeWithRight_LeafNode(disk, node->size, node, nNode);
                     // propagate update key of right
                     if(index==0){
-                        node->parent->deleteKeyInNonLeafNode();
+                        nParent->deleteKeyInNonLeafNode();
                         checkKey(nNode);
                         return 0;
                     } else{
@@ -154,10 +155,8 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         int full_delete = 0;
         int nd = 0;
         int dsize = node->size + 1;
-        cout<<"Check nonleaf with key starting "<<node->keys[0].key<<endl;
-        printNode(node,0);
         for (int i = 0; i < dsize; i++)
-        {
+        {   
             full_delete = deleteKey(disk, (BPlusTreeNode *)node->children[0], dkey);
             if (full_delete)
             {
@@ -212,11 +211,12 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
             }
             else
             {
+                BPlusTreeNode *nParent = (BPlusTreeNode *) node->parent;
                 int index=node->findIndexChild(node);
                 MergeWithRight_NonLeafNode(disk, node->size, node, nNode);
                 // propagate update key of right
                 if(index==0){
-                    node->parent->deleteKeyInNonLeafNode();
+                    nParent->deleteKeyInNonLeafNode();
                     checkKey(nNode);
                     return 0;
                 } else{

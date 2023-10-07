@@ -125,6 +125,8 @@ int main()
 
     cout << "==================================================================================================================================================================" << endl;
 
+    cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
+
     // KELLY CODE
     // Retrieve records with "FG_PCT_Home" = 0.5
 
