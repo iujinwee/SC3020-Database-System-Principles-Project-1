@@ -589,10 +589,10 @@ void BPlusTree::printNode(BPlusTreeNode *node, int level)
 
     if (!node->is_leaf)
     {
-        // for (int i = 0; i <= node->size; ++i)
-        // {
-        //     printNode((BPlusTreeNode *)node->children[i], level + 1);
-        // }
+         for (int i = 0; i <= node->size; ++i)
+         {
+             printNode((BPlusTreeNode *)node->children[i], level + 1);
+         }
     }
 }
 
@@ -607,30 +607,58 @@ BPlusTreeNode *BPlusTree::searchInsertionNode(float key)
     }
     else
     {
+//        auto current_node = (BPlusTreeNode *) root;
+//        while (!current_node->is_leaf) {
+//            for (int i = current_node->size-1; i >= 0; i--) {
+//
+//                if(current_node->is_leaf){
+//                    break;
+//                }
+//
+//                // If key is larger, go to right node
+//                if (key >= current_node->keys[i].key) {
+//
+//                    auto target_node = (BPlusTreeNode *) current_node->children[i+1];
+//                    if (target_node != nullptr) {
+//                        current_node = target_node;
+//                        break;
+//                    }
+//
+//                }
+//
+//                // If all nodes exhausted, go to left node
+//                if (i == 0) {
+//                    current_node = (BPlusTreeNode *) current_node->children[0];
+//                    continue;
+//                }
+//            }
+//        }
+
+        // NEW INSERTION CODE (EUGENE)
         auto current_node = (BPlusTreeNode *) root;
         while (!current_node->is_leaf) {
-            for (int i = current_node->size-1; i >= 0; i--) {
-
+            for (int i = 0; i < current_node->size; i++) {
                 if(current_node->is_leaf){
                     break;
                 }
 
-                // If key is larger, go to right node
-                if (key >= current_node->keys[i].key) {
-
-                    auto target_node = (BPlusTreeNode *) current_node->children[i+1];
-                    if (target_node != nullptr) {
-                        current_node = target_node;
+                // If key to be inserted is lesser than current node key, go to the left children
+                if(current_node->keys[i].key > key){
+                    current_node = (BPlusTreeNode *)current_node->children[i];
+                    break;
+                }
+                // Key to be inserted is greater than or equal to current node key
+                else{
+                    // Terminate and enter to the right-most children if all exhausted
+                    if(i == current_node->size-1){
+                        current_node = (BPlusTreeNode *) current_node->children[i+1];
                         break;
                     }
 
-                }
-
-                // If all nodes exhausted, go to left node
-                if (i == 0) {
-                    current_node = (BPlusTreeNode *) current_node->children[0];
+                    // Iterate to next key
                     continue;
                 }
+
             }
         }
 
