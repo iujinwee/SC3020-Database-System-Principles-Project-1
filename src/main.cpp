@@ -95,7 +95,7 @@ int main()
     // Experiment 1 Results
     cout << "=============================================================================================================================================================" << endl;
     cout << "Experiment 1: Reading data text file into DB system." << endl;
-    cout << " - Number of records: " << disk.getNumUsedRecords() - missing_data << endl;
+    cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
