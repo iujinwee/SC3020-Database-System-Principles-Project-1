@@ -976,6 +976,7 @@ void BPlusTree::displayExp2Results()
 
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
+    int indexblks = 0;
     
     SearchAddresslist.clear();
     
@@ -986,7 +987,6 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
     }
     else
     {
-        //find node where first instance of lower key appears
         auto current_node = (BPlusTreeNode *) root;
         while (!current_node->is_leaf) {
             for (int i = 0; i < current_node->size; i++) {
@@ -1042,7 +1042,8 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        cout << " - Number of records retrieved: " << count << endl;
+        
     }
 }
 
@@ -1123,7 +1124,7 @@ double BPlusTree::getAverage(MemoryPool *disk)
     {
         average = sum / SearchAddresslist.size();
         return average;
-    }
+    } else return 0 ;
 
 }
 
@@ -1216,8 +1217,8 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     auto end1 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time1 = end1 - start1;
 
-    cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    cout << " - Number of Data Blocks Accessed by Brute Force: " << bruteForceAccessCount << endl;
+    cout << " - Running time of Linear Scan Accessed by Brute Force: " << elapsed_time1.count() << " seconds" << endl;
 }
 
 
