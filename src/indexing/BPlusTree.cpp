@@ -1106,31 +1106,17 @@ double BPlusTree::getAverage(MemoryPool *disk)
     double sum=0;
     double average=0;
     double value;
-    int ID ;
 
     for (int i=0; i < SearchAddresslist.size(); i++)
     {
         value = disk->loadRecordfcg3(SearchAddresslist[i]) ;
-        //cout << "reteieve fcg3 value is: " << value << endl;
         sum = sum + value ;
-
-        // testing
-        // ID = Block::getblockAddress(SearchAddresslist[i]) ;
-        // cout << "block ID for address : " << ID << endl;
     }
 
     if (SearchAddresslist.size() != 0)
     {
-        // cout << "sum" << sum << endl;
-        // cout << "SearchAddresslist.size() " << SearchAddresslist.size() << endl;
         average = sum / SearchAddresslist.size();
         return average;
-    }
-
-    else
-    {
-        cout << "no such record with fcg value = 0.5" << endl;
-        return 0 ;
     }
 
 }
