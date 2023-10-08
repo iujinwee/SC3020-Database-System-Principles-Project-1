@@ -1020,6 +1020,7 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
                 {
                     auto temp_address = current_node->children[i] ;
                     SearchAddresslist.push_back(temp_address);
+                    disk->displayRecord(temp_address);
                     count++;
                 }
 
