@@ -49,7 +49,6 @@ Block *MemoryPool::allocateBlock() {
 
         // Update block
         current_memory_size += block_size;
-        // num_used_blocks += 1;
 
         
         return new_block;
@@ -74,10 +73,10 @@ void MemoryPool::allocateRecord() {
 
         if (new_block != nullptr) {
             cout << "First data record stored at " << new_block->block_ptr << endl;
-        // Kelly
-        //push new block ptr to list of block pointers
-        block_ptr_list.push_back(new_block->block_ptr);
 
+            // Kelly
+            //push new block ptr to list of block pointers
+            block_ptr_list.push_back(new_block->block_ptr);
         }
         return;
     }
@@ -94,15 +93,6 @@ void MemoryPool::allocateRecord() {
         
         current_data_block = new_block;
         num_used_data_blocks++;
-
-        if (!new_block) {
-            string error = "Insufficient Memory " +
-                           to_string(getCurrentMemory()) +
-                           "MB / " +
-                           to_string(getTotalMemory()) +
-                           "MB";
-            throw logic_error(error);
-        }
     }
 }
 
@@ -116,10 +106,6 @@ void MemoryPool::saveBPlusTreeNode(BPlusTreeNode *newNode) {
     if (new_block != nullptr) {
         // Move the content of the BPlusTree node into the designated memory block
         new_block->addNode(&newNode);
-
-        // Update block attributes
-        // new_block->size += sizeof(BPlusTreeNode);
-        // new_block->num_records++;
     }
 }
 
@@ -129,10 +115,6 @@ void MemoryPool::deleteBPlusTreeNode(BPlusTreeNode *node) {
         // Move the content of the BPlusTree node into the designated memory block
         dBlock->deleteNode( (void*) dBlock);
 
-        // Update block attributes
-        // dBlock->size-=sizeof(BPlusTreeNode);
-        // dBlock->num_records--;
-        // Update block
         current_memory_size -= block_size;
         num_used_blocks -= 1;
 }

@@ -91,6 +91,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 node->deleteKeyInLeafNode(disk);
             }
             disk->deleteBPlusTreeNode(node);
+            nodes--;
             return 1;
         }
         else
@@ -136,6 +137,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                     // propagate update key of right
                     if(index==0){
                         nParent->deleteKeyInNonLeafNode();
+                        nodes--;
                         checkKey(nNode);
                         return 0;
                     } else{
@@ -177,12 +179,15 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         if (node->size == 0 & node != root & node->children[0] != nullptr)
         {
             disk->deleteBPlusTreeNode(node);
+            nodes--;
             return 1;
         }
 
         else if (node->size == 0 & node == root)
         {
             root = (BPlusTreeNode *)node->children[0];
+            nodes--;
+            levels--;
             return 0;
         }
 
@@ -215,6 +220,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 // propagate update key of right
                 if(index==0){
                     nParent->deleteKeyInNonLeafNode();
+                    nodes--;
                     checkKey(nNode);
                     return 0;
                 } else{
@@ -1212,8 +1218,8 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     auto end1 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time1 = end1 - start1;
 
-    cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    cout << " - Number of Data Blocks Accessed by Brute Force: " << bruteForceAccessCount << endl;
+    cout << " - Running time of Linear Scan Accessed by Brute Force: " << elapsed_time1.count() << " seconds" << endl;
 }
 
 
