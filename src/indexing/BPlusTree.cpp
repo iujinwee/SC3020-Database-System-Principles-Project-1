@@ -1211,8 +1211,8 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     auto end1 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time1 = end1 - start1;
 
-    cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    cout << " - Number of Data Blocks Accessed by Brute Force: " << bruteForceAccessCount << endl;
+    cout << " - Running time of Linear Scan Accessed by Brute Force: " << elapsed_time1.count() << " seconds" << endl;
 }
 
 
