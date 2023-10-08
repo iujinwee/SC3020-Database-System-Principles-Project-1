@@ -91,6 +91,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 node->deleteKeyInLeafNode(disk);
             }
             disk->deleteBPlusTreeNode(node);
+            nodes--;
             return 1;
         }
         else
@@ -136,6 +137,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                     // propagate update key of right
                     if(index==0){
                         nParent->deleteKeyInNonLeafNode();
+                        nodes--;
                         checkKey(nNode);
                         return 0;
                     } else{
@@ -177,12 +179,15 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
         if (node->size == 0 & node != root & node->children[0] != nullptr)
         {
             disk->deleteBPlusTreeNode(node);
+            nodes--;
             return 1;
         }
 
         else if (node->size == 0 & node == root)
         {
             root = (BPlusTreeNode *)node->children[0];
+            nodes--;
+            levels--;
             return 0;
         }
 
@@ -215,6 +220,7 @@ int BPlusTree::deleteKey(MemoryPool *disk, BPlusTreeNode *node, float dkey)
                 // propagate update key of right
                 if(index==0){
                     nParent->deleteKeyInNonLeafNode();
+                    nodes--;
                     checkKey(nNode);
                     return 0;
                 } else{
