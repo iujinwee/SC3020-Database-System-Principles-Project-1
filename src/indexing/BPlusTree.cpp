@@ -972,6 +972,7 @@ void BPlusTree::displayExp2Results()
 
 void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
 {
+    int indexblks = 0;
     
     SearchAddresslist.clear();
     
@@ -982,7 +983,6 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
     }
     else
     {
-        //find node where first instance of lower key appears
         auto current_node = (BPlusTreeNode *) root;
         while (!current_node->is_leaf) {
             for (int i = 0; i < current_node->size; i++) {
@@ -1038,7 +1038,8 @@ void BPlusTree::searchKey(MemoryPool *disk, float lowerkey, float upperkey)
             }
 
         }
-        cout << " - Number of records retrieved with 'FG_PCT_home = 0.5': " << count << endl;
+        cout << " - Number of records retrieved: " << count << endl;
+        
     }
 }
 
@@ -1119,7 +1120,7 @@ double BPlusTree::getAverage(MemoryPool *disk)
     {
         average = sum / SearchAddresslist.size();
         return average;
-    }
+    } else return 0 ;
 
 }
 
