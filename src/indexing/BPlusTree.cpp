@@ -46,8 +46,6 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
         auto *target_node = searchInsertionNode(key);
         auto bpKey = getInsertionBPKey(target_node, key);
 
-        // Find index to compare
-
         // Insertion into non-full B+ leaf node
         if (target_node->size < m)
         {
@@ -953,7 +951,7 @@ void BPlusTree::printRootKeys()
 {
     for (int i = 0; i < root->size; i++)
     {
-        cout << "(" << root->keys[i].key << ", " << root->keys[i].count << ") ";
+        cout << "(" << setprecision(3) <<  root->keys[i].key << ", " << root->keys[i].count << ") ";
     }
 }
 
@@ -1206,21 +1204,15 @@ void BPlusTree::displayExp5Results(MemoryPool *disk)
     cout << endl;
     cout << " - Running time of Process: " << elapsed_time.count() << " seconds" << endl;
 
-    // auto *current_node = root;
-    // while(!current_node->is_leaf){
-    //     current_node=(BPlusTreeNode *)current_node->children[0];
+    auto start1 = std::chrono::high_resolution_clock::now();
 
-    // }
+    int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
 
-    // auto start1 = std::chrono::high_resolution_clock::now();
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed_time1 = end1 - start1;
 
-    // int bruteForceAccessCount = disk->getBlocksAccessedByBruteForce(0,0.35);
-
-    // auto end1 = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double> elapsed_time1 = end1 - start1;
-
-    // cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
-    // cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
+    cout << " - Number of Data Blocks Accessed by Brute Force " << bruteForceAccessCount << endl;
+    cout << " - Running time of Linear Scan Accessed by Brute Force : " << elapsed_time1.count() << " seconds" << endl;
 }
 
 
