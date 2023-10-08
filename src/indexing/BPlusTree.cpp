@@ -46,8 +46,6 @@ void BPlusTree::insertKey(MemoryPool *disk, float key, void *recordAddress)
         auto *target_node = searchInsertionNode(key);
         auto bpKey = getInsertionBPKey(target_node, key);
 
-        // Find index to compare
-
         // Insertion into non-full B+ leaf node
         if (target_node->size < m)
         {
@@ -953,7 +951,7 @@ void BPlusTree::printRootKeys()
 {
     for (int i = 0; i < root->size; i++)
     {
-        cout << "(" << root->keys[i].key << ", " << root->keys[i].count << ") ";
+        cout << "(" << setprecision(3) <<  root->keys[i].key << ", " << root->keys[i].count << ") ";
     }
 }
 

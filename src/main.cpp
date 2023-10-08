@@ -30,6 +30,9 @@ int main()
     // Initialize B+ Tree
     BPlusTree tree;
 
+    // Missing counter
+    int missing_data = 0;
+
     bool header = true;
     if (datafile.is_open())
     {
@@ -47,9 +50,17 @@ int main()
                 continue;
             }
 
-            // Write new record into memory pool
+            // Write new record into structure
             Record new_record = {};
             new_record.store(line);
+
+            // Skip blank data
+            if(new_record.fg_pct_home == 0.0){
+                missing_data++;
+                continue;
+            }
+
+            // Save new record into memory pool
             auto new_record_address = disk.saveRecord(new_record);
 
             // Add to B+ Tree sequentially
@@ -63,6 +74,9 @@ int main()
         cout << "Summary of Memory Pool: " << endl;
         cout << disk.getCurrentMemory() << "MB / "
              << disk.getTotalMemory() << "MB"
+             << endl
+             << "Missing data: "
+             << missing_data
              << endl
              << endl;
 
@@ -79,9 +93,9 @@ int main()
     auto disk_tree = (BPlusTree *)(((Block *)disk.bplustree_ptr)->block_ptr);
 
     // Experiment 1 Results
-    cout << "==================================================================================================================================================================" << endl;
+    cout << "=============================================================================================================================================================" << endl;
     cout << "Experiment 1: Reading data text file into DB system." << endl;
-    cout << " - Number of records: " << disk.getNumUsedRecords() << endl;
+    cout << " - Number of records: " << disk.getNumUsedRecords() - missing_data << endl;
     cout << " - Size of a record: " << disk.getRecordSize() << endl;
     cout << " - Number of records stored in a block: " << disk.getNumRecordsInBlock() << endl;
     cout << " - Number of blocks for storing the data: " << disk.getNumUsedDataBlocks() << endl;
@@ -103,7 +117,7 @@ int main()
     disk_tree->deleteKey(&disk, disk_tree->root, 0.35);
     disk_tree->displayExp5Results(&disk);
 
-    cout << "==================================================================================================================================================================" << endl;
+    cout << "=============================================================================================================================================================" << endl;
 
 
     cout << "\n\n\n=============================================================================================================================================================" << endl;
