@@ -242,43 +242,6 @@ void* MemoryPool::getBlockAddress(void *recordAddress)
     return record->block_add ;
 }
 
-/*
-void MemoryPool::getBlocksAccessedByForce(float lower, float upper)
-{
-    cout << "size of block ptr list  " << block_ptr_list.size() << endl;
-    int numRecord = 0 ;
-    int datablks = 0;
-
-    for (int i = 0; i < block_ptr_list.size(); i++)
-    {
-       // cout << "Block ptr " << block_ptr_list[i] << endl;
-       int usedSize = 0 ;
-       int numRecord = 0 ;
-
-       while (usedSize <= block_size)
-       {
-       void* recordAddress = (void*)((char*) block_ptr_list[i] + numRecord * RECORD_SIZE);
-
-       auto *record = new Record;
-       record = loadRecord(recordAddress) ;
-      
-       if (record == nullptr) break ;
-       else
-       {
-       if (record->fg_pct_home == 0.5) displayRecord(recordAddress) ;
-
-       numRecord = numRecord + 1;
-       usedSize = usedSize + RECORD_SIZE ;
-       }
-       }
-       datablks++;
-
-    }
-
-    return datablks; ;
-} 
-*/
-
 
 int MemoryPool::getBlocksAccessedByBruteForce(float lowerkey, float upperkey)
 {
