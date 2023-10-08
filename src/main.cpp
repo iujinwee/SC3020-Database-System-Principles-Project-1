@@ -100,8 +100,8 @@ int main()
 
     // Experiment 5 Results
     cout << "\nExperiment 5: delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively" << endl;
-    disk_tree->deleteKey(&disk, disk_tree->root, 0.35);
     disk_tree->displayExp5Results(&disk);
+
 
     cout << "==================================================================================================================================================================" << endl;
 
