@@ -19,7 +19,8 @@ Block::Block(void* allocatedAddress){
  */
 
 Block* Block::findBlock(void *recordAddress){
-    Block* dBlock = (Block*)((char*) recordAddress - num_records * RECORD_SIZE);
+    Record* dRecord=(Record*)recordAddress;
+    Block* dBlock = (Block*) (dRecord->getBlockAddress(dRecord));
     return dBlock;
 }
 

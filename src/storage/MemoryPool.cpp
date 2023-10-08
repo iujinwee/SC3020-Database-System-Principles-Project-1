@@ -127,7 +127,7 @@ void MemoryPool::deleteBPlusTreeNode(BPlusTreeNode *node) {
 
         Block *dBlock = (Block*) node;
         // Move the content of the BPlusTree node into the designated memory block
-        dBlock->deleteNode(&dBlock);
+        dBlock->deleteNode( (void*) dBlock);
 
         // Update block attributes
         // dBlock->size-=sizeof(BPlusTreeNode);
@@ -172,7 +172,6 @@ void *MemoryPool::saveRecord(Record newRecord) {
 void *MemoryPool::deletemRecord(Record* dRecord) {
 
     Block* dBlock = dBlock->findBlock(dRecord);
-    cout << "==================================================================" << endl;
     dBlock->deleteRecord(dRecord);
 
     if(dBlock->size==0){
